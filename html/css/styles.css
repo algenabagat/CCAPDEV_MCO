@@ -1,0 +1,52 @@
+/* Navbar styling */
+.navbar {
+  background-color: #3D8D7A !important;
+}
+
+.navbar .navbar-brand {
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  width: 100%;
+}
+
+.custom-navbar {
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+}
+
+.custom-navbar .navbar-brand {
+  font-size: 1.8rem;
+}
+
+.custom-navbar .nav-link {
+  font-size: 1.2rem;
+  padding: 0.75rem 1rem;
+}
+
+.custom-navbar .container-fluid {
+  align-items: center;
+}
+
+
+/* Main container layout */
+.main-container {
+  background-color: #FBFFE4;
+  min-height: 100vh;
+  padding: 40px 0;
+
+}
+
+/* Optional: Make carousel images fixed height for uniformity */
+.carousel-item img {
+  height: 400px;
+  object-fit: cover;
+}
+
+/* Info section styling only */
+.info {
+  background-color: #B3D8A8;
+  padding: 20px;
+  border-radius: 10px;
+}
+
