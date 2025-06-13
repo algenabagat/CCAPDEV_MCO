@@ -5,7 +5,7 @@ body {
 
 /* Navbar styling */
 .navbar {
-  background-color: #3D8D7A !important;
+  background-color: #182c25 !important;
 }
 
 .navbar .navbar-brand {
@@ -46,8 +46,38 @@ body {
 
 /* Main container layout */
 .main-container {
-  background-color: #B3D8A8;
+  background-color: #B2C9AD;
   min-height: 100vh;
+}
+
+.bg-image {
+  position: relative;
+  background-image: url('../img/lasalle.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 500px;
+  opacity: 0.85; /* Adjust transparency here (0 = fully transparent, 1 = fully opaque) */
+  color: white;
+}
+
+.bg-image::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.4); /* dark overlay to improve contrast */
+  z-index: 0;
+}
+
+.bg-image .container {
+  position: relative;
+  z-index: 1;
+}
+
+.bg-image h1,
+.bg-image p {
+  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.8);
 }
 
 .row {
@@ -65,9 +95,10 @@ body {
 /* Optional: Make carousel images fixed height for uniformity */
 .carousel-item img {
   padding: 20px;
-  border-radius: 10px;
+  border-radius: 30px;
   height: 400px;
   object-fit: cover;
+  opacity: 0.85; /* Adjust transparency here (0 = fully transparent, 1 = fully opaque) */
 }
 
 /* Info section styling only */
@@ -78,7 +109,7 @@ body {
   height: 400px;
 }
 
-footer {
-  background-color: #3D8D7A !important;
+.footer {
+  background-color: #182c25 !important;
 }
 
