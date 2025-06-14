@@ -15,43 +15,118 @@
 <body>
     <div id="navbar-placeholder"></div>
 
-<!-- Main Container -->
-<div class="main-container d-flex justify-content-center">
-  <!-- Profile Container -->
-  <div class="profile-container">
-    <div class="row h-100">
-      <div class="col-md-4 profile-pic d-flex align-items-center justify-content-center">
-        <!-- Add profile image here -->
-        <img src="img/pfp.png" alt="Profile Picture" class="img-fluid rounded-circle just" style="width: 350px; height: 350px; border: 2px solid #ddd;">
+  <!-- Main Container -->
+  <div class="main-container">
+    <!-- Profile Header -->
+     <div class="container py-5">
+    <div class="profile-header mb-4">
+      <div class="d-flex justify-content-between align-items-center">
+        <h1 class="display-5">Hi User!</h1>
+        <button id="edit-profile-btn" class="btn btn-primary">
+          <i class="bi bi-pencil-fill"></i> Edit Profile
+        </button>
       </div>
-      <div class="col-md-4 profile-bio d-flex flex-column justify-content-center">
-        <!-- Add bio text here -->
-        <h1 class="profile-name">John Doe</h1>
-        <h2>Bio Info</h2> <br>
-        <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Unde, recusandae?</p>
-      </div>
-      <div class="col-md-4 profile-details d-flex align-items-center justify-content-center">
-        <!-- Add other details here -->
-        <div>Details</div>
-      </div>
-</div>
-</div>
-</div>
+      <hr>
+    </div>
 
+    <!-- Profile Content -->
+    <div class="row">
+      <!-- Left Column - Profile Picture & Basic Info -->
+      <div class="col-lg-4">
+        <div class="card mb-4">
+          <div class="card-body text-center">
+            <img src="img/pfp.png" alt="Profile Picture" class="rounded-circle m-3 profile-picture">
+            <div class="mb-3">
+              <h3 class="profile-name">John Doe</h3>
+              <p class="text-muted mb-1">Computer Science Student</p>
+              <p class="text-muted"><i class="bi bi-envelope"></i> john.doe@university.edu</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
-    <script>
+      <!-- Right Column - Bio & Reservations -->
+      <div class="col-lg-8">
+        <!-- Bio Section -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="mb-0">About Me</h5>
+          </div>
+          <div class="card-body">
+            <p class="profile-bio" id="bio-content">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.</p>
+            <textarea class="form-control d-none" id="bio-edit" rows="3"></textarea>
+          </div>
+        </div>
+
+        <!-- Reservations Section -->
+        <div class="card">
+          <div class="card-header">
+            <h5 class="mb-0">My Reservations</h5>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Lab</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Seat No.</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>GK404</td>
+                    <td>2023-11-15</td>
+                    <td>10:00 - 12:00</td>
+                    <td>Seat 12</td>
+                    <td><span class="badge bg-success">Confirmed</span></td>
+                  </tr>
+                  <tr>
+                    <td>GK403</td>
+                    <td>2023-11-16</td>
+                    <td>14:00 - 16:00</td>
+                    <td>Seat 5</td>
+                    <td><span class="badge bg-warning text-dark">Pending</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
     fetch('components/navbar.html')
-    .then(res => res.text())
-    .then(data => {
-      document.getElementById('navbar-placeholder').innerHTML = data;
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById('navbar-placeholder').innerHTML = data;
+      });
+
+    // Edit profile functionality
+    document.getElementById('edit-profile-btn').addEventListener('click', function() {
+      const bioContent = document.getElementById('bio-content');
+      const bioEdit = document.getElementById('bio-edit');
+      
+      if (bioContent.classList.contains('d-none')) {
+        // Save changes
+        bioContent.textContent = bioEdit.value;
+        bioContent.classList.remove('d-none');
+        bioEdit.classList.add('d-none');
+        this.innerHTML = '<i class="bi bi-pencil-fill"></i> Edit Profile';
+      } else {
+        // Enter edit mode
+        bioEdit.value = bioContent.textContent;
+        bioContent.classList.add('d-none');
+        bioEdit.classList.remove('d-none');
+        this.innerHTML = '<i class="bi bi-check"></i> Save Changes';
+      }
     });
-
-
-
-
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
 </html>

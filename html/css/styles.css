@@ -96,17 +96,19 @@ body {
 .carousel-item img {
   padding: 20px;
   border-radius: 30px;
-  height: 400px;
+  height: 420px;
   object-fit: cover;
   opacity: 0.85; /* Adjust transparency here (0 = fully transparent, 1 = fully opaque) */
+
 }
 
 /* Info section styling only */
 .info {
-  background-color: #FBFFE4;
+  background-color: #EEEFE0;
   padding: 50px;
   border-radius: 10px;
   height: 400px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
 }
 
 .footer {
