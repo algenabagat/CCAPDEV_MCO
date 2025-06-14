@@ -91,85 +91,88 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-      // Check for remembered user on page load
-      document.addEventListener('DOMContentLoaded', function() {
-        checkRememberedUser();
-      });
-
-      // Check if user is remembered and auto-login if cookie exists
-      function checkRememberedUser() {
-        const rememberCookie = getCookie('rememberedUser');
-        if (rememberCookie) {
-          try {
-            const userData = JSON.parse(rememberCookie);
-            document.getElementById('login-email').value = userData.email;
-            document.getElementById('remember-me').checked = true;
-            
-            // In a real app, you would verify credentials with server
-            // For this demo, we'll just redirect if the stored user exists
-            const storedUser = localStorage.getItem('user');
-            if (storedUser && JSON.parse(storedUser).email === userData.email) {
-              // Extend remember period by 3 weeks
-              setRememberCookie(userData.email);
-              window.location.href = 'profile.html';
-            }
-          } catch (e) {
-            console.error('Error parsing remember cookie', e);
-          }
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+  // Check for remembered user
+  function checkRememberedUser() {
+    const rememberCookie = getCookie('rememberedUser');
+    if (rememberCookie) {
+      try {
+        const userData = JSON.parse(rememberCookie);
+        $('#login-email').val(userData.email);
+        $('#remember-me').prop('checked', true);
+        
+        // Check against all users
+        const users = getAllUsers();
+        if (users.some(user => user.email === userData.email)) {
+          setRememberCookie(userData.email);
+          window.location.href = 'profile.html';
         }
+      } catch (e) {
+        console.error('Error parsing remember cookie', e);
       }
+    }
+  }
 
-      // Handle form submission
-      document.getElementById('login-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const email = document.getElementById('login-email').value;
-        const password = document.getElementById('login-password').value;
-        const rememberMe = document.getElementById('remember-me').checked;
-        
-        // In a real app, you would verify credentials with server
-        const storedUser = localStorage.getItem('user');
-        
-        if (storedUser) {
-          const user = JSON.parse(storedUser);
-          
-          if (user.email === email && user.password === password) {
-            // Successful login
-            if (rememberMe) {
-              setRememberCookie(email);
-            } else {
-              // Clear remember cookie if not checked
-              document.cookie = 'rememberedUser=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-            }
-            
-            // Store session data (in a real app, you'd use proper session management)
-            sessionStorage.setItem('loggedIn', 'true');
-            sessionStorage.setItem('userEmail', email);
-            sessionStorage.setItem('accountType', user.accountType);
-            
-            window.location.href = 'profile.html';
-          } else {
-            alert('Invalid email or password');
-          }
+  // Handle form submission
+  $('#login-form').submit(function(e) {
+    e.preventDefault();
+    
+    const email = $('#login-email').val();
+    const password = $('#login-password').val();
+    const rememberMe = $('#remember-me').is(':checked');
+    const users = getAllUsers();
+    const user = users.find(u => u.email === email);
+    
+    if (user) {
+      if (user.password === password) {
+        // Successful login
+        if (rememberMe) {
+          setRememberCookie(email);
         } else {
-          alert('No user found. Please register first.');
+          // Clear remember cookie if not checked
+          document.cookie = 'rememberedUser=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
         }
-      });
-
-      // Set remember me cookie (expires in 3 weeks)
-      function setRememberCookie(email) {
-        const expirationDate = new Date();
-        expirationDate.setDate(expirationDate.getDate() + 21); // 3 weeks
-        document.cookie = `rememberedUser=${JSON.stringify({ email: email })}; expires=${expirationDate.toUTCString()}; path=/`;
+        
+        // Store session data
+        sessionStorage.setItem('loggedIn', 'true');
+        sessionStorage.setItem('userEmail', email);
+        sessionStorage.setItem('accountType', user.accountType);
+        
+        // Set current user
+        localStorage.setItem('currentUser', JSON.stringify(user));
+        
+        window.location.href = 'profile.html';
+      } else {
+        alert('Invalid password');
       }
+    } else {
+      alert('No user found with this email. Please register first.');
+    }
+  });
 
-      // Helper function to get cookie value
-      function getCookie(name) {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop().split(';').shift();
-      }
-    </script>
+  // Cookie functions (same as before)
+  function setRememberCookie(email) {
+    const expirationDate = new Date();
+    expirationDate.setDate(expirationDate.getDate() + 21);
+    document.cookie = `rememberedUser=${JSON.stringify({ email })}; expires=${expirationDate.toUTCString()}; path=/`;
+  }
+
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+  }
+
+  // Get all users from localStorage (matches register.js)
+  function getAllUsers() {
+    return JSON.parse(localStorage.getItem('labUsers') || '[]');
+  }
+
+  // Check remembered user on page load
+  checkRememberedUser();
+});
+</script>
   </body>
 </html>

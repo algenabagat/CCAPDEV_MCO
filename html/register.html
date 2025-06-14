@@ -62,6 +62,16 @@
           
           <!-- Registration Form -->
           <form id="registration-form">
+              <div class="mb-3">
+              <label for="f-name" class="form-label">First Name</label>
+              <input type="text" class="form-control" id="f-name" name="f-name" required>
+            </div>
+
+            <div class="mb-3">
+              <label for="l-name" class="form-label">Last Name</label>
+              <input type="text" class="form-control" id="l-name" name="l-name" required>
+            </div>
+
             <div class="mb-3">
               <label for="email" class="form-label">DLSU Email</label>
               <input type="email" class="form-control" id="email" name="email" 
@@ -112,68 +122,92 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-      // Account type selection
-      document.getElementById('student-btn').addEventListener('click', function(e) {
-        e.preventDefault();
-        this.classList.add('active');
-        document.getElementById('tech-btn').classList.remove('active');
-        document.getElementById('account-type').value = 'student';
-      });
-      
-      document.getElementById('tech-btn').addEventListener('click', function(e) {
-        e.preventDefault();
-        this.classList.add('active');
-        document.getElementById('student-btn').classList.remove('active');
-        document.getElementById('account-type').value = 'technician';
-      });
-      
-      // Form validation
-      const form = document.getElementById('registration-form');
-      const password = document.getElementById('password');
-      const confirmPassword = document.getElementById('confirm-password');
-      
-      function validatePassword() {
-        if (password.value !== confirmPassword.value) {
-          confirmPassword.setCustomValidity("Passwords do not match");
-          confirmPassword.classList.add('is-invalid');
-        } else {
-          confirmPassword.setCustomValidity('');
-          confirmPassword.classList.remove('is-invalid');
-        }
-      }
-      
-      password.addEventListener('change', validatePassword);
-      confirmPassword.addEventListener('keyup', validatePassword);
-      
-      // Form submission
-      form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        if (form.checkValidity()) {
-          // Get form data
-          const accountType = document.getElementById('account-type').value;
-          const email = document.getElementById('email').value;
-          const password = document.getElementById('password').value;
-          
-          // Save to localStorage (in a real app, this would be a server call)
-          const user = {
-            email: email,
-            password: password,
-            accountType: accountType
-          };
-          
-          // Save to localStorage
-        //   localStorage.setItem('user', JSON.stringify(user));
-          
-          // Show success message and redirect
-          alert('Registration successful! You can now login.');
-          window.location.href = 'profile.html';
-        } else {
-          e.stopPropagation();
-          form.classList.add('was-validated');
-        }
-      });
-    </script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+  // Account type selection
+  $('.account-type-btn').click(function(e) {
+    e.preventDefault();
+    $('.account-type-btn').removeClass('active');
+    $(this).addClass('active');
+    $('#account-type').val($(this).attr('id').replace('-btn', ''));
+  });
+
+  // Password validation
+  $('#confirm-password').on('keyup', function() {
+    if ($(this).val() !== $('#password').val()) {
+      $(this).addClass('is-invalid');
+    } else {
+      $(this).removeClass('is-invalid');
+    }
+  });
+
+  // Email validation
+  $('#email').on('blur', function() {
+    if (!this.checkValidity()) {
+      $(this).addClass('is-invalid');
+    } else {
+      $(this).removeClass('is-invalid');
+    }
+  });
+
+  // Form submission
+  $('#registration-form').submit(function(e) {
+    e.preventDefault();
+    
+    // Front-end validation
+    if (!this.checkValidity()) {
+      e.stopPropagation();
+      $(this).addClass('was-validated');
+      return;
+    }
+
+    // Check if email already exists
+    if (isEmailRegistered($('#email').val())) {
+      alert('This email is already registered. Please use a different email or login.');
+      $('#email').addClass('is-invalid');
+      return;
+    }
+
+    // Create user object
+    const user = {
+      firstName: $('#f-name').val(),
+      lastName: $('#l-name').val(),
+      email: $('#email').val(),
+      password: $('#password').val(),
+      accountType: $('#account-type').val(),
+      registeredAt: new Date().toISOString()
+    };
+
+    // Save user data
+    saveUser(user);
+    
+    // Show success and redirect
+    alert('Registration successful! You can now login.');
+    window.location.href = 'login.html';
+  });
+
+  // Check if email is already registered
+  function isEmailRegistered(email) {
+    const users = getAllUsers();
+    return users.some(user => user.email === email);
+  }
+
+  // Get all registered users from localStorage
+  function getAllUsers() {
+    return JSON.parse(localStorage.getItem('labUsers') || '[]');
+  }
+
+  // Save new user to localStorage
+  function saveUser(user) {
+    const users = getAllUsers();
+    users.push(user);
+    localStorage.setItem('labUsers', JSON.stringify(users));
+    
+    // Also store as current user (for immediate login)
+    localStorage.setItem('currentUser', JSON.stringify(user));
+  }
+});
+</script>
   </body>
 </html>
