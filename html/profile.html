@@ -11,93 +11,131 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="css/profile.css">
+  <style>
+    .profile-picture-container {
+      position: relative;
+      width: fit-content;
+      margin: 0 auto;
+    }
+    .profile-edit-btn {
+      position: absolute;
+      bottom: 15px;
+      right: 15px;
+      background: rgba(0,0,0,0.5);
+      color: white;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .profile-edit-btn:hover {
+      background: rgba(0,0,0,0.7);
+    }
+    #name-edit {
+      display: none;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+    .edit-profile-btn {
+      background-color: #198754;
+      color: white;
+    }
+    .edit-profile-btn:hover {
+      background-color: #157347;
+    }
+  </style>
 </head>
 <body>
-    <div id="navbar-placeholder"></div>
+  <div id="navbar-placeholder"></div>
 
   <!-- Main Container -->
   <div class="main-container">
     <!-- Profile Header -->
-     <div class="container py-5">
-    <div class="profile-header mb-4">
-      <div class="d-flex justify-content-between align-items-center">
-        <h1 class="display-5">Hi User!</h1>
-        <button id="edit-profile-btn" class="btn edit-profile-btn">
-          <i class="bi bi-pencil-fill"></i> Edit Profile
-        </button>
+    <div class="container py-5">
+      <div class="profile-header mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+          <h1 class="display-5">Hi <span id="greeting-name">User</span>!</h1>
+          <button id="edit-profile-btn" class="btn edit-profile-btn">
+            <i class="bi bi-pencil-fill"></i> Edit Profile
+          </button>
+        </div>
+        <hr>
       </div>
-      <hr>
-    </div>
 
-    <!-- Profile Content -->
-    <div class="row">
-      <!-- Left Column - Profile Picture & Basic Info -->
-      <div class="col-lg-4">
-        <div class="card mb-4">
-          <div class="pfp-container card-body text-center">
-          <div class="profile-picture-container position-relative mx-auto" style="width: fit-content;">
-            <img src="img/pfp.png" alt="Profile Picture" class="rounded-circle m-3 profile-picture" id="profile-image">
-            <label for="profile-upload" id="pfp-edit-btn" class="profile-edit-btn d-none position-absolute">
-              <i class="bi bi-pencil-fill"></i>
-            </label>
-            <input type="file" id="profile-upload" accept="image/*" class="d-none">
-          </div>
-            <div class="mb-3">
-              <h3 class="profile-name">John Doe</h3>
-              <p class="text-muted mb-1">Computer Science Student</p>
-              <p class="text-muted"><i class="bi bi-envelope"></i> john.doe@university.edu</p>
+      <!-- Profile Content -->
+      <div class="row">
+        <!-- Left Column - Profile Picture & Basic Info -->
+        <div class="col-lg-4">
+          <div class="card mb-4">
+            <div class="card-body text-center">
+              <div class="profile-picture-container">
+                <img src="img/pfp.png" alt="Profile Picture" class="rounded-circle m-3 profile-picture" id="profile-image" style="width: 200px; height: 200px; object-fit: cover;">
+                <label for="profile-upload" id="pfp-edit-btn" class="profile-edit-btn d-none">
+                  <i class="bi bi-pencil-fill"></i>
+                </label>
+                <input type="file" id="profile-upload" accept="image/*" class="d-none">
+              </div>
+              <div class="mb-3">
+                <h3 class="profile-name" id="profile-name-display">John Doe</h3>
+                <input type="text" id="name-edit" class="form-control">
+                <p class="text-muted mb-1" id="account-type-display">Student</p>
+                <p class="text-muted"><i class="bi bi-envelope"></i> <span id="email-display">user@example.com</span></p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Right Column - Bio & Reservations -->
-      <div class="col-lg-8">
-        <!-- Bio Section -->
-        <div class="card mb-4">
-          <div class="card-header">
-            <h5 class="mb-0">About Me</h5>
+        <!-- Right Column - Bio & Reservations -->
+        <div class="col-lg-8">
+          <!-- Bio Section -->
+          <div class="card mb-4">
+            <div class="card-header">
+              <h5 class="mb-0">About Me</h5>
+            </div>
+            <div class="card-body">
+              <p class="profile-bio" id="bio-content">No bio yet.</p>
+              <textarea class="form-control d-none" id="bio-edit" rows="3"></textarea>
+            </div>
           </div>
-          <div class="card-body">
-            <p class="profile-bio" id="bio-content">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.</p>
-            <textarea class="form-control d-none" id="bio-edit" rows="3"></textarea>
-          </div>
-        </div>
 
-        <!-- Reservations Section -->
-        <div class="card">
-          <div class="card-header">
-            <h5 class="mb-0">My Reservations</h5>
-          </div>
-          <div class="card-body">
-            <div class="table-responsive">
-              <table class="table table-hover">
-                <thead>
-                  <tr>
-                    <th>Lab</th>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Seat No.</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>GK404</td>
-                    <td>2023-11-15</td>
-                    <td>10:00 - 12:00</td>
-                    <td>Seat 12</td>
-                    <td><span class="badge bg-success">Confirmed</span></td>
-                  </tr>
-                  <tr>
-                    <td>GK403</td>
-                    <td>2023-11-16</td>
-                    <td>14:00 - 16:00</td>
-                    <td>Seat 5</td>
-                    <td><span class="badge bg-warning text-dark">Pending</span></td>
-                  </tr>
-                </tbody>
-              </table>
+          <!-- Reservations Section -->
+          <div class="card">
+            <div class="card-header">
+              <h5 class="mb-0">My Reservations</h5>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>Lab</th>
+                      <th>Date</th>
+                      <th>Time</th>
+                      <th>Seat No.</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>GK404</td>
+                      <td>2023-11-15</td>
+                      <td>10:00 - 12:00</td>
+                      <td>Seat 12</td>
+                      <td><span class="badge bg-success">Confirmed</span></td>
+                    </tr>
+                    <tr>
+                      <td>GK403</td>
+                      <td>2023-11-16</td>
+                      <td>14:00 - 16:00</td>
+                      <td>Seat 5</td>
+                      <td><span class="badge bg-warning text-dark">Pending</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
@@ -105,52 +143,103 @@
     </div>
   </div>
 
-  
-
-  <script>
-    fetch('components/navbar.html')
-      .then(res => res.text())
-      .then(data => {
-        document.getElementById('navbar-placeholder').innerHTML = data;
-      });
-
-
-    // Edit profile functionality
-    document.getElementById('edit-profile-btn').addEventListener('click', function() {
-      const bioContent = document.getElementById('bio-content');
-      const bioEdit = document.getElementById('bio-edit');
-      const pfpEditBtn = document.getElementById('pfp-edit-btn');
-      
-      if (bioContent.classList.contains('d-none')) {
-        // Save changes - hide edit elements
-        bioContent.textContent = bioEdit.value;
-        bioContent.classList.remove('d-none');
-        bioEdit.classList.add('d-none');
-        pfpEditBtn.classList.add('d-none');
-        this.innerHTML = '<i class="bi bi-pencil-fill"></i> Edit Profile';
-      } else {
-        // Enter edit mode - show edit elements
-        bioEdit.value = bioContent.textContent;
-        bioContent.classList.add('d-none');
-        bioEdit.classList.remove('d-none');
-        pfpEditBtn.classList.remove('d-none');
-        this.innerHTML = '<i class="bi bi-check"></i> Save Changes';
-      }
-    });
-
-    // Profile picture upload functionality
-    document.getElementById('profile-upload').addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(event) {
-          document.getElementById('profile-image').src = event.target.result;
-        }
-        reader.readAsDataURL(file);
-      }
-    });
-  </script>
+  <!-- Footer placeholder -->
+  <div id="footer-placeholder"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="components/loadComponents.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Load user data from localStorage or create default
+      let userData = JSON.parse(localStorage.getItem('user')) || {};
+      
+      // Set default values if they don't exist
+      if (!userData.name) userData.name = "New User";
+      if (!userData.bio) userData.bio = "No bio yet.";
+      if (!userData.accountType) userData.accountType = "Student";
+      if (!userData.email) {
+        // Get email from login data if available
+        const loginData = JSON.parse(localStorage.getItem('loginData')) || {};
+        userData.email = loginData.email || "user@example.com";
+      }
+      if (!userData.profileImage) userData.profileImage = "img/pfp.png";
+      
+      // Display user data
+      document.getElementById('profile-name-display').textContent = userData.name;
+      document.getElementById('greeting-name').textContent = userData.name;
+      document.getElementById('bio-content').textContent = userData.bio;
+      document.getElementById('account-type-display').textContent = userData.accountType;
+      document.getElementById('email-display').textContent = userData.email;
+      document.getElementById('profile-image').src = userData.profileImage;
+      
+      // Save back to localStorage (with any new defaults)
+      localStorage.setItem('user', JSON.stringify(userData));
+
+      // Edit profile functionality
+      document.getElementById('edit-profile-btn').addEventListener('click', function() {
+        const bioContent = document.getElementById('bio-content');
+        const bioEdit = document.getElementById('bio-edit');
+        const nameDisplay = document.getElementById('profile-name-display');
+        const nameEdit = document.getElementById('name-edit');
+        const pfpEditBtn = document.getElementById('pfp-edit-btn');
+        const editBtn = this;
+        
+        if (nameEdit.style.display === 'block' || nameEdit.classList.contains('d-block')) {
+          // Save changes
+          userData.name = nameEdit.value;
+          userData.bio = bioEdit.value;
+          localStorage.setItem('user', JSON.stringify(userData));
+          
+          // Update display
+          nameDisplay.textContent = userData.name;
+          document.getElementById('greeting-name').textContent = userData.name;
+          bioContent.textContent = userData.bio;
+          
+          // Hide edit elements
+          bioContent.classList.remove('d-none');
+          bioEdit.classList.add('d-none');
+          nameEdit.style.display = 'none';
+          nameEdit.classList.remove('d-block');
+          nameDisplay.classList.remove('d-none');
+          pfpEditBtn.classList.add('d-none');
+          
+          // Change button back to edit mode
+          this.innerHTML = '<i class="bi bi-pencil-fill"></i> Edit Profile';
+        } else {
+          // Enter edit mode
+          bioEdit.value = bioContent.textContent;
+          nameEdit.value = nameDisplay.textContent;
+          
+          // Show edit elements
+          bioContent.classList.add('d-none');
+          bioEdit.classList.remove('d-none');
+          nameDisplay.classList.add('d-none');
+          nameEdit.style.display = 'block';
+          nameEdit.classList.add('d-block');
+          pfpEditBtn.classList.remove('d-none');
+          
+          // Change button to save mode
+          this.innerHTML = '<i class="bi bi-check"></i> Save Changes';
+        }
+      });
+
+      // Profile picture upload functionality
+      document.getElementById('profile-upload').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(event) {
+            // Update the image display
+            document.getElementById('profile-image').src = event.target.result;
+            
+            // Save to user data
+            userData.profileImage = event.target.result;
+            localStorage.setItem('user', JSON.stringify(userData));
+          }
+          reader.readAsDataURL(file);
+        }
+      });
+    });
+  </script>
 </body>
 </html>

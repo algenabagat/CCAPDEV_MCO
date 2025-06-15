@@ -14,27 +14,7 @@
   </head>
   <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg bg-body-tertiary custom-navbar" data-bs-theme="dark">
-      <div class="container-fluid">
-        <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
-          <ul class="navbar-nav mx-auto mb-2 mb-lg-0 text-center">
-            <li class="nav-item">
-              <a class="navbar-brand nav-link" href="index.html">Lab Reservation System</a>
-            </li>
-            <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-            <li class="nav-item"><a class="nav-link" href="profile.html">Profile</a></li>
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Reservation</a>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Make a Reservation</a></li>
-                <li><a class="dropdown-item" href="#">My Reservations</a></li>
-              </ul>
-            </li>
-            <li class="nav-item"><a class="nav-link active" href="login.html">Login</a></li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+     <div id="navbar-placeholder"></div>
 
     <!-- Main Container -->
     <div class="main-container">
@@ -83,15 +63,25 @@
       </div>
       
       <!-- Footer -->
-      <footer class="bg-success text-white mt-4">
-        <div class="footer container-fluid text-center align-items-center py-3">
-          <p>&copy; 2023 Lab Reservation System. All rights reserved.</p>
-        </div>
-      </footer>
+      <div id="footer-placeholder"></div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="components/loadComponents.js"></script>
     <script>
+      // Load navbar and footer
+      fetch('components/navbar.html')
+        .then(res => res.text())
+        .then(data => {
+          document.getElementById('navbar-placeholder').innerHTML = data;
+        });
+
+      fetch('components/footer.html')
+        .then(res => res.text())
+        .then(data => {
+          document.getElementById('footer-placeholder').innerHTML = data;
+        });
+
       // Check for remembered user on page load
       document.addEventListener('DOMContentLoaded', function() {
         checkRememberedUser();
@@ -127,13 +117,13 @@
         const email = document.getElementById('login-email').value;
         const password = document.getElementById('login-password').value;
         const rememberMe = document.getElementById('remember-me').checked;
-        
-        // In a real app, you would verify credentials with server
+  
+        // Get stored users (in a real app, this would be a server call)
         const storedUser = localStorage.getItem('user');
-        
+  
         if (storedUser) {
           const user = JSON.parse(storedUser);
-          
+    
           if (user.email === email && user.password === password) {
             // Successful login
             if (rememberMe) {
@@ -142,20 +132,37 @@
               // Clear remember cookie if not checked
               document.cookie = 'rememberedUser=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
             }
-            
-            // Store session data (in a real app, you'd use proper session management)
+      
+            // Store session data
             sessionStorage.setItem('loggedIn', 'true');
             sessionStorage.setItem('userEmail', email);
             sessionStorage.setItem('accountType', user.accountType);
-            
+      
             window.location.href = 'profile.html';
+            if (window.parent.updateAuthUI) {
+              window.parent.updateAuthUI();
+            }
           } else {
-            alert('Invalid email or password');
+            showError('Invalid email or password');
           }
         } else {
-          alert('No user found. Please register first.');
+          showError('No user found. Please register first.');
         }
       });
+
+      function showError(message) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'alert alert-danger mt-3';
+        errorDiv.textContent = message;
+  
+        const form = document.getElementById('login-form');
+        const existingError = form.querySelector('.alert');
+        if (existingError) {
+          existingError.remove();
+        }
+  
+      form.appendChild(errorDiv);
+      }
 
       // Set remember me cookie (expires in 3 weeks)
       function setRememberCookie(email) {

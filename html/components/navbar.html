@@ -1,24 +1,57 @@
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg bg-body-tertiary custom-navbar" data-bs-theme="dark">
-      <div class="container-fluid">
-        <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
-          <ul class="navbar-nav mx-auto mb-2 mb-lg-0 text-center">
-            <li class="nav-item">
-              <a class="navbar-brand nav-link" href="index.html">Lab Reservation System</a> <!--Logo-->
-            </li>
-            <li class="nav-item"><a class="nav-link active" href="index.html">Home</a></li>
-            <li class="nav-item"><a class="nav-link" href="profile.html">Profile</a></li>
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Reservation</a>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Make a Reservation</a></li>
-                <li><a class="dropdown-item" href="#">My Reservations</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="#">Something else here</a></li>
-              </ul>
-            </li>
-            <li class="nav-item"><a class="nav-link disabled" aria-disabled="true">Disabled</a></li>
+<!-- components/navbar.html -->
+<nav class="navbar navbar-expand-lg bg-body-tertiary custom-navbar" data-bs-theme="dark">
+  <div class="container-fluid">
+    <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
+      <ul class="navbar-nav mx-auto mb-2 mb-lg-0 text-center">
+        <li class="nav-item">
+          <a class="navbar-brand nav-link" href="index.html">Lab Reservation System</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="index.html">Home</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Reservation</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#">Make a Reservation</a></li>
+            <li><a class="dropdown-item" href="#">My Reservations</a></li>
           </ul>
-        </div>
-      </div>
-    </nav>
+        </li>
+        <li class="nav-item d-none" id="nav-profile-item">
+          <a class="nav-link" href="profile.html">Profile</a>
+        </li>
+        <li class="nav-item d-none" id="nav-logout-item">
+          <a class="nav-link" href="logout.html">Logout</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<script>
+  // Update auth UI based on login state
+  function updateAuthUI() {
+    const navProfileItem = document.getElementById('nav-profile-item');
+    const navLogoutItem = document.getElementById('nav-logout-item');
+    
+    if (sessionStorage.getItem('loggedIn')) {
+      navProfileItem.classList.remove('d-none');
+      navLogoutItem.classList.remove('d-none');
+    } else {
+      navProfileItem.classList.add('d-none');
+      navLogoutItem.classList.add('d-none');
+    }
+  }
+
+  // Initialize when navbar loads
+  document.addEventListener('DOMContentLoaded', function() {
+    updateAuthUI();
+    
+    // Add this to make dropdowns work
+    if (typeof bootstrap !== 'undefined') {
+      var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'));
+      var dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
+        return new bootstrap.Dropdown(dropdownToggleEl);
+      });
+    }
+  });
+</script>

@@ -14,29 +14,7 @@
   <body>
    
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg bg-body-tertiary custom-navbar" data-bs-theme="dark">
-      <div class="container-fluid">
-        <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
-          <ul class="navbar-nav mx-auto mb-2 mb-lg-0 text-center">
-            <li class="nav-item">
-              <a class="navbar-brand nav-link" href="#">Lab Reservation System</a> <!--Logo-->
-            </li>
-            <li class="nav-item"><a class="nav-link active" href="index.html">Home</a></li>
-            <li class="nav-item"><a class="nav-link" href="profile.html">Profile</a></li>
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Reservation</a>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Make a Reservation</a></li>
-                <li><a class="dropdown-item" href="#">My Reservations</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="#">Something else here</a></li>
-              </ul>
-            </li>
-            <li class="nav-item"><a class="nav-link disabled" aria-disabled="true">Disabled</a></li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+    <div id="navbar-placeholder"></div>
 
     <!-- Main Container -->
     <div class="main-container">
@@ -46,7 +24,12 @@
   <div class="container text-center py-5">
     <h1>Lab Reservation System</h1>
     <p>Reserve labs with ease. Explore, book, and manage your academic needs.</p>
-    <button type="button" class="btn btn-light" id="get-started-btn">Get Started!</button>
+    <button type="button" class="btn btn-light" id="get-started-btn">
+      <span id="btn-text">Get Started!</span>
+    </button>
+    <button type="button" class="btn btn-outline-light d-none" id="logout-btn">
+      <i class="bi bi-box-arrow-right"></i> Logout
+    </button>
   </div>
 </section>
 
@@ -107,21 +90,49 @@
         </div>
       </div>
       
-      <footer class="bg-success text-white mt-4">
-      <div class="footer container-fluid text-center align-items-center py-3">
-        <p>&copy; 2025 Lab Reservation System. All rights reserved.</p>
-      </div>
-    </footer>
+      <!-- Footer -->
+      <div id="footer-placeholder"></div>
     </div>
 
 
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="components/loadComponents.js"></script>
     <script>
-      document.getElementById('get-started-btn').addEventListener('click', function() {
-        window.location.href = 'login.html';
+      document.addEventListener('DOMContentLoaded', function() {
+      const getStartedBtn = document.getElementById('get-started-btn');
+      const logoutBtn = document.getElementById('logout-btn');
+      const btnText = document.getElementById('btn-text');
+    
+      // Check if user is logged in
+      const loggedIn = sessionStorage.getItem('loggedIn');
+      const userEmail = sessionStorage.getItem('userEmail');
+    
+      if (loggedIn && userEmail) {
+        // User is logged in
+        getStartedBtn.onclick = function() {
+          window.location.href = 'profile.html';
+        };
+        btnText.textContent = 'Go to Profile';
+        logoutBtn.classList.remove('d-none');
+      } else {
+      // User is not logged in
+        getStartedBtn.onclick = function() {
+          window.location.href = 'login.html';
+        };
+        btnText.textContent = 'Get Started!';
+        logoutBtn.classList.add('d-none');
+      }
+    
+      // Handle logout
+      logoutBtn.addEventListener('click', function() {
+        // Clear session data
+        sessionStorage.clear();
+        // Redirect to logout page
+        window.location.href = 'logout.html';
       });
-    </script>
+    });
+</script>
   </body>
 </html>
