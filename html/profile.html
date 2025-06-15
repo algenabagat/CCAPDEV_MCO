@@ -148,98 +148,121 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
   <script src="components/loadComponents.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Load user data from localStorage or create default
-      let userData = JSON.parse(localStorage.getItem('user')) || {};
-      
-      // Set default values if they don't exist
-      if (!userData.name) userData.name = "New User";
-      if (!userData.bio) userData.bio = "No bio yet.";
-      if (!userData.accountType) userData.accountType = "Student";
-      if (!userData.email) {
-        // Get email from login data if available
-        const loginData = JSON.parse(localStorage.getItem('loginData')) || {};
-        userData.email = loginData.email || "user@example.com";
-      }
-      if (!userData.profileImage) userData.profileImage = "img/pfp.png";
-      
-      // Display user data
-      document.getElementById('profile-name-display').textContent = userData.name;
-      document.getElementById('greeting-name').textContent = userData.name;
-      document.getElementById('bio-content').textContent = userData.bio;
-      document.getElementById('account-type-display').textContent = userData.accountType;
-      document.getElementById('email-display').textContent = userData.email;
-      document.getElementById('profile-image').src = userData.profileImage;
-      
-      // Save back to localStorage (with any new defaults)
-      localStorage.setItem('user', JSON.stringify(userData));
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Check if user is logged in
+    const loggedIn = sessionStorage.getItem('loggedIn');
+    const userEmail = sessionStorage.getItem('userEmail');
+    
+    if (!loggedIn || !userEmail) {
+      window.location.href = 'login.html';
+      return;
+    }
 
-      // Edit profile functionality
-      document.getElementById('edit-profile-btn').addEventListener('click', function() {
-        const bioContent = document.getElementById('bio-content');
-        const bioEdit = document.getElementById('bio-edit');
-        const nameDisplay = document.getElementById('profile-name-display');
-        const nameEdit = document.getElementById('name-edit');
-        const pfpEditBtn = document.getElementById('pfp-edit-btn');
-        const editBtn = this;
+    // Load all users from localStorage
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+    
+    // Find current user
+    const currentUser = users.find(u => u.email === userEmail);
+    
+    if (!currentUser) {
+      // User not found, clear session and redirect to login
+      sessionStorage.clear();
+      window.location.href = 'login.html';
+      return;
+    }
+
+    // Display user data (no defaults set)
+    document.getElementById('profile-name-display').textContent = 
+      `${currentUser.firstName} ${currentUser.lastName}`;
+    document.getElementById('greeting-name').textContent = currentUser.firstName;
+    document.getElementById('bio-content').textContent = currentUser.bio || "No bio yet.";
+    document.getElementById('account-type-display').textContent = currentUser.accountType;
+    document.getElementById('email-display').textContent = currentUser.email;
+    document.getElementById('profile-image').src = currentUser.profileImage || "img/pfp.png";
+
+    // Initialize edit fields
+    document.getElementById('name-edit').value = 
+      `${currentUser.firstName} ${currentUser.lastName}`;
+    document.getElementById('bio-edit').value = currentUser.bio || "";
+
+    // Edit profile functionality
+    document.getElementById('edit-profile-btn').addEventListener('click', function() {
+      const bioContent = document.getElementById('bio-content');
+      const bioEdit = document.getElementById('bio-edit');
+      const nameDisplay = document.getElementById('profile-name-display');
+      const nameEdit = document.getElementById('name-edit');
+      const pfpEditBtn = document.getElementById('pfp-edit-btn');
+      const editBtn = this;
+      
+      if (nameEdit.style.display === 'block' || nameEdit.classList.contains('d-block')) {
+        // Save changes
+        const [firstName, ...lastNameParts] = nameEdit.value.split(' ');
+        currentUser.firstName = firstName;
+        currentUser.lastName = lastNameParts.join(' ');
+        currentUser.bio = bioEdit.value;
         
-        if (nameEdit.style.display === 'block' || nameEdit.classList.contains('d-block')) {
-          // Save changes
-          userData.name = nameEdit.value;
-          userData.bio = bioEdit.value;
-          localStorage.setItem('user', JSON.stringify(userData));
-          
-          // Update display
-          nameDisplay.textContent = userData.name;
-          document.getElementById('greeting-name').textContent = userData.name;
-          bioContent.textContent = userData.bio;
-          
-          // Hide edit elements
-          bioContent.classList.remove('d-none');
-          bioEdit.classList.add('d-none');
-          nameEdit.style.display = 'none';
-          nameEdit.classList.remove('d-block');
-          nameDisplay.classList.remove('d-none');
-          pfpEditBtn.classList.add('d-none');
-          
-          // Change button back to edit mode
-          this.innerHTML = '<i class="bi bi-pencil-fill"></i> Edit Profile';
-        } else {
-          // Enter edit mode
-          bioEdit.value = bioContent.textContent;
-          nameEdit.value = nameDisplay.textContent;
-          
-          // Show edit elements
-          bioContent.classList.add('d-none');
-          bioEdit.classList.remove('d-none');
-          nameDisplay.classList.add('d-none');
-          nameEdit.style.display = 'block';
-          nameEdit.classList.add('d-block');
-          pfpEditBtn.classList.remove('d-none');
-          
-          // Change button to save mode
-          this.innerHTML = '<i class="bi bi-check"></i> Save Changes';
+        // Update in users array
+        const userIndex = users.findIndex(u => u.email === userEmail);
+        if (userIndex !== -1) {
+          users[userIndex] = currentUser;
+          localStorage.setItem('users', JSON.stringify(users));
         }
-      });
-
-      // Profile picture upload functionality
-      document.getElementById('profile-upload').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = function(event) {
-            // Update the image display
-            document.getElementById('profile-image').src = event.target.result;
-            
-            // Save to user data
-            userData.profileImage = event.target.result;
-            localStorage.setItem('user', JSON.stringify(userData));
-          }
-          reader.readAsDataURL(file);
-        }
-      });
+        
+        // Update display
+        nameDisplay.textContent = `${currentUser.firstName} ${currentUser.lastName}`;
+        document.getElementById('greeting-name').textContent = currentUser.firstName;
+        bioContent.textContent = currentUser.bio || "No bio yet.";
+        
+        // Hide edit elements
+        bioContent.classList.remove('d-none');
+        bioEdit.classList.add('d-none');
+        nameEdit.style.display = 'none';
+        nameEdit.classList.remove('d-block');
+        nameDisplay.classList.remove('d-none');
+        pfpEditBtn.classList.add('d-none');
+        
+        // Change button back to edit mode
+        this.innerHTML = '<i class="bi bi-pencil-fill"></i> Edit Profile';
+      } else {
+        // Enter edit mode
+        bioEdit.value = currentUser.bio || "";
+        nameEdit.value = `${currentUser.firstName} ${currentUser.lastName}`;
+        
+        // Show edit elements
+        bioContent.classList.add('d-none');
+        bioEdit.classList.remove('d-none');
+        nameDisplay.classList.add('d-none');
+        nameEdit.style.display = 'block';
+        nameEdit.classList.add('d-block');
+        pfpEditBtn.classList.remove('d-none');
+        
+        // Change button to save mode
+        this.innerHTML = '<i class="bi bi-check"></i> Save Changes';
+      }
     });
-  </script>
+
+    // Profile picture upload functionality
+    document.getElementById('profile-upload').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          // Update the image display
+          document.getElementById('profile-image').src = event.target.result;
+          
+          // Update in users array
+          currentUser.profileImage = event.target.result;
+          const userIndex = users.findIndex(u => u.email === userEmail);
+          if (userIndex !== -1) {
+            users[userIndex] = currentUser;
+            localStorage.setItem('users', JSON.stringify(users));
+          }
+        }
+        reader.readAsDataURL(file);
+      }
+    });
+  });
+</script>
 </body>
 </html>

@@ -119,12 +119,13 @@
         const rememberMe = document.getElementById('remember-me').checked;
   
         // Get stored users (in a real app, this would be a server call)
-        const storedUser = localStorage.getItem('user');
-  
-        if (storedUser) {
-          const user = JSON.parse(storedUser);
-    
-          if (user.email === email && user.password === password) {
+        const storedUsers = localStorage.getItem('users');
+
+        if (storedUsers) {
+          const users = JSON.parse(storedUsers);
+          const user = users.find(u => u.email === email);
+
+          if (user && user.password === password) {
             // Successful login
             if (rememberMe) {
               setRememberCookie(email);
