@@ -57,8 +57,11 @@
     <div class="container py-5">
       <div class="profile-header mb-4">
         <div class="d-flex justify-content-between align-items-center">
-          <h1 class="display-5">Hi <span id="greeting-name">User</span>!</h1>
-          <button id="edit-profile-btn" class="btn edit-profile-btn">
+          <h1 class="display-5 col-8">Hi <span id="greeting-name">User</span>!</h1>
+          <button id="delete-profile-btn" class="btn btn-danger col-2 d-none m-1">
+            <i class="bi bi-trash"></i> Delete Account
+          </button>
+          <button id="edit-profile-btn" class="btn edit-profile-btn col-2 m-1">
             <i class="bi bi-pencil-fill"></i> Edit Profile
           </button>
         </div>
@@ -193,6 +196,7 @@
       const nameDisplay = document.getElementById('profile-name-display');
       const nameEdit = document.getElementById('name-edit');
       const pfpEditBtn = document.getElementById('pfp-edit-btn');
+      const deleteProfileBtn = document.getElementById('delete-profile-btn');
       const editBtn = this;
       
       if (nameEdit.style.display === 'block' || nameEdit.classList.contains('d-block')) {
@@ -221,6 +225,7 @@
         nameEdit.classList.remove('d-block');
         nameDisplay.classList.remove('d-none');
         pfpEditBtn.classList.add('d-none');
+        deleteProfileBtn.classList.add('d-none');
         
         // Change button back to edit mode
         this.innerHTML = '<i class="bi bi-pencil-fill"></i> Edit Profile';
@@ -236,9 +241,26 @@
         nameEdit.style.display = 'block';
         nameEdit.classList.add('d-block');
         pfpEditBtn.classList.remove('d-none');
+        deleteProfileBtn.classList.remove('d-none');
         
         // Change button to save mode
         this.innerHTML = '<i class="bi bi-check"></i> Save Changes';
+      }
+    });
+
+    // Delete profile functionality
+    document.getElementById('delete-profile-btn').addEventListener('click', function() {
+      if (confirm("Are you sure you want to delete your account? Deleting your account will remove all your data. This action cannot be undone.")) {
+        // Remove user from users array
+        const userIndex = users.findIndex(u => u.email === userEmail);
+        if (userIndex !== -1) {
+          users.splice(userIndex, 1);
+          localStorage.setItem('users', JSON.stringify(users));
+          
+          // Clear session and redirect to login
+          sessionStorage.clear();
+          window.location.href = 'deleteprofile.html';
+        }
       }
     });
 
