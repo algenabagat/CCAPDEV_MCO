@@ -1,3 +1,9 @@
 {
-    "liveServer.settings.multiRootWorkspaceName": "CCAPDEV_MCO"
+    "liveServer.settings.multiRootWorkspaceName": "CCAPDEV_MCO",
+    "cSpell.words": [
+        "bron",
+        "DLSU",
+        "Gokongwei",
+        "seatdata"
+    ]
 }
