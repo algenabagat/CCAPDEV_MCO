@@ -7,6 +7,13 @@ document.addEventListener('DOMContentLoaded', function() {
       window.location.href = 'login.html';
       return;
     }
+    
+    // Check if this is a profile view 
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('email')) {
+      window.location.href = `profile-view.html?email=${encodeURIComponent(urlParams.get('email'))}`;
+      return;
+    }
 
     // Load all users from localStorage
     const users = JSON.parse(localStorage.getItem('users')) || [];

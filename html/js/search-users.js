@@ -45,12 +45,12 @@ $(document).ready(function() {
                     <td>${user.email}</td>
                     <td>${user.accountType === 'student' ? 'Student' : 'Lab Technician'}</td>
                     <td>
-                        <a href="profile-view.html?email=${encodeURIComponent(user.email)}" class="btn-action btn-view">
-                            <i class="bi bi-eye-fill"></i> View
+                        <a href="profile-view.html?email=${encodeURIComponent(user.email)}" class="btn btn-primary btn-sm">
+                            <i class="bi bi-eye-fill"></i> View Profile
                         </a>
                     </td>
                 </tr>
-            `;
+`;
             $tbody.append(row);
         });
     }
