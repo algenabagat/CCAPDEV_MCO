@@ -1,0 +1,57 @@
+$(document).ready(function() {
+    $('#search-users-form').submit(function(e) {
+        e.preventDefault();
+        
+        // Get search parameters
+        const name = $('#search-name').val().toLowerCase();
+        const email = $('#search-email').val().toLowerCase();
+        const accountType = $('#search-account-type').val();
+        
+        // Get all users from localStorage
+        const allUsers = JSON.parse(localStorage.getItem('users') || '[]');
+        
+        // Filter users based on search criteria
+        const results = allUsers.filter(user => {
+            const matchesName = !name || 
+                user.firstName.toLowerCase().includes(name) || 
+                user.lastName.toLowerCase().includes(name);
+            const matchesEmail = !email || user.email.toLowerCase().includes(email);
+            const matchesType = !accountType || user.accountType === accountType;
+            
+            return matchesName && matchesEmail && matchesType;
+        });
+        
+        displayResults(results);
+        $('#search-results').show();
+    });
+    
+    function displayResults(users) {
+        const $tbody = $('#results-body');
+        $tbody.empty();
+        
+        if (users.length === 0) {
+            $tbody.append(`
+                <tr>
+                    <td colspan="4" class="text-center">No users found matching your criteria</td>
+                </tr>
+            `);
+            return;
+        }
+        
+        users.forEach(user => {
+            const row = `
+                <tr>
+                    <td>${user.firstName} ${user.lastName}</td>
+                    <td>${user.email}</td>
+                    <td>${user.accountType === 'student' ? 'Student' : 'Lab Technician'}</td>
+                    <td>
+                        <a href="profile-view.html?email=${encodeURIComponent(user.email)}" class="btn-action btn-view">
+                            <i class="bi bi-eye-fill"></i> View
+                        </a>
+                    </td>
+                </tr>
+            `;
+            $tbody.append(row);
+        });
+    }
+});

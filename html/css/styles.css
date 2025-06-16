@@ -116,3 +116,11 @@ body {
   background-color: #182c25 !important;
 }
 
+.logout-link i {
+  color: #ccc; /* default color */
+  transition: color 0.3s ease;
+}
+
+.logout-link:hover i {
+  color: white;
+}
