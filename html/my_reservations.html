@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Reservations</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f7f9fc;
+    }
+
+    #navbar {
+      margin-bottom: 30px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      padding: 20px;
+      background-color: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-radius: 8px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th {
+      background-color: rgb(0, 0, 0);
+      color: white;
+      padding: 10px;
+    }
+
+    td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      background-color: #fdfdfd;
+    }
+
+    .status-pill {
+      padding: 5px 12px;
+      border-radius: 20px;
+      color: white;
+      font-weight: bold;
+      display: inline-block;
+    }
+
+    .status-confirmed {
+      background-color: #28a745;
+    }
+
+    .status-pending {
+      background-color: #ffc107;
+      color: black;
+    }
+
+
+    .edit-btn
+    {
+      background-color: #37aa46;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .edit-btn:hover
+    {
+      background-color: #2f923c;
+    }
+
+    .delete-btn
+    {
+      background-color: #c53737;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .delete-btn:hover
+    {
+      background-color: #a72e2e;
+    }
+
+    .button-normal {
+      background-color: #004080;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .button-normal:hover {
+      background-color: #003060;
+    }
+
+    #editModal {
+      display: none;
+      position: fixed;
+      top: 15%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 300px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      padding: 20px;
+      z-index: 1000;
+    }
+
+    #editModal label {
+      display: block;
+      margin-top: 10px;
+    }
+
+    #editModal input,
+    #editModal select {
+      width: 100%;
+      padding: 6px;
+      margin-top: 4px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    #editModal button {
+      margin-top: 12px;
+      width: 48%;
+    }
+  </style>
+</head>
+<body>
+  <div id="navbar"></div>
+  <div class="container">
+    <h1>My Reservations</h1>
+    <table id="reservationsTable">
+      <thead>
+        <tr>
+          <th>Lab</th>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Seat No.</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- Edit Modal -->
+  <div id="editModal">
+    <h3>Edit Reservation</h3>
+    <label>Seat: <input type="text" id="editSeat"></label>
+    <label>Lab: <input type="text" id="editLab"></label>
+    <label>Date: <input type="date" id="editDate"></label>
+    <label>Start Time: <input type="time" id="editStart"></label>
+    <label>End Time: <input type="time" id="editEnd"></label>
+    <label>Status:
+      <select id="editStatus">
+        <option value="Confirmed">Confirmed</option>
+        <option value="Pending">Pending</option>
+      </select>
+    </label>
+    <div style="text-align:right; margin-top: 10px;">
+      <button class="btn button-normal" onclick="saveEdit()">Save</button>
+      <button class="btn button-normal"onclick="document.getElementById('editModal').style.display='none'">Cancel</button>
+    </div>
+  </div>
+
+  <script src="components/loadComponents.js"></script>
+  <script>
+    localStorage.setItem("username", "student1");
+    localStorage.setItem("role", "student");
+
+    if (!localStorage.getItem("reservations")) {
+      const sampleReservations = [
+        {
+          username: "student1",
+          lab: "GK404",
+          seat: "Seat 12",
+          requestTime: "2023-11-14T09:00",
+          reservationTime: "2023-11-15T10:00",
+          timeRange: ["10:00", "12:00"],
+          status: "Confirmed"
+        },
+        {
+          username: "student1",
+          lab: "GK403",
+          seat: "Seat 5",
+          requestTime: "2023-11-14T13:00",
+          reservationTime: "2023-11-16T14:00",
+          timeRange: ["14:00", "16:00"],
+          status: "Pending"
+        }
+      ];
+      localStorage.setItem("reservations", JSON.stringify(sampleReservations));
+    }
+
+    let reservations = JSON.parse(localStorage.getItem("reservations") || "[]");
+    const user = localStorage.getItem("username");
+    const isLabTech = localStorage.getItem("role") === "labtech";
+
+    function renderTable() {
+      const tbody = document.querySelector("#reservationsTable tbody");
+      tbody.innerHTML = "";
+
+      reservations.forEach((res, i) => {
+        if (res.username === user || isLabTech) {
+          const reservationDate = new Date(res.reservationTime);
+          const now = new Date();
+          const canDelete = isLabTech && (now - reservationDate > 10 * 60 * 1000);
+          const [datePart, timePart] = res.reservationTime.split("T");
+          const [startTime, endTime] = res.timeRange || ["", ""];
+
+          const statusClass = res.status === "Confirmed" ? "status-confirmed" : "status-pending";
+
+          tbody.innerHTML += `
+            <tr>
+              <td>${res.lab}</td>
+              <td>${datePart}</td>
+              <td>${res.timeRange ? res.timeRange.join(" - ") : timePart}</td>
+              <td>${res.seat}</td>
+              <td><span class="status-pill ${statusClass}">${res.status}</span></td>
+              <td>
+                <button class="btn edit-btn" onclick="editReservation(${i})">Edit</button>
+                <button class="btn delete-btn" onclick="deleteReservation(${i})" ${!canDelete && !(!isLabTech) ? "disabled" : ""}>Delete</button>
+              </td>
+            </tr>
+          `;
+        }
+      });
+    }
+
+    function editReservation(index) {
+      const res = reservations[index];
+      document.getElementById("editSeat").value = res.seat;
+      document.getElementById("editLab").value = res.lab;
+      document.getElementById("editDate").value = res.reservationTime.split("T")[0];
+      const timeRange = res.timeRange || ["", ""];
+      document.getElementById("editStart").value = timeRange[0];
+      document.getElementById("editEnd").value = timeRange[1];
+      document.getElementById("editStatus").value = res.status;
+      document.getElementById("editModal").dataset.index = index;
+      document.getElementById("editModal").style.display = "block";
+    }
+
+    function saveEdit() {
+      const index = document.getElementById("editModal").dataset.index;
+      const updatedReservation = {
+        ...reservations[index],
+        seat: document.getElementById("editSeat").value,
+        lab: document.getElementById("editLab").value,
+        reservationTime: document.getElementById("editDate").value + "T" + document.getElementById("editStart").value,
+        timeRange: [
+          document.getElementById("editStart").value,
+          document.getElementById("editEnd").value
+        ],
+        status: document.getElementById("editStatus").value
+      };
+      reservations[index] = updatedReservation;
+      localStorage.setItem("reservations", JSON.stringify(reservations));
+      document.getElementById("editModal").style.display = "none";
+      renderTable();
+    }
+
+    function deleteReservation(index) {
+      const confirmed = confirm("Are you sure you want to delete this reservation?");
+      if (confirmed) {
+        reservations.splice(index, 1);
+        localStorage.setItem("reservations", JSON.stringify(reservations));
+        renderTable();
+      }
+    }
+
+    renderTable();
+  </script>
+</body>
+</html>
