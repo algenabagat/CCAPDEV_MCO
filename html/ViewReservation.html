@@ -83,7 +83,7 @@
 
         <!-- Seat Grid Section -->
       <div class="col-md-5 d-flex justify-content-center align-items-center flex-column">
-        <h4 class="text-center mb-3" id="room-name">Room: GK302A</h4>
+        <h4 class="text-center mt-5 mb-3" id="room-name">Room: GK302A</h4>
         <div id="seat-layout" class="seat-grid"></div>
       </div>
     </div>
@@ -95,44 +95,6 @@
     <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
   <script src="components/loadComponents.js"></script>
-
-  <!-- IMPORTANT: Module Script to Import seatData -->
-  <script type="module">
-    import seatData from './js/seatdata.js';
-
-    const seatLayout = document.getElementById('seat-layout');
-    const roomName = document.getElementById('room-name');
-    const carousel = document.getElementById('carouselExampleCaptions');
-
-    const labOrder = ["GK302A", "GK302B", "GK306A", "GK404A", "GK404B"];
-    let currentLab = 0;
-
-    function renderSeats(labIndex) {
-      const labKey = labOrder[labIndex];
-      const seats = seatData[labKey] || [];
-
-      roomName.textContent = `Room: ${labKey}`;
-      seatLayout.innerHTML = seats.map((s, i) => {
-        const seatNumber = i + 1;
-        let html = `<div class="seat ${s.occupied ? 'occupied' : 'available'}">Seat ${seatNumber}`;
-        if (s.occupied && s.user) {
-          if (s.user.anonymous) {
-            html += `<br><span style="font-size: 0.75rem;">Anonymous</span>`;
-          } else {
-            html += `<br><a href="profile.html?user=${encodeURIComponent(s.user.name)}">${s.user.name}</a>`;
-          }
-        }
-        html += `</div>`;
-        return html;
-      }).join('');
-    }
-
-    carousel.addEventListener('slid.bs.carousel', function (e) {
-      currentLab = e.to;
-      renderSeats(currentLab);
-    });
-
-    renderSeats(currentLab);
-  </script>
+  <script type="module" src="js/viewRes.js"></script>
 </body>
 </html>
