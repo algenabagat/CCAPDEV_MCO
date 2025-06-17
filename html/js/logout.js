@@ -4,7 +4,6 @@
 document.addEventListener('DOMContentLoaded', function() {
 // Clear all authentication data
 sessionStorage.clear();
-localStorage.removeItem('currentUser'); // Remove if you have this
 document.cookie = 'rememberedUser=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
 
 // Redirect to home page after a brief delay

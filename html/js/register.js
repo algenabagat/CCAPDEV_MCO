@@ -1,16 +1,22 @@
+// register.js
+import { getAppData } from './initData.js';
+console.log('Register script loaded');
+console.log('App data:', getAppData());
+
+document.addEventListener('DOMContentLoaded', function() {
   // Account type selection
-  document.getElementById('student-btn').addEventListener('click', function (e) {
+  document.getElementById('student-btn').addEventListener('click', function(e) {
     e.preventDefault();
     this.classList.add('active');
     document.getElementById('tech-btn').classList.remove('active');
-    document.getElementById('account-type').value = 'Student';
+    document.getElementById('account-type').value = 'student';
   });
 
-  document.getElementById('tech-btn').addEventListener('click', function (e) {
+  document.getElementById('tech-btn').addEventListener('click', function(e) {
     e.preventDefault();
     this.classList.add('active');
     document.getElementById('student-btn').classList.remove('active');
-    document.getElementById('account-type').value = 'Technician';
+    document.getElementById('account-type').value = 'technician';
   });
 
   // Form validation
@@ -32,40 +38,35 @@
   confirmPassword.addEventListener('keyup', validatePassword);
 
   // Form submission
-  form.addEventListener('submit', function (e) {
+  form.addEventListener('submit', function(e) {
     e.preventDefault();
 
     if (form.checkValidity()) {
+      const appData = getAppData();
       const accountType = document.getElementById('account-type').value;
       const firstName = document.getElementById('first-name').value;
       const lastName = document.getElementById('last-name').value;
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
 
-      const user = {
-        firstName,
-        lastName,
-        email,
-        password,
-        accountType
-      };
-
-      // Load existing users
-      let users = JSON.parse(localStorage.getItem('users')) || [];
-
       // Check if email already exists
-      const exists = users.some(u => u.email === email);
+      const exists = appData.users.some(u => u.email === email);
       if (exists) {
         alert("An account with this email already exists.");
         return;
       }
 
       // Add new user
-      users.push(user);
-      localStorage.setItem('users', JSON.stringify(users));
+      const newUser = {
+        firstName,
+        lastName,
+        email,
+        password,
+        accountType: accountType.toLowerCase(),
+        bio: ''
+      };
 
-      // Set current logged-in user (optional)
-      localStorage.setItem('currentUserEmail', email);
+      sessionStorage.setItem('currentUser', JSON.stringify(newUser));
 
       alert('Registration successful! You can now login.');
       window.location.href = 'login.html';
@@ -74,3 +75,4 @@
       form.classList.add('was-validated');
     }
   });
+});
