@@ -6,7 +6,7 @@ const initAppData = {
       lastName: 'Abagat',
       email: 'algen.abagat@dlsu.edu.ph',
       password: '12345678',
-      accountType: 'student',
+      accountType: 'Student',
       bio: 'Computer Science student interested in web development'
     },
     {
@@ -14,7 +14,7 @@ const initAppData = {
       lastName: 'Santos',
       email: 'maria.santos@dlsu.edu.ph',
       password: 'password123',
-      accountType: 'student',
+      accountType: 'Student',
       bio: 'Engineering major specializing in robotics'
     },
     {
@@ -22,7 +22,7 @@ const initAppData = {
       lastName: 'Doe',
       email: 'john.doe@dlsu.edu.ph',
       password: 'qwerty123',
-      accountType: 'technician',
+      accountType: 'Technician',
       bio: 'Lab technician with 3 years of experience'
     },
     {
@@ -30,7 +30,7 @@ const initAppData = {
       lastName: 'Cruz',
       email: 'anna.cruz@dlsu.edu.ph',
       password: 'anna1234',
-      accountType: 'student',
+      accountType: 'Student',
       bio: 'Multimedia Arts student'
     },
     {
@@ -38,7 +38,7 @@ const initAppData = {
       lastName: 'Tan',
       email: 'michael.tan@dlsu.edu.ph',
       password: 'mike5678',
-      accountType: 'technician',
+      accountType: 'Technician',
       bio: 'Senior lab technician'
     }
   ]
