@@ -1,19 +1,18 @@
-// login.js
 import { getAppData } from './initData.js';
 console.log('Login script loaded');
 console.log('App data:', getAppData());
 
-document.addEventListener('DOMContentLoaded', function() {
+$(document).ready(function() {
   // Check for remembered user on page load
   checkRememberedUser();
   
   // Handle form submission
-  document.getElementById('login-form').addEventListener('submit', function(e) {
+  $('#login-form').on('submit', function(e) {
     e.preventDefault();
     
-    const email = document.getElementById('login-email').value;
-    const password = document.getElementById('login-password').value;
-    const rememberMe = document.getElementById('remember-me').checked;
+    const email = $('#login-email').val();
+    const password = $('#login-password').val();
+    const rememberMe = $('#remember-me').is(':checked');
 
     // Get current data
     const appData = getAppData();
@@ -35,10 +34,10 @@ function checkRememberedUser() {
   if (rememberCookie) {
     try {
       const userData = JSON.parse(rememberCookie);
-      document.getElementById('login-email').value = userData.email;
-      document.getElementById('remember-me').checked = true;
+      $('#login-email').val(userData.email);
+      $('#remember-me').prop('checked', true);
       
-      // Check if the remembered user exists in our data
+      // Check if the remembered user exists in the data
       const appData = getAppData(); // Get current data
       const userExists = appData.users.some(u => u.email === userData.email);
       if (userExists) {
@@ -70,17 +69,11 @@ function handleSuccessfulLogin(email, accountType, rememberMe) {
 }
 
 function showError(message) {
-  const errorDiv = document.createElement('div');
-  errorDiv.className = 'alert alert-danger mt-3';
-  errorDiv.textContent = message;
+  const errorDiv = $('<div>').addClass('alert alert-danger mt-3').text(message);
 
-  const form = document.getElementById('login-form');
-  const existingError = form.querySelector('.alert');
-  if (existingError) {
-    existingError.remove();
-  }
-
-  form.appendChild(errorDiv);
+  const form = $('#login-form');
+  form.find('.alert').remove();
+  form.append(errorDiv);
 }
 
 // Helper function to get cookie value
