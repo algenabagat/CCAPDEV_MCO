@@ -2,20 +2,22 @@
 const initAppData = {
   users: [
     {
-      firstName: 'Algen',
-      lastName: 'Abagat',
-      email: 'algen.abagat@dlsu.edu.ph',
+      firstName: 'Lebron',
+      lastName: 'James',
+      email: 'lebron.james@dlsu.edu.ph',
       password: '12345678',
       accountType: 'Student',
-      bio: 'Computer Science student interested in web development'
+      bio: 'Computer Science student interested in web development',
+      profileImage: 'img/bron.jpg'
     },
     {
-      firstName: 'Maria',
-      lastName: 'Santos',
-      email: 'maria.santos@dlsu.edu.ph',
+      firstName: 'Shrek',
+      lastName: 'Ogre',
+      email: 'shrek.ogre@dlsu.edu.ph',
       password: 'password123',
       accountType: 'Student',
-      bio: 'Engineering major specializing in robotics'
+      bio: 'Engineering major specializing in robotics',
+      profileImage: 'img/shrek.jpg'
     },
     {
       firstName: 'John',
@@ -23,7 +25,7 @@ const initAppData = {
       email: 'john.doe@dlsu.edu.ph',
       password: 'qwerty123',
       accountType: 'Technician',
-      bio: 'Lab technician with 3 years of experience'
+      bio: 'Lab technician with 3 years of experience',
     },
     {
       firstName: 'Anna',
@@ -31,7 +33,7 @@ const initAppData = {
       email: 'anna.cruz@dlsu.edu.ph',
       password: 'anna1234',
       accountType: 'Student',
-      bio: 'Multimedia Arts student'
+      bio: 'Hi',
     },
     {
       firstName: 'Michael',
@@ -39,7 +41,7 @@ const initAppData = {
       email: 'michael.tan@dlsu.edu.ph',
       password: 'mike5678',
       accountType: 'Technician',
-      bio: 'Senior lab technician'
+      bio: 'Senior Lab technician',
     }
   ]
 };
