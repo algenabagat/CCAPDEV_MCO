@@ -1,33 +1,45 @@
-<!-- components/navbar.html -->
 <nav class="navbar navbar-expand-lg bg-body-tertiary custom-navbar" data-bs-theme="dark">
   <div class="container-fluid">
+    <!-- Added navbar-toggler for mobile -->
+    <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    
+    <!-- Moved brand outside for better mobile display -->
+    <a class="navbar-brand d-lg-none" href="index.html">Lab Reservation System</a>
+    
     <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
       <ul class="navbar-nav mx-auto mb-2 mb-lg-0 text-center">
-        <li class="nav-item">
+        <!-- Hidden on mobile since we show it above -->
+        <li class="nav-item d-none d-lg-block">
           <a class="navbar-brand nav-link" href="index.html">Lab Reservation System</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="index.html">Home</a>
         </li>
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Reservation</a>
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Reservation
+          </a>
           <ul class="dropdown-menu">
             <li><a class="dropdown-item" href="CreateReservation.html">Make a Reservation</a></li>
             <li><a class="dropdown-item" href="my_reservations.html">My Reservations</a></li>
           </ul>
         </li>
         <li class="nav-item" id="nav-profile-item">
-          <a class="nav-link" href="profile.html"><i class="bi bi-person-circle"></i></a>
+          <a class="nav-link" href="profile.html"><i class="bi bi-person-circle"></i> <span class="d-lg-none">Profile</span></a>
         </li> 
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"><i class="bi bi-search"></i></a>
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-search"></i> <span class="d-lg-none">Search</span>
+          </a>
           <ul class="dropdown-menu">
             <li><a class="dropdown-item" href="search-users.html">Search Users</a></li>
             <li><a class="dropdown-item" href="search.html">Search Slots</a></li>
           </ul>
         </li>
-        <li class="nav-item " id="nav-logout-item">
-          <a class="nav-link" href="logout.html"><i class="bi bi-box-arrow-right"></i></a>
+        <li class="nav-item" id="nav-logout-item">
+          <a class="nav-link" href="logout.html"><i class="bi bi-box-arrow-right"></i> <span class="d-lg-none">Logout</span></a>
         </li>
       </ul>
     </div>
