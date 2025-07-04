@@ -19,6 +19,7 @@
   "homepage": "https://github.com/algenabagat/CCAPDEV_MCO#readme",
   "dependencies": {
     "express": "^5.1.0",
-    "express-handlebars": "^8.0.3"
+    "express-handlebars": "^8.0.3",
+    "mongoose": "^8.16.1"
   }
 }
