@@ -2,22 +2,35 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>My Reservations</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Reservations - Lab Reservation System</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
   <style>
     body {
       margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Roboto', sans-serif;
       background-color: #f7f9fc;
     }
 
-    #navbar {
-      margin-bottom: 30px;
+    .main-container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .content-container {
+      flex: 1;
+      padding: 20px;
     }
 
     .container {
       max-width: 1000px;
-      margin: auto;
+      margin: 20px auto;
       padding: 20px;
       background-color: white;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
@@ -33,18 +46,19 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 10px;
+      margin-top: 20px;
     }
 
     th {
-      background-color: rgb(0, 0, 0);
+      background-color: #212529;
       color: white;
-      padding: 10px;
+      padding: 12px;
+      text-align: left;
     }
 
     td {
-      border: 1px solid #ddd;
-      padding: 10px;
+      border: 1px solid #dee2e6;
+      padding: 12px;
       background-color: #fdfdfd;
     }
 
@@ -54,6 +68,7 @@
       color: white;
       font-weight: bold;
       display: inline-block;
+      font-size: 0.9rem;
     }
 
     .status-confirmed {
@@ -65,47 +80,39 @@
       color: black;
     }
 
-
-    .edit-btn
-    {
-      background-color: #37aa46;
-      color: white;
-      border: none;
+    .action-btn {
       padding: 6px 12px;
       border-radius: 4px;
       cursor: pointer;
+      border: none;
+      margin-right: 5px;
+      font-size: 0.9rem;
     }
 
-    .edit-btn:hover
-    {
+    .edit-btn {
+      background-color: #37aa46;
+      color: white;
+    }
+
+    .edit-btn:hover {
       background-color: #2f923c;
     }
 
-    .delete-btn
-    {
+    .delete-btn {
       background-color: #c53737;
       color: white;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 4px;
-      cursor: pointer;
     }
 
-    .delete-btn:hover
-    {
+    .delete-btn:hover {
       background-color: #a72e2e;
     }
 
-    .button-normal {
+    .modal-btn {
       background-color: #004080;
       color: white;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 4px;
-      cursor: pointer;
     }
 
-    .button-normal:hover {
+    .modal-btn:hover {
       background-color: #003060;
     }
 
@@ -115,177 +122,257 @@
       top: 15%;
       left: 50%;
       transform: translateX(-50%);
-      width: 300px;
+      width: 350px;
       background: white;
       border-radius: 8px;
       box-shadow: 0 0 15px rgba(0,0,0,0.2);
-      padding: 20px;
+      padding: 25px;
       z-index: 1000;
+    }
+
+    #editModal h3 {
+      margin-top: 0;
+      color: #333;
     }
 
     #editModal label {
       display: block;
-      margin-top: 10px;
+      margin-top: 15px;
+      font-weight: 500;
     }
 
     #editModal input,
     #editModal select {
       width: 100%;
-      padding: 6px;
-      margin-top: 4px;
-      border: 1px solid #ccc;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ced4da;
       border-radius: 4px;
+      box-sizing: border-box;
     }
 
-    #editModal button {
-      margin-top: 12px;
-      width: 48%;
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 20px;
+      gap: 10px;
+    }
+
+    .no-reservations {
+      text-align: center;
+      padding: 20px;
+      color: #6c757d;
+      font-style: italic;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 15px;
+      }
+      
+      table {
+        font-size: 0.9rem;
+      }
+      
+      th, td {
+        padding: 8px;
+      }
     }
   </style>
 </head>
 <body>
-  <div id="navbar"></div>
-  <div class="container">
-    <h1>My Reservations</h1>
-    <table id="reservationsTable">
-      <thead>
-        <tr>
-          <th>Lab</th>
-          <th>Date</th>
-          <th>Time</th>
-          <th>Seat No.</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
+  <div id="navbar-placeholder"></div>
+  <div class="main-container">
+    <div class="content-container">
+      <div class="container">
+        <h1>My Reservations</h1>
+        <table id="reservationsTable">
+          <thead>
+            <tr>
+              <th>Lab</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Seat No.</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <div id="noReservations" class="no-reservations" style="display: none;">
+          You have no reservations yet.
+        </div>
+      </div>
 
-  <!-- Edit Modal -->
-  <div id="editModal">
-    <h3>Edit Reservation</h3>
-    <label>Seat: <input type="text" id="editSeat"></label>
-    <label>Lab: <input type="text" id="editLab"></label>
-    <label>Date: <input type="date" id="editDate"></label>
-    <label>Start Time: <input type="time" id="editStart"></label>
-    <label>End Time: <input type="time" id="editEnd"></label>
-    <label>Status:
-      <select id="editStatus">
-        <option value="Confirmed">Confirmed</option>
-        <option value="Pending">Pending</option>
-      </select>
-    </label>
-    <div style="text-align:right; margin-top: 10px;">
-      <button class="btn button-normal" onclick="saveEdit()">Save</button>
-      <button class="btn button-normal"onclick="document.getElementById('editModal').style.display='none'">Cancel</button>
+      <!-- Edit Modal -->
+      <div id="editModal">
+        <h3>Edit Reservation</h3>
+        <label>Lab:
+          <input type="text" id="editLab" required>
+        </label>
+        <label>Seat:
+          <input type="text" id="editSeat" required>
+        </label>
+        <label>Date:
+          <input type="date" id="editDate" required>
+        </label>
+        <label>Start Time:
+          <input type="time" id="editStart" required>
+        </label>
+        <label>End Time:
+          <input type="time" id="editEnd" required>
+        </label>
+        <label>Status:
+          <select id="editStatus" required>
+            <option value="Confirmed">Confirmed</option>
+            <option value="Pending">Pending</option>
+          </select>
+        </label>
+        <div class="modal-actions">
+          <button class="action-btn modal-btn" onclick="saveEdit()">Save</button>
+          <button class="action-btn modal-btn" onclick="closeModal()">Cancel</button>
+        </div>
+      </div>
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
   <script src="components/loadComponents.js"></script>
   <script>
-
-    if (!localStorage.getItem("reservations")) {
-      const sampleReservations = [
-        {
-          username: "student1",
-          lab: "GK404",
-          seat: "Seat 12",
-          requestTime: "2023-11-14T09:00",
-          reservationTime: "2023-11-15T10:00",
-          timeRange: ["10:00", "12:00"],
-          status: "Confirmed"
-        },
-        {
-          username: "student1",
-          lab: "GK403",
-          seat: "Seat 5",
-          requestTime: "2023-11-14T13:00",
-          reservationTime: "2023-11-16T14:00",
-          timeRange: ["14:00", "16:00"],
-          status: "Pending"
-        }
-      ];
-      localStorage.setItem("reservations", JSON.stringify(sampleReservations));
-    }
-
-    let reservations = JSON.parse(localStorage.getItem("reservations") || "[]");
-    const user = localStorage.getItem("username");
-    const isLabTech = localStorage.getItem("role") === "labtech";
-
-    function renderTable() {
-      const tbody = document.querySelector("#reservationsTable tbody");
-      tbody.innerHTML = "";
-
-      reservations.forEach((res, i) => {
-        if (res.username === user || isLabTech) {
-          const reservationDate = new Date(res.reservationTime);
-          const now = new Date();
-          const canDelete = isLabTech && (now - reservationDate > 10 * 60 * 1000);
-          const [datePart, timePart] = res.reservationTime.split("T");
-          const [startTime, endTime] = res.timeRange || ["", ""];
-
-          const statusClass = res.status === "Confirmed" ? "status-confirmed" : "status-pending";
-
-          tbody.innerHTML += `
-            <tr>
-              <td>${res.lab}</td>
-              <td>${datePart}</td>
-              <td>${res.timeRange ? res.timeRange.join(" - ") : timePart}</td>
-              <td>${res.seat}</td>
-              <td><span class="status-pill ${statusClass}">${res.status}</span></td>
-              <td>
-                <button class="btn edit-btn" onclick="editReservation(${i})">Edit</button>
-                <button class="btn delete-btn" onclick="deleteReservation(${i})" ${!canDelete && !(!isLabTech) ? "disabled" : ""}>Delete</button>
-              </td>
-            </tr>
-          `;
-        }
-      });
-    }
-
-    function editReservation(index) {
-      const res = reservations[index];
-      document.getElementById("editSeat").value = res.seat;
-      document.getElementById("editLab").value = res.lab;
-      document.getElementById("editDate").value = res.reservationTime.split("T")[0];
-      const timeRange = res.timeRange || ["", ""];
-      document.getElementById("editStart").value = timeRange[0];
-      document.getElementById("editEnd").value = timeRange[1];
-      document.getElementById("editStatus").value = res.status;
-      document.getElementById("editModal").dataset.index = index;
-      document.getElementById("editModal").style.display = "block";
-    }
-
-    function saveEdit() {
-      const index = document.getElementById("editModal").dataset.index;
-      const updatedReservation = {
-        ...reservations[index],
-        seat: document.getElementById("editSeat").value,
-        lab: document.getElementById("editLab").value,
-        reservationTime: document.getElementById("editDate").value + "T" + document.getElementById("editStart").value,
-        timeRange: [
-          document.getElementById("editStart").value,
-          document.getElementById("editEnd").value
-        ],
-        status: document.getElementById("editStatus").value
-      };
-      reservations[index] = updatedReservation;
-      localStorage.setItem("reservations", JSON.stringify(reservations));
-      document.getElementById("editModal").style.display = "none";
-      renderTable();
-    }
-
-    function deleteReservation(index) {
-      const confirmed = confirm("Are you sure you want to delete this reservation?");
-      if (confirmed) {
-        reservations.splice(index, 1);
-        localStorage.setItem("reservations", JSON.stringify(reservations));
-        renderTable();
+    // Initialize sample data if none exists
+    function initializeReservations() {
+      if (!sessionStorage.getItem("reservations")) {
+        const currentUser = sessionStorage.getItem("userEmail");
+        const sampleReservations = [
+          {
+            username: currentUser,
+            lab: "GK404",
+            seat: "Seat 12",
+            reservationDate: new Date(Date.now() + 86400000).toISOString().split('T')[0], // Tomorrow
+            startTime: "10:00",
+            endTime: "12:00",
+            status: "Confirmed"
+          },
+          {
+            username: currentUser,
+            lab: "GK403",
+            seat: "Seat 5",
+            reservationDate: new Date(Date.now() + 2 * 86400000).toISOString().split('T')[0], // Day after tomorrow
+            startTime: "14:00",
+            endTime: "16:00",
+            status: "Pending"
+          }
+        ];
+        sessionStorage.setItem("reservations", JSON.stringify(sampleReservations));
       }
     }
 
-    renderTable();
+    // Load reservations for current user
+    function loadReservations() {
+      initializeReservations();
+      const reservations = JSON.parse(sessionStorage.getItem("reservations") || "[]");
+      const currentUser = sessionStorage.getItem("userEmail");
+      const isLabTech = sessionStorage.getItem("accountType") === "Technician";
+      
+      return isLabTech ? reservations : reservations.filter(res => res.username === currentUser);
+    }
+
+    // Render reservations table
+    function renderTable() {
+      const reservations = loadReservations();
+      const tbody = document.querySelector("#reservationsTable tbody");
+      const noReservationsMsg = document.getElementById("noReservations");
+      
+      tbody.innerHTML = "";
+      
+      if (reservations.length === 0) {
+        noReservationsMsg.style.display = "block";
+        return;
+      }
+      
+      noReservationsMsg.style.display = "none";
+      
+      reservations.forEach((res, i) => {
+        const statusClass = res.status === "Confirmed" ? "status-confirmed" : "status-pending";
+        
+        tbody.innerHTML += `
+          <tr>
+            <td>${res.lab}</td>
+            <td>${res.reservationDate}</td>
+            <td>${res.startTime} - ${res.endTime}</td>
+            <td>${res.seat}</td>
+            <td><span class="status-pill ${statusClass}">${res.status}</span></td>
+            <td>
+              <button class="action-btn edit-btn" onclick="editReservation(${i})">Edit</button>
+              <button class="action-btn delete-btn" onclick="deleteReservation(${i})">Delete</button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    // Edit reservation
+    let currentEditIndex = null;
+    
+    function editReservation(index) {
+      const reservations = loadReservations();
+      const res = reservations[index];
+      currentEditIndex = index;
+      
+      document.getElementById("editLab").value = res.lab;
+      document.getElementById("editSeat").value = res.seat;
+      document.getElementById("editDate").value = res.reservationDate;
+      document.getElementById("editStart").value = res.startTime;
+      document.getElementById("editEnd").value = res.endTime;
+      document.getElementById("editStatus").value = res.status;
+      
+      document.getElementById("editModal").style.display = "block";
+    }
+
+    // Save edited reservation
+    function saveEdit() {
+      const reservations = JSON.parse(sessionStorage.getItem("reservations"));
+      const updatedReservation = {
+        ...reservations[currentEditIndex],
+        lab: document.getElementById("editLab").value,
+        seat: document.getElementById("editSeat").value,
+        reservationDate: document.getElementById("editDate").value,
+        startTime: document.getElementById("editStart").value,
+        endTime: document.getElementById("editEnd").value,
+        status: document.getElementById("editStatus").value
+      };
+      
+      reservations[currentEditIndex] = updatedReservation;
+      sessionStorage.setItem("reservations", JSON.stringify(reservations));
+      closeModal();
+      renderTable();
+    }
+
+    // Delete reservation
+    function deleteReservation(index) {
+      if (!confirm("Are you sure you want to delete this reservation?")) return;
+      
+      const reservations = JSON.parse(sessionStorage.getItem("reservations"));
+      reservations.splice(index, 1);
+      sessionStorage.setItem("reservations", JSON.stringify(reservations));
+      renderTable();
+    }
+
+    // Close modal
+    function closeModal() {
+      document.getElementById("editModal").style.display = "none";
+      currentEditIndex = null;
+    }
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', function() {
+      if (!sessionStorage.getItem("userEmail")) {
+        window.location.href = "login.html";
+        return;
+      }
+      
+      renderTable();
+    });
   </script>
 </body>
 </html>
