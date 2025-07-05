@@ -1,0 +1,17 @@
+[{
+  "_id": {
+    "$oid": "6868a35f639f6a35f8980f68"
+  },
+  "email": "john.doe@dlsu.edu.ph",
+  "password": "hashedPassword123",
+  "role": "Student",
+  "description": "Computer Science student",
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2025-07-05T04:00:31.452Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-05T04:00:31.452Z"
+  },
+  "__v": 0
+}]
