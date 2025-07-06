@@ -1,0 +1,44 @@
+    <!-- Main Container -->
+    <div class="main-container">
+      <div class="container-fluid py-5">
+        <div class="login-container">
+          <h2 class="text-center mb-4">Login to Your Account</h2>
+          
+          <!-- Login Form -->
+          <form id="login-form">
+            <div class="mb-3">
+              <label for="login-email" class="form-label">DLSU Email</label>
+              <input type="email" class="form-control" id="login-email" name="email" 
+                     placeholder="e.g. juan.delacruz@dlsu.edu.ph" required
+                     pattern=".+@dlsu\.edu\.ph$">
+              <div class="invalid-feedback">
+                Please enter a valid DLSU email address
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="login-password" class="form-label">Password</label>
+              <input type="password" class="form-control" id="login-password" 
+                     name="password" required>
+              <div class="invalid-feedback">
+                Please enter your password
+              </div>
+            </div>
+            
+            <div class="mb-3 form-check">
+              <input type="checkbox" class="form-check-input" id="remember-me">
+              <label class="form-check-label" for="remember-me">Remember me</label>
+            </div>
+            
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-success btn-lg">
+                <i class="bi bi-box-arrow-in-right me-2"></i>Login
+              </button>
+            </div>
+            
+            <div class="text-center mt-3">
+              <p>Don't have an account? <a href="/register">Register here</a></p>
+            </div>
+          </form>
+        </div>
+      </div>

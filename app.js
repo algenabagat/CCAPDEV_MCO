@@ -9,7 +9,8 @@ const PORT = 3000;
 app.engine('hbs', engine({
     defaultLayout: 'main',
     layoutsDir: __dirname + '/views/layouts/',
-    partialsDir: __dirname + '/views/partials/'
+    partialsDir: __dirname + '/views/partials/',
+    extname: 'hbs',
 }));
 app.set('view engine', 'hbs');
 app.set('views', __dirname + '/views');
@@ -31,9 +32,28 @@ useUnifiedTopology: true
 });
 
 app.get('/', (req, res) => {
-    res.render('index', { 
-        title: 'Lab Reservation System',
-        user: req.session.user 
+    res.render('index');
+});
+
+app.get('/login', (req, res) => {
+    res.render('login', {
+        additionalCSS: ['/css/login.css'],
+        additionalJS: ['/js/login.js']
+    });
+});
+
+app.post('/logout', (req, res) => {
+  res.render('logout', {
+    additionalCSS: ['/css/logout.css'],
+    additionalJS: ['/js/logout.js']
+  });
+  //res.redirect('/login');
+});
+
+app.get('/register', (req, res) => {
+    res.render('register', {
+        additionalCSS: ['/css/register.css'],
+        additionalJS: ['/js/register.js']
     });
 });
 

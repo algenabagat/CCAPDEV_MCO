@@ -1,0 +1,84 @@
+    <!-- Main Container -->
+    <div class="main-container">
+      <div class="container-fluid py-5">
+        <div class="registration-container">
+          <h2 class="text-center mb-4">Create an Account</h2>
+          
+          <!-- Account Type Selection -->
+          <div class="mb-4">
+            <p class="text-center mb-3">Select account type:</p>
+            <div class="row">
+              <div class="col-md-6">
+                <button id="student-btn" class="btn btn-outline-success account-type-btn active">
+                  <i class="bi bi-person-fill me-2"></i>Student
+                </button>
+              </div>
+              <div class="col-md-6">
+                <button id="tech-btn" class="btn btn-outline-success account-type-btn">
+                  <i class="bi bi-tools me-2"></i>Lab Technician
+                </button>
+              </div>
+            </div>
+            <input type="hidden" id="account-type" name="account-type" value="student">
+          </div>
+          
+          <!-- Registration Form -->
+          <form id="registration-form" method="POST" action="/register" novalidate>
+            <div class="mb-3">
+              <label for="first-name" class="form-label">First Name</label>
+              <input type="text" class="form-control" id="first-name" name="first-name" 
+                     placeholder="e.g. Juan" required>
+              <div class="invalid-feedback">
+                Please enter your first name
+              </div>
+            </div>
+            
+              <div class="mb-3">
+              <label for="last-name" class="form-label">Last Name</label>
+              <input type="text" class="form-control" id="last-name" name="last-name" 
+                     placeholder="e.g. Dela Cruz" required>
+              <div class="invalid-feedback">
+                Please enter your last name
+              </div>
+
+            </div>
+            <div class="mb-3">
+              <label for="email" class="form-label">DLSU Email</label>
+              <input type="email" class="form-control" id="email" name="email" 
+                     placeholder="e.g. juan.delacruz@dlsu.edu.ph" required
+                     pattern=".+@dlsu\.edu\.ph$">
+              <div class="invalid-feedback">
+                Please enter a valid DLSU email address (must end with @dlsu.edu.ph)
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input type="password" class="form-control" id="password" name="password" 
+                     minlength="8" required>
+              <div class="invalid-feedback">
+                Password must be at least 8 characters long
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="confirm-password" class="form-label">Confirm Password</label>
+              <input type="password" class="form-control" id="confirm-password" 
+                     name="confirm-password" required>
+              <div class="invalid-feedback">
+                Passwords do not match
+              </div>
+            </div>
+            
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-success btn-lg mt-3">
+                <i class="bi bi-person-plus-fill me-2"></i>Register
+              </button>
+            </div>
+            
+            <div class="text-center mt-3">
+              <p>Already have an account? <a href='/login'>Login here</a></p>
+            </div>
+          </form>
+        </div>
+      </div>
