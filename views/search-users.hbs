@@ -1,0 +1,56 @@
+    <!-- Main Container -->
+    <div class="main-container">
+        <div class="container-fluid py-5">
+            <div class="search-container">
+                <h2 class="text-center mb-4">Search Users</h2>
+                
+                <!-- Search Form -->
+                <form id="search-users-form" class="mb-5">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="search-name" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="search-name" placeholder="Enter name">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="search-email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="search-email" placeholder="Enter DLSU email">
+                        </div>
+                    </div>
+                    <div class="row g-3 mt-2">
+                        <div class="col-md-6">
+                            <label for="search-account-type" class="form-label">Account Type</label>
+                            <select class="form-select" id="search-account-type">
+                                <option value="">All Types</option>
+                                <option value="student">Student</option>
+                                <option value="technician">Lab Technician</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="bi bi-search me-2"></i>Search Users
+                        </button>
+                    </div>
+                </form>
+                
+                <!-- Search Results -->
+                <div id="search-results">
+                    <h3 class="text-center mb-4">User Search Results</h3>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Account Type</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="results-body">
+                                <!-- Results will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>

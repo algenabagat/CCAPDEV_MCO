@@ -3,6 +3,9 @@ const { engine } = require('express-handlebars');
 const app = express();
 const mongoose = require('mongoose');
 const User = require('./models/Users'); // Import your User model
+// Import routes
+const indexRoutes = require('./routes/indexRoutes');
+const searchRoutes = require('./routes/searchRoutes');
 const PORT = 3000;
 
 // Set up Handlebars as the template engine
@@ -31,24 +34,10 @@ useUnifiedTopology: true
     console.error('MongoDB connection error:', err);
 });
 
-app.get('/', (req, res) => {
-    res.render('index');
-});
 
-app.get('/login', (req, res) => {
-    res.render('login', {
-        additionalCSS: ['/css/login.css'],
-        additionalJS: ['/js/login.js']
-    });
-});
 
-app.post('/logout', (req, res) => {
-  res.render('logout', {
-    additionalCSS: ['/css/logout.css'],
-    additionalJS: ['/js/logout.js']
-  });
-  //res.redirect('/login');
-});
+app.use('/', indexRoutes);
+app.use('/search', searchRoutes);
 
 app.get('/register', (req, res) => {
     res.render('register', {
