@@ -34,15 +34,17 @@
             <i class="bi bi-search"></i> <span class="d-lg-none">Search</span>
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="/search/search-users">Search Users</a></li>
-            <li><a class="dropdown-item" href="/search/search-slots">Search Slots</a></li>
+            <li><a class="dropdown-item" href="/search-users">Search Users</a></li>
+            <li><a class="dropdown-item" href="/search-slots">Search Slots</a></li>
           </ul>
         </li>
+        {{#if user}}
         <li class="nav-item" id="nav-logout-item">
           <form action="/logout" method="POST">
             <button type="submit" class="nav-link btn btn-link"><i class="bi bi-box-arrow-right"></i> <span class="d-lg-none">Logout</span></button>
           </form>
         </li>
+        {{/if}}
       </ul>
     </div>
   </div>

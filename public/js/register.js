@@ -1,75 +1,83 @@
-import { getAppData } from './initData.js';
-console.log('Register script loaded');
-console.log('App data:', getAppData());
-
 $(document).ready(function() {
-  // Account type selection
+  // Account type selection UI
   $('#student-btn').on('click', function(e) {
     e.preventDefault();
-    $(this).addClass('active');
-    $('#tech-btn').removeClass('active');
+    $(this).addClass('active').addClass('btn-primary');
+    $('#tech-btn').removeClass('active').removeClass('btn-primary');
     $('#account-type').val('student');
   });
 
   $('#tech-btn').on('click', function(e) {
     e.preventDefault();
-    $(this).addClass('active');
-    $('#student-btn').removeClass('active');
+    $(this).addClass('active').addClass('btn-primary');
+    $('#student-btn').removeClass('active').removeClass('btn-primary');
     $('#account-type').val('technician');
   });
 
-  // Form validation
+  // Form elements
   const form = $('#registration-form');
   const password = $('#password');
   const confirmPassword = $('#confirm-password');
+  const emailInput = $('#email');
 
+  // Validate password match
   function validatePassword() {
     if (password.val() !== confirmPassword.val()) {
       confirmPassword[0].setCustomValidity("Passwords do not match");
       confirmPassword.addClass('is-invalid');
+      return false;
     } else {
       confirmPassword[0].setCustomValidity('');
       confirmPassword.removeClass('is-invalid');
+      return true;
     }
   }
 
+  // Validate DLSU email format
+  function validateEmail() {
+    const email = emailInput.val();
+    if (!email.endsWith('@dlsu.edu.ph')) {
+      emailInput[0].setCustomValidity("Please use a DLSU email address");
+      emailInput.addClass('is-invalid');
+      return false;
+    } else {
+      emailInput[0].setCustomValidity('');
+      emailInput.removeClass('is-invalid');
+      return true;
+    }
+  }
+
+  // Validate required fields
+  function validateRequiredFields() {
+    let isValid = true;
+    form.find('[required]').each(function() {
+      if (!$(this).val()) {
+        $(this).addClass('is-invalid');
+        isValid = false;
+      }
+    });
+    return isValid;
+  }
+
+  // Event listeners
   password.on('change', validatePassword);
   confirmPassword.on('keyup', validatePassword);
+  emailInput.on('blur', validateEmail);
 
-  // Form submission
+  // Clear validation on input
+  form.find('input').on('input', function() {
+    $(this).removeClass('is-invalid');
+  });
+
+  // Form submission handler
   form.on('submit', function(e) {
-    e.preventDefault();
+    // Validate all fields
+    const isEmailValid = validateEmail();
+    const isPasswordValid = validatePassword();
+    const isRequiredValid = validateRequiredFields();
 
-    if (form[0].checkValidity()) {
-      const appData = getAppData();
-      const accountType = $('#account-type').val();
-      const firstName = $('#first-name').val();
-      const lastName = $('#last-name').val();
-      const email = $('#email').val();
-      const password = $('#password').val();
-
-      // Check if email already exists
-      const exists = appData.users.some(u => u.email === email);
-      if (exists) {
-        alert("An account with this email already exists.");
-        return;
-      }
-
-      // Add new user
-      const newUser = {
-        firstName,
-        lastName,
-        email,
-        password,
-        accountType: accountType.toLowerCase(),
-        bio: ''
-      };
-
-      sessionStorage.setItem('currentUser', JSON.stringify(newUser));
-
-      alert('Registration successful! You can now login.');
-      window.location.href = 'login.html';
-    } else {
+    if (!isEmailValid || !isPasswordValid || !isRequiredValid) {
+      e.preventDefault();
       e.stopPropagation();
       form.addClass('was-validated');
     }

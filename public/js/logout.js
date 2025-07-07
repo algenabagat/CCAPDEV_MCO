@@ -1,18 +1,22 @@
-// Perform logout actions when page loads
 $(document).ready(function() {
-  // Clear all authentication data
-  sessionStorage.clear();
-  document.cookie = 'rememberedUser=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+  // Display logout message/confirmation
+  const $logoutMessage = $('.logout-message');
+  const $countdown = $('.countdown');
+  let seconds = 3;
 
-  // Redirect to home page after a brief delay
-  setTimeout(function() {
-    window.location.href = 'index.html';
-  }, 1500);
+  // Show initial message
+  $logoutMessage.text('Logging out...');
+  
+  // Start countdown timer
+  const timer = setInterval(function() {
+    seconds--;
+    $countdown.text(seconds);
+    
+    if (seconds <= 0) {
+      clearInterval(timer);
+      // The actual redirect will happen via the backend response
+      // This just provides visual feedback
+      $logoutMessage.text('Redirecting to homepage...');
+    }
+  }, 1000);
 });
-
-// Helper function to get cookie value
-function getCookie(name) {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(';').shift();
-}

@@ -3,9 +3,12 @@
       <div class="container-fluid py-5">
         <div class="login-container">
           <h2 class="text-center mb-4">Login to Your Account</h2>
+                {{#if errorMessage}}
+        <div class="alert alert-danger">{{errorMessage}}</div>
+      {{/if}}
           
           <!-- Login Form -->
-          <form id="login-form">
+          <form id="login-form" method="POST" action="/login" novalidate>
             <div class="mb-3">
               <label for="login-email" class="form-label">DLSU Email</label>
               <input type="email" class="form-control" id="login-email" name="email" 
@@ -40,5 +43,9 @@
               <p>Don't have an account? <a href="/register">Register here</a></p>
             </div>
           </form>
+          <div class="error-message text-danger mt-3">
+            {{#if errorMessage}}
+              <p>{{errorMessage}}</p>
+            {{/if}}
         </div>
       </div>
