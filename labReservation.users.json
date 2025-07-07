@@ -4,6 +4,8 @@
   },
   "email": "john.doe@dlsu.edu.ph",
   "password": "hashedPassword123",
+  "firstName": "John",
+  "lastName": "Doe",
   "role": "Student",
   "description": "Computer Science student",
   "isDeleted": false,

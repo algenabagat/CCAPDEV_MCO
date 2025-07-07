@@ -1,94 +1,114 @@
   <!-- Main Container -->
-  <div class="main-container">
-    <!-- Profile Header -->
-    <div class="container py-5">
-      <div class="profile-header mb-4">
-        <div class="d-flex justify-content-between align-items-center">
-          <h1 class="display-5 col-8">Hi <span id="greeting-name"></span>!</h1>
-          <button id="delete-profile-btn" class="btn btn-danger col-2 d-none m-1">
-            <i class="bi bi-trash"></i> Delete Account
-          </button>
-          <button id="edit-profile-btn" class="btn edit-profile-btn col-2 m-1">
-            <i class="bi bi-pencil-fill"></i> Edit Profile
-          </button>
+<div class="main-container">
+  <!-- Profile Header -->
+  <div class="container py-5">
+    <div class="profile-header mb-4">
+      <div class="d-flex justify-content-between align-items-center">
+        <h1 class="display-5 col-8">Hi {{#if user.firstName}}{{user.firstName}}{{else}}{{user.email}}{{/if}}!</h1>
+        <button id="delete-profile-btn" class="btn btn-danger col-2 d-none m-1">
+          <i class="bi bi-trash"></i> Delete Account
+        </button>
+        <button id="edit-profile-btn" class="btn edit-profile-btn col-2 m-1">
+          <i class="bi bi-pencil-fill"></i> Edit Profile
+        </button>
+      </div>
+      <hr>
+    </div>
+
+    <!-- Profile Content -->
+    <div class="row">
+      <!-- Left Column - Profile Picture & Basic Info -->
+      <div class="col-lg-4">
+        <div class="card mb-4">
+          <div class="card-body text-center">
+            <div class="profile-picture-container">
+              <img src="{{#if user.profilePicture}}{{user.profilePicture}}{{else}}/img/pfp.png{{/if}}" 
+                   alt="Profile Picture" 
+                   class="rounded-circle m-3 profile-picture" 
+                   id="profile-image" 
+                   style="width: 200px; height: 200px; object-fit: cover;">
+              <label for="profile-upload" id="pfp-edit-btn" class="profile-edit-btn d-none">
+                <i class="bi bi-pencil-fill"></i>
+              </label>
+              <input type="file" id="profile-upload" accept="image/*" class="d-none">
+            </div>
+            <div class="mb-3">
+              <h3 class="profile-name" id="profile-name-display">
+                {{#if user.firstName}}{{user.firstName}} {{user.lastName}}{{else}}{{user.email}}{{/if}}
+              </h3>
+              <input type="text" id="name-edit" class="form-control d-none" 
+                     value="{{#if user.firstName}}{{user.firstName}} {{user.lastName}}{{else}}{{user.email}}{{/if}}">
+              <p class="text-muted mb-1" id="account-type-display">{{user.role}}</p>
+              <p class="text-muted"><i class="bi bi-envelope"></i> <span id="email-display">{{user.email}}</span></p>
+            </div>
+          </div>
         </div>
-        <hr>
       </div>
 
-      <!-- Profile Content -->
-      <div class="row">
-        <!-- Left Column - Profile Picture & Basic Info -->
-        <div class="col-lg-4">
-          <div class="card mb-4">
-            <div class="card-body text-center">
-              <div class="profile-picture-container">
-                <img src="img/pfp.png" alt="Profile Picture" class="rounded-circle m-3 profile-picture" id="profile-image" style="width: 200px; height: 200px; object-fit: cover;">
-                <label for="profile-upload" id="pfp-edit-btn" class="profile-edit-btn d-none">
-                  <i class="bi bi-pencil-fill"></i>
-                </label>
-                <input type="file" id="profile-upload" accept="image/*" class="d-none">
-              </div>
-              <div class="mb-3">
-                <h3 class="profile-name" id="profile-name-display"></h3>
-                <input type="text" id="name-edit" class="form-control">
-                <p class="text-muted mb-1" id="account-type-display"></p>
-                <p class="text-muted"><i class="bi bi-envelope"></i> <span id="email-display"></span></p>
-              </div>
-            </div>
+      <!-- Right Column - Bio & Reservations -->
+      <div class="col-lg-8">
+        <!-- Bio Section -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="mb-0">About Me</h5>
+          </div>
+          <div class="card-body">
+            <p class="profile-bio" id="bio-content">
+              {{#if user.description}}{{user.description}}{{else}}No bio yet.{{/if}}
+            </p>
+            <textarea class="form-control d-none" id="bio-edit" rows="3">{{user.description}}</textarea>
           </div>
         </div>
 
-        <!-- Right Column - Bio & Reservations -->
-        <div class="col-lg-8">
-          <!-- Bio Section -->
-          <div class="card mb-4">
-            <div class="card-header">
-              <h5 class="mb-0">About Me</h5>
-            </div>
-            <div class="card-body">
-              <p class="profile-bio" id="bio-content">No bio yet.</p>
-              <textarea class="form-control d-none" id="bio-edit" rows="3"></textarea>
-            </div>
+        <!-- Reservations Section -->
+        <div class="card">
+          <div class="card-header">
+            <h5 class="mb-0">My Reservations</h5>
           </div>
-
-          <!-- Reservations Section -->
-          <div class="card">
-            <div class="card-header">
-              <h5 class="mb-0">My Reservations</h5>
-            </div>
-            <div class="card-body">
-              <div class="table-responsive">
-                <table class="table table-hover">
-                  <thead>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Lab</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Seat No.</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {{#if reservations}}
+                    {{#each reservations}}
                     <tr>
-                      <th>Lab</th>
-                      <th>Date</th>
-                      <th>Time</th>
-                      <th>Seat No.</th>
-                      <th>Status</th>
+                      <td>{{this.lab}}</td>
+                      <td>{{this.date}}</td>
+                      <td>{{this.time}}</td>
+                      <td>{{this.seat}}</td>
+                      <td>
+                        {{#if (eq this.status 'Confirmed')}}
+                          <span class="badge bg-success">{{this.status}}</span>
+                        {{else if (eq this.status 'Pending')}}
+                          <span class="badge bg-warning text-dark">{{this.status}}</span>
+                        {{else if (eq this.status 'Cancelled')}}
+                          <span class="badge bg-danger">{{this.status}}</span>
+                        {{else}}
+                          <span class="badge bg-secondary">{{this.status}}</span>
+                        {{/if}}
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
+                    {{/each}}
+                  {{else}}
                     <tr>
-                      <td>GK404</td>
-                      <td>2023-11-15</td>
-                      <td>10:00 - 12:00</td>
-                      <td>Seat 12</td>
-                      <td><span class="badge bg-success">Confirmed</span></td>
+                      <td colspan="5" class="text-center text-muted">No reservations yet.</td>
                     </tr>
-                    <tr>
-                      <td>GK403</td>
-                      <td>2023-11-16</td>
-                      <td>14:00 - 16:00</td>
-                      <td>Seat 5</td>
-                      <td><span class="badge bg-warning text-dark">Pending</span></td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+                  {{/if}}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+</div>

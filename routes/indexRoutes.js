@@ -5,12 +5,12 @@ const router = express.Router();
 const AuthController = require('../controllers/AuthController');
 
 router.get('/', AuthController.isLoggedIn);
-
-
 router.get('/login', AuthController.displayLoginPage);
 router.post('/login', AuthController.handleLogin);
 router.get('/logout', AuthController.handleLogout);
 router.post('/logout', AuthController.handleLogout);
+
+router.get('/profile', AuthController.displayProfilePage);
 
 
 // In any route file:

@@ -17,16 +17,22 @@ exports.getCurrentUser = async (req) => {
 };
 
 // Then modify your existing routes to use it
-exports.displayLoginPage = async (req, res) => {
-    const user = await this.getCurrentUser(req);
+exports.displayLoginPage = (req, res) => {
     res.render('login', {
         title: 'Login - Lab Reservation System',
         additionalCSS: ['/css/login.css'],
-        additionalJS: ['/js/login.js'],
-        errorMessage: req.query.error,
-        user: user || null// Pass user to view
+        additionalJS: ['/js/login.js']
     });
-};
+}
+
+exports.displayRegisterPage = (req, res) => {
+    res.render('register', {
+        title: 'Register - Lab Reservation System',
+        additionalCSS: ['/css/register.css'],
+        additionalJS: ['/js/register.js']
+    });
+}
+
 
 exports.handleLogin = async (req, res) => {
     try {
@@ -128,5 +134,44 @@ exports.isLoggedIn = async (req, res) => {
     }
 };
 
+
+exports.displayProfilePage = async (req, res) => {
+    try {
+        // For now, get user data from session or use mock data
+        const user = await this.getCurrentUser(req);
+        if (!user) {
+            return res.redirect('/login');
+        }
+
+        // Mock reservations data
+        const mockReservations = [
+            {
+                lab: 'GK404',
+                date: '2023-11-15',
+                time: '10:00 - 12:00',
+                seat: 'Seat 12',
+                status: 'Confirmed'
+            },
+            {
+                lab: 'GK403',
+                date: '2023-11-16',
+                time: '14:00 - 16:00',
+                seat: 'Seat 5',
+                status: 'Pending'
+            }
+        ];
+
+        res.render('profile', {
+            title: 'Profile - Lab Reservation System',
+            user: user.toObject(),  // Convert Mongoose document to plain object
+            reservations: mockReservations,
+            additionalCSS: ['/css/profile.css'],
+            additionalJS: ['/js/profile.js']
+        });
+    } catch (error) {
+        console.error('Profile error:', error);
+        res.redirect('/login');
+    }
+};
 
 

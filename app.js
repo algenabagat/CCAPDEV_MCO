@@ -15,6 +15,11 @@ app.engine('hbs', engine({
     layoutsDir: __dirname + '/views/layouts/',
     partialsDir: __dirname + '/views/partials/',
     extname: 'hbs',
+    helpers: {
+        eq: function(a, b) {
+            return a === b;
+        }
+    }
 }));
 app.set('view engine', 'hbs');
 app.set('views', __dirname + '/views');
