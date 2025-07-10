@@ -1,74 +1,68 @@
-$(document).ready(function() {
-    // UI Elements
-    const $nameDisplay = $('#profile-name-display');
-    const $greetingName = $('#greeting-name');
-    const $bioContent = $('#bio-content');
-    const $accountTypeDisplay = $('#account-type-display');
-    const $emailDisplay = $('#email-display');
-    const $profileImage = $('#profile-image');
-    const $nameEdit = $('#name-edit');
-    const $bioEdit = $('#bio-edit');
-    const $editProfileBtn = $('#edit-profile-btn');
-    const $pfpEditBtn = $('#pfp-edit-btn');
-    const $deleteProfileBtn = $('#delete-profile-btn');
-    const $profileUpload = $('#profile-upload');
+document.addEventListener('DOMContentLoaded', function() {
+  const editBtn = document.getElementById('edit-profile-btn');
+  const cancelBtn = document.getElementById('cancel-edit');
+  const editForm = document.getElementById('edit-form');
+  const viewMode = document.getElementById('view-mode');
+  const updateForm = document.getElementById('profile-update-form');
 
-    // Toggle edit mode
-    $editProfileBtn.on('click', function() {
-        if ($nameEdit.is(':visible')) {
-            // Save mode
-            const [firstName, ...lastNameParts] = $nameEdit.val().split(' ');
-            const newBio = $bioEdit.val();
-            
-            $nameDisplay.text($nameEdit.val());
-            $greetingName.text(firstName);
-            $bioContent.text(newBio || "No bio yet.");
-            
-            // Hide edit fields
-            $bioContent.removeClass('d-none');
-            $bioEdit.addClass('d-none');
-            $nameEdit.hide();
-            $nameDisplay.removeClass('d-none');
-            $pfpEditBtn.addClass('d-none');
-            $deleteProfileBtn.addClass('d-none');
-            
-            $editProfileBtn.html('<i class="bi bi-pencil-fill"></i> Edit Profile');
-            
-            // In a real app, you would submit changes to the server here
+  // Toggle edit mode
+  if (editBtn) {
+    editBtn.addEventListener('click', function() {
+      viewMode.classList.add('d-none');
+      editForm.classList.remove('d-none');
+    });
+  }
+
+  // Cancel edit
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', function() {
+      editForm.classList.add('d-none');
+      viewMode.classList.remove('d-none');
+    });
+  }
+
+  // Form submission
+  if (updateForm) {
+    updateForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const formData = {
+        firstName: document.getElementById('firstName').value,
+        lastName: document.getElementById('lastName').value,
+        description: document.getElementById('description').value
+      };
+
+      try {
+        const response = await fetch(window.location.pathname, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // Update the displayed values
+          document.getElementById('profile-name-display').textContent = 
+            `${data.user.firstName} ${data.user.lastName}`;
+          document.getElementById('bio-content').textContent = 
+            data.user.description || 'No bio yet.';
+          
+          // Switch back to view mode
+          editForm.classList.add('d-none');
+          viewMode.classList.remove('d-none');
+          
+          // Show success message
+          alert('Profile updated successfully!');
         } else {
-            // Edit mode
-            $bioContent.addClass('d-none');
-            $bioEdit.removeClass('d-none');
-            $nameDisplay.addClass('d-none');
-            $nameEdit.show();
-            $pfpEditBtn.removeClass('d-none');
-            $deleteProfileBtn.removeClass('d-none');
-            
-            $editProfileBtn.html('<i class="bi bi-check"></i> Save Changes');
+          alert(data.error || 'Failed to update profile');
         }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while updating the profile');
+      }
     });
-
-    // Profile picture upload preview
-    $profileUpload.on('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                $profileImage.attr('src', event.target.result);
-                // In a real app, you would upload the image to the server here
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-
-    // Delete profile confirmation
-    $deleteProfileBtn.on('click', function() {
-        if (confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
-            // In a real app, this would trigger a server-side deletion
-            window.location.href = '/login'; // Redirect after "deletion"
-        }
-    });
-
-    // Initialize the profile display
-    initProfileDisplay();
+  }
 });

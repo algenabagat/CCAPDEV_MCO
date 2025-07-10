@@ -8,6 +8,7 @@ const cookieParser = require('cookie-parser');
 
 // Import routes
 const indexRoutes = require('./routes/indexRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 // Set up Handlebars as the template engine
 app.engine('hbs', engine({
@@ -18,6 +19,16 @@ app.engine('hbs', engine({
     helpers: {
         eq: function(a, b) {
             return a === b;
+        },
+        debug: function(data) {
+            console.log('Handlebars debug:', data);
+            return '';
+        },
+        json: function(data) {
+            return JSON.stringify(data);
+        },
+        gt: function(a, b) {
+            return a > b;
         }
     }
 }));
@@ -44,6 +55,8 @@ mongoose.connect('mongodb://localhost:27017/labReservation')
 
 // Route handlers
 app.use('/', indexRoutes);
+app.use('/users', userRoutes);
+
 
 app.get('/register', (req, res) => {
     res.render('register', {

@@ -1,56 +1,80 @@
-    <!-- Main Container -->
-    <div class="main-container">
-        <div class="container-fluid py-5">
-            <div class="search-container">
-                <h2 class="text-center mb-4">Search Users</h2>
-                
-                <!-- Search Form -->
-                <form id="search-users-form" class="mb-5">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label for="search-name" class="form-label">Name</label>
-                            <input type="text" class="form-control" id="search-name" placeholder="Enter name">
-                        </div>
-                        <div class="col-md-6">
-                            <label for="search-email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="search-email" placeholder="Enter DLSU email">
-                        </div>
+<!-- Main Container -->
+<div class="main-container">
+    <div class="container-fluid py-5">
+        <div class="search-container">
+            <h2 class="text-center mb-4">Search Users</h2>
+            
+            <!-- Search Form -->
+            <form id="search-users-form" class="mb-5" action="/search-users" method="GET">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="search-name" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="search-name" name="name" placeholder="Enter name" value="{{searchQuery.name}}">
                     </div>
-                    <div class="row g-3 mt-2">
-                        <div class="col-md-6">
-                            <label for="search-account-type" class="form-label">Account Type</label>
-                            <select class="form-select" id="search-account-type">
-                                <option value="">All Types</option>
-                                <option value="student">Student</option>
-                                <option value="technician">Lab Technician</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="d-grid gap-2 mt-4">
-                        <button type="submit" class="btn btn-success btn-lg">
-                            <i class="bi bi-search me-2"></i>Search Users
-                        </button>
-                    </div>
-                </form>
-                
-                <!-- Search Results -->
-                <div id="search-results">
-                    <h3 class="text-center mb-4">User Search Results</h3>
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th>Account Type</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="results-body">
-                                <!-- Results will be populated here -->
-                            </tbody>
-                        </table>
+                    <div class="col-md-6">
+                        <label for="search-email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="search-email" name="email" placeholder="Enter DLSU email" value="{{searchQuery.email}}">
                     </div>
                 </div>
+                <div class="row g-3 mt-2">
+                    <div class="col-md-6">
+                        <label for="search-account-type" class="form-label">Account Type</label>
+                        <select class="form-select" id="search-account-type" name="role">
+                            <option value="all" {{#if (eq searchQuery.role "")}}selected{{/if}}>All Types</option> <!--Fixed the empty option to show "All Types" -->
+                            <option value="Student" {{#if (eq searchQuery.role "Student")}}selected{{/if}}>Student</option>
+                            <option value="Technician" {{#if (eq searchQuery.role "Technician")}}selected{{/if}}>Lab Technician</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="d-grid gap-2 mt-4">
+                    <button type="submit" class="btn btn-success btn-lg">
+                        <i class="bi bi-search me-2"></i>Search Users
+                    </button>
+                </div>
+            </form>
+            
+            <!-- Search Results -->
+            <!---{{#if showResults}}-->
+            <div id="search-results">
+                <h3 class="text-center mb-4">User Search Results</h3>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Account Type</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="results-body">
+                            {{#each users}}
+                                <tr>
+                                    <td>
+                                        {{#if this.firstName}}
+                                            {{this.firstName}} {{this.lastName}}
+                                        {{else}}
+                                            {{this.email}}
+                                        {{/if}}
+                                    </td>
+                                    <td>{{this.email}}</td>
+                                    <td>{{this.role}}</td>
+                                    <td>
+                                        <a href="/profile/{{this.email}}" class="btn btn-primary btn-sm">
+                                            <i class="bi bi-eye-fill"></i> View Profile
+                                        </a>
+                                    </td>
+                                </tr>
+                            {{else}}
+                                <tr>
+                                    <td colspan="4" class="text-center">No users found matching your criteria</td>
+                                </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                </div>
             </div>
+            <!---{{/if}}-->
         </div>
+    </div>
+</div>

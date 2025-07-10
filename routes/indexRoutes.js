@@ -3,6 +3,7 @@ const router = express.Router();
 
 // Controller for handling index routes
 const AuthController = require('../controllers/AuthController');
+const UserController = require('../controllers/UserController');
 
 router.get('/', AuthController.isLoggedIn);
 router.get('/login', AuthController.displayLoginPage);
@@ -10,28 +11,12 @@ router.post('/login', AuthController.handleLogin);
 router.get('/logout', AuthController.handleLogout);
 router.post('/logout', AuthController.handleLogout);
 
-router.get('/profile', AuthController.displayProfilePage);
+// Profile routes
+router.get('/profile', UserController.displayMyProfile); // Redirects to current user's profile
+router.get('/profile/:email', UserController.displayProfilePage); // View specific user's profile by email
 
-
-// In any route file:
-router.get('/profile', (req, res) => {
-  if (!req.user) return res.redirect('/login'); // Simple guard
-  res.render('profile', { user: req.user });
-});
-
-// Routes for reservation
-
-// Routes for profile
-
-// Routes for search
-router.get('/search-users', (req, res) => {
-    res.render('search-users', {
-        title: 'Search Users',
-        additionalCSS: ['/css/search.css'],
-        additionalJS: ['/js/search-users.js']
-    });
-});
-
+// Route to search for users
+router.get('/search-users', UserController.searchUsers);
 
 router.get('/search-slots', (req, res) => {
     res.render('search-slots', {
