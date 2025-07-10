@@ -107,74 +107,75 @@ exports.updateProfile = async (req, res) => {
     }
 };
 
-exports.searchUsers = async (req, res) => {
-    try {
-        const { name, email, role } = req.query;
-        let users = [];
-        let showResults = false;
+    exports.searchUsers = async (req, res) => {
+        try {
+            const { name, email, role } = req.query;
+            let users = [];
+            let showResults = false;
 
-        // Get current logged-in user for navbar
-        const currentUser = await AuthController.getCurrentUser(req);
+            // Get current logged-in user for navbar
+            const currentUser = await AuthController.getCurrentUser(req);
 
-        // Only search if there are query parameters
-        if (name || email || role) {
-            showResults = true;
-            
-            // Build query object
-            const query = { isDeleted: false };
-            
-            if (name) {
-                query.$or = [
-                    { firstName: { $regex: name, $options: 'i' } },
-                    { lastName: { $regex: name, $options: 'i' } }
-                ];
-            }
-            
-            if (email) {
-                query.email = { $regex: email, $options: 'i' };
-            }
-            
-            if (role && role !== 'all') {
-                query.role = role;
-            }
-            
-            // Search users in database
-            users = await User.find(query)
-                .select('firstName lastName email role')
-                .lean();
+            // Only search if there are query parameters
+            if (name || email || role) {
+                showResults = true;
                 
-            // Log the users found for debugging
-            console.log('Search query:', query);
-            console.log('Number of users found:', users.length);
-            console.log('Users data:', users);
-            console.log('Show results:', showResults);
+                // Build query object
+                const query = { isDeleted: false };
+                
+                if (name) {
+                    query.$or = [
+                        { firstName: { $regex: name, $options: 'i' } },
+                        { lastName: { $regex: name, $options: 'i' } }
+                    ];
+                }
+                
+                if (email) {
+                    query.email = { $regex: email, $options: 'i' };
+                }
+                
+                if (role && role !== 'all') {
+                    query.role = role;
+                }
+                
+                // Search users in database
+                users = await User.find(query)
+                    .select('firstName lastName email role')
+                    .lean();
+                    
+                // Log the users found for debugging
+                console.log('Search query:', query);
+                console.log('Number of users found:', users.length);
+                console.log('Users data:', users);
+                console.log('Show results:', showResults);
+            }
+
+            const templateData = {
+                title: 'Search Users - Lab Reservation System',
+                users: users,
+                showResults: showResults,
+                searchQuery: { name, email, role },
+                additionalCSS: ['/css/search-users.css'],
+                currentUser: currentUser ? currentUser.toObject() : null
+            };
+
+            // Log what we're sending to template
+            console.log('Template data being sent:', {
+                usersCount: templateData.users.length,
+                users: templateData.users,
+                showResults: templateData.showResults,
+                searchQuery: templateData.searchQuery
+            });
+
+            res.render('search-users', templateData);
+            console.log(templateData);
+        } catch (error) {
+            console.error('Search users error:', error);
+            res.render('search-users', {
+                title: 'Search Users - Lab Reservation System',
+                error: 'An error occurred while searching users',
+                additionalCSS: ['/css/search-users.css'],
+                currentUser: null
+            });
         }
-
-        const templateData = {
-            title: 'Search Users - Lab Reservation System',
-            users: users,
-            showResults,
-            searchQuery: { name, email, role },
-            additionalCSS: ['/css/search-users.css'],
-            currentUser: currentUser ? currentUser.toObject() : null
-        };
-
-        // Log what we're sending to template
-        console.log('Template data being sent:', {
-            usersCount: templateData.users.length,
-            users: templateData.users,
-            showResults: templateData.showResults,
-            searchQuery: templateData.searchQuery
-        });
-
-        res.render('search-users', templateData);
-    } catch (error) {
-        console.error('Search users error:', error);
-        res.render('search-users', {
-            title: 'Search Users - Lab Reservation System',
-            error: 'An error occurred while searching users',
-            additionalCSS: ['/css/search-users.css'],
-            currentUser: null
-        });
-    }
-};
+    };

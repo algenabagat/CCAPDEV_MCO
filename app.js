@@ -17,6 +17,9 @@ app.engine('hbs', engine({
     partialsDir: __dirname + '/views/partials/',
     extname: 'hbs',
     helpers: {
+        and: function(a, b) {
+            return a && b;
+        },
         eq: function(a, b) {
             return a === b;
         },
