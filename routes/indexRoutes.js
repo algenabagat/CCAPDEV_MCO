@@ -10,6 +10,8 @@ router.get('/login', AuthController.displayLoginPage);
 router.post('/login', AuthController.handleLogin);
 router.get('/logout', AuthController.handleLogout);
 router.post('/logout', AuthController.handleLogout);
+router.get('/register', AuthController.displayRegisterPage);
+router.post('/register', AuthController.handleRegister);
 
 // Profile routes
 router.get('/profile', UserController.displayMyProfile); // Redirects to current user's profile

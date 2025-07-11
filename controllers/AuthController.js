@@ -87,6 +87,44 @@ exports.handleLogout = (req, res) => {
     });
 };
 
+exports.handleRegister = async (req, res) => {
+    try {
+        const {
+            'first-name': firstName,
+            'last-name': lastName,
+            email,
+            password,
+            'account-type': accountType
+        } = req.body;
+
+        // Checks if a user is already registered
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.redirect('/register?error=Email already registered');
+        }
+
+        // Creates new user
+        const newUser = new User({
+            firstName,
+            lastName,
+            email,
+            password,
+            role: accountType === 'tech' ? 'Technician' : 'Student',
+            isDeleted: false,
+            createdAt: new Date()
+        });
+
+        await newUser.save();
+
+        // Redirect to login page with success message
+        return res.redirect('/login?success=Registration successful. Please log in.');
+        
+    } catch (err) {
+        console.error('Registration error:', err);
+        return res.redirect('/register?error=Registration failed');
+    }
+};
+
 exports.requireAuth = async (req, res, next) => {
     const userId = req.cookies.userId;
     
