@@ -14,6 +14,7 @@ router.post('/logout', AuthController.handleLogout);
 // Profile routes
 router.get('/profile', UserController.displayMyProfile); // Redirects to current user's profile
 router.get('/profile/:email', UserController.displayProfilePage); // View specific user's profile by email
+router.post('/delete-account', UserController.deleteAccount); // Delete user account
 
 // Route to search for users
 router.get('/search-users', UserController.searchUsers);

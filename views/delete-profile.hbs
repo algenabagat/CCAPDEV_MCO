@@ -9,3 +9,9 @@
           <p>Your profile is being deleted. Please wait...</p>
         </div>
       </div>
+
+<script>
+    setTimeout(function() {
+        window.location.href = '{{redirectUrl}}';
+    }, {{delay}});
+</script>

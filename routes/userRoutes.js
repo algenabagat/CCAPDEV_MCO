@@ -7,7 +7,7 @@ router.get('/profile/:email', UserController.displayProfilePage);
 router.get('/profile', UserController.displayMyProfile); // Route to display the current user's own profile
 router.put('/profile/:email', UserController.updateProfile);
 
-//router.get('/search-users', UserController.searchUsers);
 // Route to display the search users page
+router.post('/profile/:email', UserController.updateProfile);
 
 module.exports = router;

@@ -1,68 +1,95 @@
 document.addEventListener('DOMContentLoaded', function() {
+  // DOM Elements
   const editBtn = document.getElementById('edit-profile-btn');
-  const cancelBtn = document.getElementById('cancel-edit');
-  const editForm = document.getElementById('edit-form');
-  const viewMode = document.getElementById('view-mode');
-  const updateForm = document.getElementById('profile-update-form');
+  const saveBtn = document.getElementById('save-profile-btn');
+  const deleteBtn = document.getElementById('delete-profile-btn');
+  
+  // Form Elements
+  const nameDisplay = document.getElementById('profile-name-display');
+  const nameInput = document.getElementById('name-edit');
+  const bioDisplay = document.getElementById('bio-content');
+  const bioInput = document.getElementById('bio-edit');
 
-  // Toggle edit mode
+  // Toggle Edit Mode
   if (editBtn) {
-    editBtn.addEventListener('click', function() {
-      viewMode.classList.add('d-none');
-      editForm.classList.remove('d-none');
-    });
+    editBtn.addEventListener('click', () => toggleEditMode(true));
   }
 
-  // Cancel edit
-  if (cancelBtn) {
-    cancelBtn.addEventListener('click', function() {
-      editForm.classList.add('d-none');
-      viewMode.classList.remove('d-none');
-    });
+  if (saveBtn) {
+    saveBtn.addEventListener('click', handleProfileUpdate);
   }
 
-  // Form submission
-  if (updateForm) {
-    updateForm.addEventListener('submit', async function(e) {
-      e.preventDefault();
+  if (deleteBtn) {
+    deleteBtn.addEventListener('click', handleAccountDeletion);
+  }
+
+  function toggleEditMode(enable) {
+    // Toggle visibility
+    editBtn.classList.toggle('d-none', enable);
+    saveBtn.classList.toggle('d-none', !enable);
+    deleteBtn.classList.toggle('d-none', !enable);
+    
+    // Toggle fields
+    nameDisplay.classList.toggle('d-none', enable);
+    nameInput.classList.toggle('d-none', !enable);
+    bioDisplay.classList.toggle('d-none', enable);
+    bioInput.classList.toggle('d-none', !enable);
+    
+    // Set initial values
+    if (enable) {
+      nameInput.value = nameDisplay.textContent;
+      bioInput.value = bioDisplay.textContent;
+    }
+  }
+
+  async function handleProfileUpdate() {
+    try {
+      const response = await fetch(`/api/profile/${getUserEmail()}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          firstName: nameInput.value.split(' ')[0],
+          lastName: nameInput.value.split(' ')[1] || '',
+          description: bioInput.value
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) throw new Error(data.message || 'Update failed');
+
+      // Update UI on success
+      nameDisplay.textContent = `${data.user.firstName} ${data.user.lastName}`;
+      bioDisplay.textContent = data.user.description;
       
-      const formData = {
-        firstName: document.getElementById('firstName').value,
-        lastName: document.getElementById('lastName').value,
-        description: document.getElementById('description').value
-      };
+      showAlert('Profile updated!', 'success');
+      toggleEditMode(false);
+    } catch (error) {
+      //showAlert(error.message, 'error');
+      //console.error('Update error:', error);
+    }
+  }
 
-      try {
-        const response = await fetch(window.location.pathname, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(formData)
-        });
+  function handleAccountDeletion() {
+    if (confirm('Permanently delete your account?')) {
+      window.location.href = '/delete-account';
+    }
+  }
 
-        const data = await response.json();
+  function getUserEmail() {
+    return document.getElementById('email-display').textContent;
+  }
 
-        if (response.ok) {
-          // Update the displayed values
-          document.getElementById('profile-name-display').textContent = 
-            `${data.user.firstName} ${data.user.lastName}`;
-          document.getElementById('bio-content').textContent = 
-            data.user.description || 'No bio yet.';
-          
-          // Switch back to view mode
-          editForm.classList.add('d-none');
-          viewMode.classList.remove('d-none');
-          
-          // Show success message
-          alert('Profile updated successfully!');
-        } else {
-          alert(data.error || 'Failed to update profile');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        alert('An error occurred while updating the profile');
-      }
-    });
+  function showAlert(message, type) {
+    const alert = document.createElement('div');
+    alert.className = `alert alert-${type} alert-dismissible fade show`;
+    alert.innerHTML = `
+      ${message}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    document.body.prepend(alert);
+    setTimeout(() => alert.remove(), 3000);
   }
 });
