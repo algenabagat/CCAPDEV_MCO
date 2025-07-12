@@ -1,6 +1,21 @@
 const User = require('../models/Users');
 const AuthController = require('./AuthController');
 
+const multer = require('multer');
+const path = require('path');
+
+const upload = multer({
+  dest: 'public/uploads/profile-pictures',
+  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB limit
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype === 'image/jpeg') {
+      cb(null, true);
+    } else {
+      cb(new Error('Only JPEG images are allowed'), false);
+    }
+  }
+}).single('profilePicture');
+
 
 exports.displayProfilePage = async (req, res) => {
     try {
@@ -72,47 +87,58 @@ exports.displayMyProfile = async (req, res) => {
 };
 
 exports.updateProfile = async (req, res) => {
-    try {
-        const currentUser = await AuthController.getCurrentUser(req);
-        if (!currentUser) {
-            return res.status(401).json({ error: 'Unauthorized' });
-        }
-
-        const { firstName, lastName, description } = req.body;
-        const { email } = req.params;
-
-        // Verify the user is updating their own profile
-        if (currentUser.email !== email) {
-            return res.status(403).json({ error: 'You can only update your own profile' });
-        }
-
-        // Validate input
-        if (!firstName || !lastName) {
-            return res.status(400).json({ error: 'First name and last name are required' });
-        }
-
-        // Update the user's profile
-        currentUser.firstName = firstName;
-        currentUser.lastName = lastName;
-        currentUser.description = description || '';
-
-        await currentUser.save();
-
-        // Return success response
-        res.status(200).json({ 
-            message: 'Profile updated successfully',
-            user: {
-                firstName: currentUser.firstName,
-                lastName: currentUser.lastName,
-                description: currentUser.description,
-                email: currentUser.email
-            }
-        });
-    } catch (error) {
-        console.error('Update profile error:', error);
-        res.status(500).json({ error: 'An error occurred while updating the profile' });
+  try {
+    const currentUser = await AuthController.getCurrentUser(req);
+    if (!currentUser) {
+      return res.status(401).json({ error: 'Unauthorized' });
     }
+
+    const { email } = req.params;
+    
+    if (currentUser.email !== email) {
+      return res.status(403).json({ error: 'You can only update your own profile' });
+    }
+
+    // Handle the upload
+    upload(req, res, async (err) => {
+      if (err) {
+        return res.status(400).json({ error: err.message });
+      }
+
+      const { firstName, lastName, description } = req.body;
+      
+      if (!firstName || !lastName) {
+        return res.status(400).json({ error: 'First name and last name are required' });
+      }
+
+      // Update user data
+      currentUser.firstName = firstName;
+      currentUser.lastName = lastName;
+      currentUser.description = description || '';
+
+      // Update profile picture if uploaded
+      if (req.file) {
+        currentUser.profilePicture = `/uploads/profile-pictures/${req.file.filename}`;
+      }
+
+      await currentUser.save();
+
+      res.status(200).json({ 
+        user: {
+          firstName: currentUser.firstName,
+          lastName: currentUser.lastName,
+          description: currentUser.description,
+          email: currentUser.email,
+          profilePicture: currentUser.profilePicture
+        }
+      });
+    });
+  } catch (error) {
+    console.error('Update profile error:', error);
+    res.status(500).json({ error: 'An error occurred while updating the profile' });
+  }
 };
+
 exports.searchUsers = async (req, res) => {
     try {
         const { name, email, role } = req.query;
@@ -155,6 +181,7 @@ exports.searchUsers = async (req, res) => {
             console.log('Users data:', users);
             console.log('Show results:', showResults);
         }
+    
 
         const templateData = {
             title: 'Search Users - Lab Reservation System',
@@ -214,7 +241,7 @@ exports.deleteAccount = async (req, res) => {
         // Clear the authentication cookie
         res.clearCookie('userId');
 
-        // Render the delete confirmation page (which can auto-redirect using meta refresh)
+        // Render the delete confirmation page 
         res.render('delete-profile', {
             title: 'Account Deleted - Lab Reservation System',
             message: 'Your account has been successfully deleted.',
