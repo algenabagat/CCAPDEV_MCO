@@ -4,6 +4,7 @@ const router = express.Router();
 // Controller for handling index routes
 const AuthController = require('../controllers/AuthController');
 const UserController = require('../controllers/UserController');
+const ResController = require('../controllers/ResController');
 
 router.get('/', AuthController.isLoggedIn);
 router.get('/login', AuthController.displayLoginPage);
@@ -27,5 +28,8 @@ router.get('/search-slots', (req, res) => {
         additionalJS: ['/js/search.js']
     });
 });
+
+// Reservation routes
+router.use('/reservations', require('./resRoutes'));
 
 module.exports = router;

@@ -1,0 +1,59 @@
+<!-- Main Container -->
+<div class="main-container">
+  <div class="container-fluid">
+    <div class="row justify-content-center align-items-start">
+      <!-- Lab Image + Buttons Section -->
+      <div class="col-md-6 mt-4 mb-4 d-flex justify-content-center align-items-center">
+        <div class="lab-selection-container text-center w-100">
+          <div class="registration-container">
+            <img id="lab-image" src="/img/{{currentLab.image}}" alt="Lab Image" class="img-fluid mb-3 rounded">
+            <div id="lab-buttons" class="d-grid gap-2">
+              {{#each laboratories}}
+                <button class="btn account-type-btn {{#if (eq this._id ../currentLab._id)}}active{{/if}}" 
+                        data-lab="{{this.name}}">
+                  {{this.name}}
+                </button>
+              {{/each}}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seat Grid Section -->
+      <div class="col-md-5 d-flex justify-content-center align-items-center flex-column">
+        <h4 class="text-center mt-5 mb-3" id="room-name">Room: {{currentLab.name}}</h4>
+        <div id="seat-layout" class="seat-grid">
+          {{#each currentLab.seats}}
+            <div class="seat {{#if this.reserved}}reserved{{else}}available{{/if}}" 
+                 data-seat="{{this.number}}" 
+                 data-time-slots="{{json this.timeSlots}}">
+              {{this.number}}
+              {{#if this.reserved}}
+                <div class="reserved-info">
+                  {{#unless this.anonymous}}
+                    <span class="reserved-by">{{this.reservedBy.name}}</span>
+                  {{/unless}}
+                  <span class="reserved-time">{{this.time}}</span>
+                </div>
+              {{/if}}
+            </div>
+          {{/each}}
+        </div>
+        
+        {{#if currentUser}}
+          <div class="form-check mt-3">
+            <input class="form-check-input" type="checkbox" id="anonymous-checkbox">
+            <label class="form-check-label" for="anonymous-checkbox">
+              Reserve as Anonymous
+            </label>
+          </div>
+          <button id="reserve-button" class="btn btn-success mt-2">Reserve Selected Seats</button>
+        {{else}}
+          <div class="alert alert-warning mt-3">
+            Please <a href="/login">login</a> to make reservations
+          </div>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+</div>

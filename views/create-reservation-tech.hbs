@@ -1,0 +1,58 @@
+<!-- Main Container -->
+<div class="main-container">
+    <div class="container-fluid"> 
+    <div class="row justify-content-center align-items-center">
+        <!-- Carousel Section -->
+        <div class="carousel col-md-6 mb-4 d-flex">
+        <div class="carousel w-100">
+            <div id="carouselExampleCaptions" class="carousel slide">
+            <div class="carousel-indicators">
+                {{#each laboratories}}
+                <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="{{@index}}" {{#if @first}}class="active"{{/if}}></button>
+                {{/each}}
+            </div>
+            <div class="carousel-inner">
+                {{#each laboratories}}
+                <div class="carousel-item {{#if @first}}active{{/if}}">
+                    <img src="/img/{{this.image}}" class="d-block w-100" alt="{{this.name}}">
+                    <div class="carousel-caption d-none d-md-block">
+                    <h5>{{this.name}}</h5>
+                    <p>{{this.description}}</p>
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+            </div>
+        </div>
+        </div>
+
+        <!-- Seat Grid Section -->
+        <div class="col-md-5 d-flex justify-content-center align-items-center flex-column">
+        <h4 class="text-center mt-5 mb-3" id="room-name">Room: {{currentLab.name}}</h4>
+        <div id="seat-layout" class="seat-grid">
+            {{#each currentLab.seats}}
+            <div class="seat {{#if this.reserved}}reserved{{else}}available{{/if}}" data-seat="{{this.number}}">
+                {{this.number}}
+                {{#if this.reserved}}
+                <div class="reserved-info">
+                    {{#unless this.anonymous}}
+                    <span class="reserved-by">{{this.reservedBy}}</span>
+                    {{/unless}}
+                    <span class="reserved-time">{{this.time}}</span>
+                </div>
+                {{/if}}
+            </div>
+            {{/each}}
+        </div>
+        </div>
+    </div>
+    </div>
+</div>

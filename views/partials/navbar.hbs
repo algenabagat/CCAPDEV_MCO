@@ -17,15 +17,26 @@
         <li class="nav-item">
           <a class="nav-link" href="/">Home</a>
         </li>
+        {{#if user}}
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             Reservation
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="CreateReservation.html">Make a Reservation</a></li>
-            <li><a class="dropdown-item" href="my_reservations.html">My Reservations</a></li>
+            {{#if (eq user.role 'Student')}}
+              <li><a class="dropdown-item" href="/reservations/create-reservation">Make a Reservation</a></li>
+            {{/if}}
+            {{#if (eq user.role 'Technician')}}
+              <li><a class="dropdown-item" href="/reservations/create-reservation-tech">Create Reservation</a></li>
+            {{/if}}
+            <li><a class="dropdown-item" href="/reservations/my-reservations">My Reservations</a></li>
           </ul>
         </li>
+        {{else}}
+        <li class="nav-item">
+          <a class="nav-link" href="/login">Reservation</a>
+        </li>
+        {{/if}}
         <li class="nav-item" id="nav-profile-item">
           <a class="nav-link" href="/profile"><i class="bi bi-person-circle"></i> <span class="d-lg-none">Profile</span></a>
         </li> 

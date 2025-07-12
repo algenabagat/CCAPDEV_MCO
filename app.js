@@ -54,6 +54,7 @@ mongoose.connect('mongodb://localhost:27017/labReservation')
 // Import routes
 const indexRoutes = require('./routes/indexRoutes');
 const userRoutes = require('./routes/userRoutes');
+const resRoutes = require('./routes/resRoutes');
 
 
 // Route handlers
@@ -61,6 +62,7 @@ app.use('/', indexRoutes);
 
 app.use('/profile', userRoutes);
 //app.use('/users', userRoutes);
+app.use('/reservations', resRoutes);
 
 
 app.get('/register', (req, res) => {
