@@ -4,6 +4,7 @@
   },
   "name": "GK302A",
   "description": "Computer Lab 1",
+  "image": "/img/gk3.jpg",
   "capacity": 35,
   "location": "Gokongwei Hall 3rd Floor",
   "isActive": true

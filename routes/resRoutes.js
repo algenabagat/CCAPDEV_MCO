@@ -35,6 +35,11 @@ router.get('/search-slots',
   ResController.showSearchSlots
 );
 
+router.get('/view-slots',
+  AuthController.requireAuth,
+  ResController.showViewSlots
+);
+
 
 
 // View/edit reservations routes

@@ -229,3 +229,46 @@ exports.handleSearchSlots = async (req, res) => {
         });
     }
 };
+
+exports.showViewSlots = async (req, res) => {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+
+    const labs = await Laboratory.find({ isActive: true }).lean();
+    const slots = await Slot.find({ date: today }); // Skip populate for now
+
+    const seatData = {};
+
+    for (const lab of labs) {
+      seatData[lab.name] = [];
+
+      const labSlots = slots.filter(slot => String(slot.laboratory) === String(lab._id));
+      const maxSeat = Math.max(...labSlots.map(s => s.seatNumber), lab.capacity || 0);
+
+      for (let i = 1; i <= maxSeat; i++) {
+        const slot = labSlots.find(s => s.seatNumber === i);
+
+        const reserved = slot?.timeSlots?.some(t => t.status === 'Reserved');
+
+        seatData[lab.name].push({
+          occupied: reserved,
+          // No .name or .anonymous fields unless populated — keep it simple
+          user: reserved ? { name: 'Reserved User', anonymous: true } : null
+        });
+      }
+    }
+
+    res.render('view-slots', {
+      title: 'View Slots',
+      currentUser: req.user,
+      labs,
+      seatData: JSON.stringify(seatData),
+      additionalCSS: ['/css/seats.css'],
+      additionalJS: ['/js/viewRes.js']
+    });
+
+  } catch (err) {
+    console.error('Error showing reservation page:', err);
+    res.redirect('/');
+  }
+};
