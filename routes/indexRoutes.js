@@ -21,15 +21,11 @@ router.post('/delete-account', UserController.deleteAccount); // Delete user acc
 // Route to search for users
 router.get('/search-users', UserController.searchUsers);
 
-router.get('/search-slots', (req, res) => {
-    res.render('search-slots', {
-        title: 'Search Slots',
-        additionalCSS: ['/css/search.css'],
-        additionalJS: ['/js/search.js']
-    });
-});
+//router.get('/reservations/search-slots', ResController.showSearchSlots);
+//router.get('/search-slots', ResController.showSearchLabsPage);
+//router.get('/search-labs', ResController.showSearchLabsPage);
 
 // Reservation routes
-router.use('/reservations', require('./resRoutes'));
+//router.use('/reservations', require('./resRoutes'));
 
 module.exports = router;

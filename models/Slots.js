@@ -5,12 +5,18 @@ const slotSchema = new mongoose.Schema({
     seatNumber: { type: Number, required: true },
     date: { type: Date, required: true },
     timeSlots: [{
-        startTime: { type: String, required: true },
+        startTime: { type: String, required: true }, // Keep as String for simplicity
         endTime: { type: String, required: true },
-        status: { type: String, enum: ['Available', 'Reserved', 'Blocked'], default: 'Available' },
+        status: { 
+            type: String, 
+            enum: ['Available', 'Reserved', 'Blocked'], 
+            default: 'Available' 
+        },
         reservedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-        reservation: { type: mongoose.Schema.Types.ObjectId, ref: 'Reservation' }
-    }]
+        reservation: { type: mongoose.Schema.Types.ObjectId, ref: 'Reservation' },
+        blockedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+    }],
+    lastUpdated: { type: Date, default: Date.now }
 });
 
 module.exports = mongoose.model('Slot', slotSchema);

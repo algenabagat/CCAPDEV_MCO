@@ -1,56 +1,105 @@
-    <div class="main-container">
-        <div class="container-fluid py-5">
-            <div class="search-container">
-                <h2 class="text-center mb-4">Search for Available Slots</h2>
-                
-                <!-- Search Form -->
-                <form id="search-form" class="mb-5">
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <label for="search-date" class="form-label">Date</label>
-                            <input type="date" class="form-control" id="search-date" required>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="search-time" class="form-label">Time</label>
-                            <input type="time" class="form-control" id="search-time" required>
-                        </div>
-                        <div class="col-md-4">
-                            <label for="search-lab" class="form-label">Lab</label>
-                            <select class="form-select" id="search-lab" required>
-                                <option value="" selected disabled>Select Lab</option>
-                                <option value="lab1">Computer Lab 1</option>
-                                <option value="lab2">Computer Lab 2</option>
-                                <option value="lab3">Engineering Lab</option>
-                                <option value="lab4">Science Lab</option>
-                            </select>
-                        </div>
+<div class="container my-5">
+    <div class="search-container">
+        <h2 class="mb-4">Search Available Slots</h2>
+        
+        <form id="search-form">
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label for="lab-select" class="form-label">Laboratory</label>
+                    <select class="form-select" id="lab-select" name="labId" required>
+                        <option value="" selected disabled>Select a laboratory</option>
+                        {{#each laboratories}}
+                            <option value="{{this._id}}">{{this.name}} (Capacity: {{this.capacity}} seats)</option>
+                        {{/each}}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="date-input" class="form-label">Date</label>
+                    <input type="date" class="form-control" id="date-input" name="date" required 
+                           min="{{formatDate today 'YYYY-MM-DD'}}" 
+                           max="{{formatDate maxDate 'YYYY-MM-DD'}}">
+                </div>
+            </div>
+            
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search me-2"></i>Search Slots
+                </button>
+                <small class="d-block mt-2 text-muted">Showing availability for next 7 days</small>
+            </div>
+        </form>
+        
+        <div id="search-results" class="mt-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 id="results-header" class="mb-0"></h3>
+                <small id="last-updated" class="text-muted"></small>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Seat #</th>
+                            <th>Time Slot</th>
+                            <th>Status</th>
+                            <th>Reserved By</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="results-body">
+                        <!-- Results will be populated here by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reservation Modal -->
+<div class="modal fade" id="reservationModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reservationModalLabel">Make Reservation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="reservation-form">
+                    <input type="hidden" id="reservation-lab-id">
+                    <input type="hidden" id="reservation-seat-number">
+                    <input type="hidden" id="reservation-date">
+                    <input type="hidden" id="reservation-start-time">
+                    <input type="hidden" id="reservation-end-time">
+                    
+                    <div class="mb-3">
+                        <label class="form-check-label">
+                            <input type="checkbox" class="form-check-input" id="reservation-anonymous">
+                            Reserve anonymously (others won't see your name)
+                        </label>
                     </div>
-                    <div class="d-grid gap-2 mt-4">
-                        <button type="submit" class="btn btn-success btn-lg">
-                            <i class="bi bi-search me-2"></i>Search
+                    
+                    {{#if (eq currentUser.role 'Technician')}}
+                    <div class="mb-3">
+                        <label for="reservation-type" class="form-label">Reservation Type</label>
+                        <select class="form-select" id="reservation-type">
+                            <option value="student">For Myself</option>
+                            <option value="walkin">For Walk-in Student</option>
+                            <option value="block">Block Slot</option>
+                        </select>
+                    </div>
+                    <div class="mb-3" id="student-email-container" style="display: none;">
+                        <label for="student-email" class="form-label">Student Email</label>
+                        <input type="email" class="form-control" id="student-email" placeholder="Enter student's DLSU email">
+                    </div>
+                    {{/if}}
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            Confirm Reservation
                         </button>
                     </div>
                 </form>
-                
-                <!-- Search Results -->
-                <div id="search-results">
-                    <h3 class="text-center mb-4">Available Time Slots</h3>
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Time Slot</th>
-                                    <th>Lab</th>
-                                    <th>Availability</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="results-body">
-                                <!-- Results will be populated here -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
             </div>
         </div>
-        
+    </div>
+</div>

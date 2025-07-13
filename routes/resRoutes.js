@@ -24,11 +24,18 @@ router.get('/create-reservation-tech',
   ResController.showCreateReservationTech
 );
 
-router.post('/create-reservation-tech', 
-  AuthController.requireAuth,
-  ResController.checkTechnicianRole,
-  ResController.handleCreateReservationTech
+router.post('/search-slots', 
+  AuthController.requireAuth, 
+  ResController.handleSearchSlots
+
 );
+
+router.get('/search-slots',
+  AuthController.requireAuth,
+  ResController.showSearchSlots
+);
+
+
 
 // View/edit reservations routes
 // router.get('/my-reservations',
