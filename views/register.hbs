@@ -4,26 +4,25 @@
         <div class="registration-container">
           <h2 class="text-center mb-4">Create an Account</h2>
           
-          <!-- Account Type Selection -->
-          <div class="mb-4">
-            <p class="text-center mb-3">Select account type:</p>
-            <div class="row">
-              <div class="col-md-6">
-                <button id="student-btn" class="btn btn-outline-success account-type-btn active">
-                  <i class="bi bi-person-fill me-2"></i>Student
-                </button>
-              </div>
-              <div class="col-md-6">
-                <button id="tech-btn" class="btn btn-outline-success account-type-btn">
-                  <i class="bi bi-tools me-2"></i>Lab Technician
-                </button>
-              </div>
-            </div>
-            <input type="hidden" id="account-type" name="account-type" value="student">
-          </div>
-          
           <!-- Registration Form -->
           <form id="registration-form" method="POST" action="/register" novalidate>
+            <div class="mb-4">
+              <p class="text-center mb-3">Select account type:</p>
+              <div class="row">
+                <div class="col-md-6">
+                  <button id="student-btn" class="btn btn-outline-success account-type-btn active">
+                    <i class="bi bi-person-fill me-2"></i>Student
+                  </button>
+                </div>
+                <div class="col-md-6">
+                  <button id="tech-btn" class="btn btn-outline-success account-type-btn">
+                    <i class="bi bi-tools me-2"></i>Lab Technician
+                  </button>
+                </div>
+              </div>
+              <input type="hidden" id="account-type" name="account-type" value="student">
+            </div>
+
             <div class="mb-3">
               <label for="first-name" class="form-label">First Name</label>
               <input type="text" class="form-control" id="first-name" name="first-name" 

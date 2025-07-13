@@ -109,7 +109,7 @@ exports.handleRegister = async (req, res) => {
             lastName,
             email,
             password,
-            role: accountType === 'tech' ? 'Technician' : 'Student',
+            role: accountType === 'technician' ? 'Technician' : 'Student',
             isDeleted: false,
             createdAt: new Date()
         });
