@@ -1,3 +1,5 @@
+// FOR DB INITIALIZATION
+
 const mongoose = require('mongoose');
 const User = require('./models/Users');
 const Laboratory = require('./models/Laboratories');

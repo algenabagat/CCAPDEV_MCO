@@ -1,0 +1,34 @@
+[{
+  "_id": {
+    "$oid": "687305ea95dfb3eac9866024"
+  },
+  "user": {
+    "$oid": "6868a35f639f6a35f8980f68"
+  },
+  "laboratory": {
+    "$oid": "707f1f77bcf86cd799439011"
+  },
+  "seats": [
+    {
+      "seatNumber": 1,
+      "timeSlot": {
+        "$oid": "687305ea95dfb3eac9865d39"
+      },
+      "_id": {
+        "$oid": "687305ea95dfb3eac9866025"
+      }
+    }
+  ],
+  "startTime": {
+    "$date": "2025-07-13T00:30:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-07-13T01:00:00.000Z"
+  },
+  "isAnonymous": false,
+  "status": "Active",
+  "createdAt": {
+    "$date": "2025-07-13T01:03:38.169Z"
+  },
+  "__v": 0
+}]

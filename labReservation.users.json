@@ -7,13 +7,90 @@
   "firstName": "John",
   "lastName": "Doe",
   "role": "Student",
-  "description": "Computer Science student",
+  "description": "dasda",
   "isDeleted": false,
   "createdAt": {
     "$date": "2025-07-05T04:00:31.452Z"
   },
   "updatedAt": {
-    "$date": "2025-07-05T04:00:31.452Z"
+    "$date": "2025-07-13T01:03:38.179Z"
+  },
+  "__v": 0,
+  "profilePicture": "/uploads/profile-pictures/f6bf8e498b525e9014125034592c477a",
+  "reservations": [
+    {
+      "$oid": "687305ea95dfb3eac9866024"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "6868a35f639f6a35f8980f69"
+  },
+  "email": "jane.smith@dlsu.edu.ph",
+  "password": "hashedPassword456",
+  "firstName": "Jane",
+  "lastName": "Smith",
+  "role": "Student",
+  "description": "Information Systems major",
+  "isDeleted": true,
+  "createdAt": "2025-07-05T04:01:00.000+00:00",
+  "updatedAt": {
+    "$date": "2025-07-11T13:26:40.641Z"
   },
   "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6868a35f639f6a35f8980f70"
+  },
+  "email": "mark.tan@dlsu.edu.ph",
+  "password": "hashedPassword789",
+  "firstName": "Mark",
+  "lastName": "Tan",
+  "role": "Student",
+  "description": "Software Engineering student",
+  "isDeleted": true,
+  "createdAt": "2025-07-05T04:01:30.000+00:00",
+  "updatedAt": {
+    "$date": "2025-07-11T13:28:22.394Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6868a35f639f6a35f8980f71"
+  },
+  "email": "alyssa.reyes@dlsu.edu.ph",
+  "password": "hashedPassword321",
+  "firstName": "Alyssa",
+  "lastName": "Reyes",
+  "role": "Student",
+  "description": "CCPADEV LOVER",
+  "isDeleted": false,
+  "createdAt": "2025-07-05T04:02:00.000+00:00",
+  "updatedAt": {
+    "$date": "2025-07-12T03:32:39.373Z"
+  },
+  "__v": 0,
+  "profilePicture": "/uploads/profile-pictures/2eaf60c0222542f1a6a794a1d968ff43"
+},
+{
+  "_id": {
+    "$oid": "6871d8e8fb16af23b325df80"
+  },
+  "email": "frank.ocean@dlsu.edu.ph",
+  "password": "p0tat0",
+  "firstName": "Frank",
+  "lastName": "Ocean",
+  "role": "Student",
+  "isDeleted": false,
+  "createdAt": {
+    "$date": "2025-07-12T03:39:20.963Z"
+  },
+  "updatedAt": {
+    "$date": "2025-07-12T03:43:53.433Z"
+  },
+  "__v": 0,
+  "description": "No bio yet."
 }]
