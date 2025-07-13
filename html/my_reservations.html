@@ -1,30 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Login - Lab Reservation System</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/login.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-  <meta charset="UTF-8">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>My Reservations</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/login.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+
   <style>
     body {
       margin: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f7f9fc;
-    }
-
-    #navbar {
-      margin-bottom: 30px;
+      background-color: #b0c4a8;
     }
 
     .container {
@@ -77,9 +70,7 @@
       color: black;
     }
 
-
-    .edit-btn
-    {
+    .edit-btn {
       background-color: #37aa46;
       color: white;
       border: none;
@@ -88,13 +79,11 @@
       cursor: pointer;
     }
 
-    .edit-btn:hover
-    {
+    .edit-btn:hover {
       background-color: #2f923c;
     }
 
-    .delete-btn
-    {
+    .delete-btn {
       background-color: #c53737;
       color: white;
       border: none;
@@ -103,8 +92,7 @@
       cursor: pointer;
     }
 
-    .delete-btn:hover
-    {
+    .delete-btn:hover {
       background-color: #a72e2e;
     }
 
@@ -156,73 +144,71 @@
   </style>
 </head>
 <body>
-  <div id="navbar-placeholder"></div>
   <div class="main-container">
-  <div id="navbar"></div>
-  <div class="container">
-    <h1>My Reservations</h1>
-    <table id="reservationsTable">
-      <thead>
-        <tr>
-          <th>Lab</th>
-          <th>Date</th>
-          <th>Time</th>
-          <th>Seat No.</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
+    <div class="container">
+      <h1>My Reservations</h1>
+      <table id="reservationsTable">
+        <thead>
+          <tr>
+            <th>Lab</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Seat No.</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
 
-  <!-- Edit Modal -->
-  <div id="editModal">
-    <h3>Edit Reservation</h3>
-    <label>Seat: <input type="text" id="editSeat"></label>
-    <label>Lab: <input type="text" id="editLab"></label>
-    <label>Date: <input type="date" id="editDate"></label>
-    <label>Start Time: <input type="time" id="editStart"></label>
-    <label>End Time: <input type="time" id="editEnd"></label>
-    <label>Status:
-      <select id="editStatus">
-        <option value="Confirmed">Confirmed</option>
-        <option value="Pending">Pending</option>
-      </select>
-    </label>
-    <div style="text-align:right; margin-top: 10px;">
-      <button class="btn button-normal" onclick="saveEdit()">Save</button>
-      <button class="btn button-normal"onclick="document.getElementById('editModal').style.display='none'">Cancel</button>
+    <!-- Edit Modal -->
+    <div id="editModal">
+      <h3>Edit Reservation</h3>
+      <label>Seat: <input type="text" id="editSeat"></label>
+      <label>Lab: <input type="text" id="editLab"></label>
+      <label>Date: <input type="date" id="editDate"></label>
+      <label>Start Time: <input type="time" id="editStart"></label>
+      <label>End Time: <input type="time" id="editEnd"></label>
+      <label>Status:
+        <select id="editStatus">
+          <option value="Confirmed">Confirmed</option>
+          <option value="Pending">Pending</option>
+        </select>
+      </label>
+      <div style="text-align:right; margin-top: 10px;">
+        <button class="btn button-normal" onclick="saveEdit()">Save</button>
+        <button class="btn button-normal" onclick="document.getElementById('editModal').style.display='none'">Cancel</button>
+      </div>
     </div>
   </div>
-</div>
-  <script src="components/loadComponents.js"></script>
+
   <script>
+    // For testing: always load a default user and reservations
+    localStorage.setItem("username", "student1");
+    localStorage.setItem("role", "student");
 
-
-    if (!localStorage.getItem("reservations")) {
-      const sampleReservations = [
-        {
-          username: "student1",
-          lab: "GK404",
-          seat: "Seat 12",
-          requestTime: "2023-11-14T09:00",
-          reservationTime: "2023-11-15T10:00",
-          timeRange: ["10:00", "12:00"],
-          status: "Confirmed"
-        },
-        {
-          username: "student1",
-          lab: "GK403",
-          seat: "Seat 5",
-          requestTime: "2023-11-14T13:00",
-          reservationTime: "2023-11-16T14:00",
-          timeRange: ["14:00", "16:00"],
-          status: "Pending"
-        }
-      ];
-      localStorage.setItem("reservations", JSON.stringify(sampleReservations));
-    }
+    const sampleReservations = [
+      {
+        username: "student1",
+        lab: "GK404",
+        seat: "Seat 12",
+        requestTime: "2023-11-14T09:00",
+        reservationTime: "2023-11-15T10:00",
+        timeRange: ["10:00", "12:00"],
+        status: "Confirmed"
+      },
+      {
+        username: "student1",
+        lab: "GK403",
+        seat: "Seat 5",
+        requestTime: "2023-11-14T13:00",
+        reservationTime: "2023-11-16T14:00",
+        timeRange: ["14:00", "16:00"],
+        status: "Pending"
+      }
+    ];
+    localStorage.setItem("reservations", JSON.stringify(sampleReservations));
 
     let reservations = JSON.parse(localStorage.getItem("reservations") || "[]");
     const user = localStorage.getItem("username");
