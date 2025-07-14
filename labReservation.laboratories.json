@@ -4,6 +4,7 @@
   },
   "name": "GK302A",
   "description": "Main Computer Laboratory with 35 workstations",
+  "image": "/img/gk3.jpg",
   "capacity": 35,
   "location": "Gokongwei Building 3rd Floor",
   "isActive": true
@@ -14,6 +15,7 @@
   },
   "name": "GK302B",
   "description": "Secondary Computer Laboratory with 35 workstations",
+  "image": "/img/gk3.jpg",
   "capacity": 35,
   "location": "Gokongwei Building 3rd Floor",
   "isActive": true
@@ -24,6 +26,7 @@
   },
   "name": "GK404",
   "description": "Advanced Computing Lab with specialized equipment",
+  "image": "/img/gk404.jpeg",
   "capacity": 35,
   "location": "Gokongwei Building 4th Floor",
   "isActive": true
@@ -34,6 +37,7 @@
   },
   "name": "GK403",
   "description": "Advanced Computing Lab with specialized equipment",
+  "image": "/img/gk403.jpg",
   "capacity": 35,
   "location": "Gokongwei Building 4th Floor",
   "isActive": true
@@ -44,6 +48,7 @@
   },
   "name": "GK405",
   "description": "Advanced Computing Lab with specialized equipment",
+  "image": "/img/gk405.jpg",
   "capacity": 35,
   "location": "Gokongwei Building 4th Floor",
   "isActive": true
