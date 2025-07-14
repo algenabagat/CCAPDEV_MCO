@@ -92,7 +92,7 @@ const seedDB = async () => {
       startTime: new Date(today.setHours(8, 30, 0, 0)),
       endTime: new Date(today.setHours(9, 0, 0, 0)),
       isAnonymous: false,
-      status: "Active",
+      status: "Reserved",
       createdAt: new Date()
     });
 
