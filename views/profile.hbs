@@ -98,6 +98,7 @@
         </div>
 
         <!-- Reservations Section -->
+        {{#unless (eq user.role 'Technician')}}
         <div class="card">
           <div class="card-header">
             <h5 class="mb-0">{{#if (eq currentUser.email user.email)}}My Reservations{{else}}Reservations{{/if}}</h5>
@@ -133,7 +134,7 @@
                     {{/each}}
                   {{else}}
                     <tr>
-                      <td colspan="{{#if (eq currentUser.email user.email)}}6{{else}}5{{/if}}" class="text-center text-muted">
+                      <td colspan="5" class="text-center text-muted">
                         No reservations found.
                       </td>
                     </tr>
@@ -143,6 +144,7 @@
             </div>
           </div>
         </div>
+        {{/unless}}
       </div>
     </div>
     {{/if}}
