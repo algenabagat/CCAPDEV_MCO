@@ -5,6 +5,7 @@ const Reservation = require('../models/Reservations');
 const multer = require('multer');
 const path = require('path');
 
+// Configure multer for file uploads
 const upload = multer({
   dest: 'public/uploads/profile-pictures',
   limits: { fileSize: 2 * 1024 * 1024 }, // 2MB limit
@@ -18,6 +19,7 @@ const upload = multer({
 }).single('profilePicture');
 
 
+// Display user profile page by email
 exports.displayProfilePage = async (req, res) => {
     try {
         const { email } = req.params;
@@ -92,6 +94,7 @@ exports.displayMyProfile = async (req, res) => {
     }
 };
 
+// Update user profile
 exports.updateProfile = async (req, res) => {
   try {
     const currentUser = await AuthController.getCurrentUser(req);
@@ -145,6 +148,7 @@ exports.updateProfile = async (req, res) => {
   }
 };
 
+// Search for users based on name, email, and role
 exports.searchUsers = async (req, res) => {
     try {
         const { name, email, role, error, success } = req.query;
@@ -222,21 +226,7 @@ exports.searchUsers = async (req, res) => {
     }
 };
 
-exports.deleteProfile = async (req, res) => {
-    const currentUser = await AuthController.getCurrentUser(req);
-    if (!currentUser) {
-        return res.status(401).json({ error: 'Unauthorized' });
-    }
-
-    currentUser.isDeleted = true;
-    currentUser.reservations = []; // Clear reservations
-    await currentUser.save();
-    
-    res.render('delete-profile', {
-        title: 'Delete Account - Lab Reservation System',
-        additionalCSS: ['/css/delete-profile.css'],
-    });
-};
+// Delete user account
 exports.deleteAccount = async (req, res) => {
     try {
         const currentUser = await AuthController.getCurrentUser(req);
