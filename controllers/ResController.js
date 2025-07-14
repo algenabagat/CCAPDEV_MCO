@@ -600,10 +600,12 @@ exports.showMyReservations = async (req, res) => {
       user: currentUser._id
     })
       .populate('laboratory', 'name')
-      .sort({ startTime: -1 });
+      .sort({ startTime: -1 })
+      .lean();
 
     // Format reservations for the template
     const formattedReservations = reservations.map(res => ({
+      _id: res._id,
       lab: res.laboratory && res.laboratory.name ? res.laboratory.name : '',
       date: res.startTime ? res.startTime.toISOString().split('T')[0] : '',
       time: res.startTime && res.endTime ? `${res.startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${res.endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : '',
@@ -621,5 +623,150 @@ exports.showMyReservations = async (req, res) => {
   } catch (err) {
     console.error('Error rendering my reservations:', err);
     res.redirect('/');
+  }
+};
+
+// Show edit reservation page for students
+exports.showEditReservation = async (req, res) => {
+  try {
+    const reservationId = req.params.id;
+    const reservation = await Reservation.findById(reservationId).populate('laboratory');
+    if (!reservation) {
+      return res.status(404).send(`<script>alert('Reservation not found'); window.history.back();</script>`);
+    }
+    // Only allow editing own reservation
+    if (!reservation.user.equals(req.user._id)) {
+      return res.status(403).send(`<script>alert('You can only edit your own reservations'); window.history.back();</script>`);
+    }
+    // Only allow editing if status is Reserved
+    if (reservation.status !== 'Reserved') {
+      return res.status(400).send(`<script>alert('Only Reserved reservations can be edited'); window.history.back();</script>`);
+    }
+    // Prepare data for form
+    const labs = await Laboratory.find({ isActive: true }).lean();
+    const timeOptions = [];
+    for (let h = 8; h <= 17; h++) {
+      for (let m of [0, 30]) {
+        const hour = h.toString().padStart(2, '0');
+        const minute = m.toString().padStart(2, '0');
+        timeOptions.push(`${hour}:${minute}`);
+      }
+    }
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+    const sevenDaysLater = new Date();
+    sevenDaysLater.setDate(today.getDate() + 6);
+    const sevenDaysLaterStr = sevenDaysLater.toISOString().split('T')[0];
+    // For seat grid, reuse logic from showCreateReservation
+    const seatData = {};
+    const selectedStartTime = reservation.startTime;
+    const selectedEndTime = reservation.endTime;
+    for (const lab of labs) {
+      const reservations = await Reservation.find({
+        laboratory: lab._id,
+        startTime: { $lt: selectedEndTime },
+        endTime: { $gt: selectedStartTime },
+        _id: { $ne: reservation._id } // Exclude this reservation
+      }).populate('user', 'firstName lastName email').lean();
+      const maxSeat = lab.capacity || 0;
+      const reservedSeatMap = new Map();
+      reservations.forEach(res => {
+        const fullName = `${res.user.firstName} ${res.user.lastName}`;
+        const email = res.user.email;
+        res.seats.forEach(seat => {
+          reservedSeatMap.set(seat.seatNumber, {
+            name: res.isAnonymous ? 'Anonymous' : fullName,
+            email: res.isAnonymous ? null : email,
+            anonymous: res.isAnonymous
+          });
+        });
+      });
+      seatData[lab.name] = [];
+      for (let i = 1; i <= maxSeat; i++) {
+        const user = reservedSeatMap.get(i);
+        seatData[lab.name].push({
+          occupied: !!user,
+          user: user || null
+        });
+      }
+    }
+    // Render create-reservation.hbs in edit mode
+    res.render('create-reservation', {
+      title: 'Edit Reservation',
+      currentUser: req.user,
+      labs,
+      currentLab: reservation.laboratory,
+      seatData: JSON.stringify(seatData),
+      today: todayStr,
+      sevenDaysLater: sevenDaysLaterStr,
+      timeOptions,
+      editMode: true,
+      reservationToEdit: {
+        _id: reservation._id,
+        lab: reservation.laboratory.name,
+        seatNumbers: reservation.seats.map(s => s.seatNumber),
+        date: reservation.startTime.toISOString().split('T')[0],
+        time: reservation.startTime.toTimeString().slice(0,5),
+        isAnonymous: reservation.isAnonymous
+      },
+      additionalCSS: ['/css/seats.css', '/css/slotregis.css'],
+      additionalJS: ['/js/createResStud.js']
+    });
+  } catch (err) {
+    console.error('Error showing edit reservation page:', err);
+    res.redirect('/reservations/my-reservations');
+  }
+};
+
+// Handle reservation update by ID
+exports.handleEditReservation = async (req, res) => {
+  try {
+    const reservationId = req.params.id;
+    const { labName, seatIndices, reservationDate, reservationTime, isAnonymous } = req.body;
+    const reservation = await Reservation.findById(reservationId);
+    if (!reservation) {
+      return res.status(404).json({ success: false, message: 'Reservation not found.' });
+    }
+    if (!reservation.user.equals(req.user._id)) {
+      return res.status(403).json({ success: false, message: 'You can only edit your own reservations.' });
+    }
+    if (reservation.status !== 'Reserved') {
+      return res.status(400).json({ success: false, message: 'Only Reserved reservations can be edited.' });
+    }
+    // Validate input
+    if (!labName || !Array.isArray(seatIndices) || seatIndices.length === 0 || !reservationDate || !reservationTime) {
+      return res.status(400).json({ success: false, message: 'Missing reservation data.' });
+    }
+    const lab = await Laboratory.findOne({ name: labName });
+    if (!lab) return res.status(404).json({ success: false, message: 'Lab not found.' });
+    const startTime = new Date(`${reservationDate}T${reservationTime}`);
+    const endTime = new Date(startTime.getTime() + 30 * 60 * 1000);
+    // Check for overlapping reservations for selected seats (excluding this reservation)
+    const overlappingReservations = await Reservation.find({
+      laboratory: lab._id,
+      startTime: { $lt: endTime },
+      endTime: { $gt: startTime },
+      'seats.seatNumber': { $in: seatIndices.map(i => i + 1) },
+      _id: { $ne: reservation._id }
+    });
+    if (overlappingReservations.length > 0) {
+      const reservedSeats = new Set();
+      overlappingReservations.forEach(res => {
+        res.seats.forEach(seat => reservedSeats.add(seat.seatNumber));
+      });
+      const conflictSeats = seatIndices.map(i => i + 1).filter(seatNum => reservedSeats.has(seatNum));
+      return res.status(409).json({ success: false, message: `Seat(s) ${conflictSeats.join(', ')} already reserved for this time slot.` });
+    }
+    // Update reservation fields
+    reservation.laboratory = lab._id;
+    reservation.seats = seatIndices.map(i => ({ seatNumber: i + 1 }));
+    reservation.startTime = startTime;
+    reservation.endTime = endTime;
+    reservation.isAnonymous = isAnonymous;
+    await reservation.save();
+    res.status(200).json({ success: true, message: 'Reservation updated successfully.' });
+  } catch (err) {
+    console.error('Error updating reservation:', err);
+    res.status(500).json({ success: false, message: 'Server error.' });
   }
 };

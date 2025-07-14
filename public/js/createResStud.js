@@ -86,25 +86,60 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // Helper to get query param
+  function getQueryParam(name) {
+    const url = new URL(window.location.href);
+    return url.searchParams.get(name);
+  }
+
+  // Pre-fill form if in edit mode
+  if (typeof editMode !== 'undefined' && editMode && typeof reservationToEdit !== 'undefined') {
+    // Set lab, date, time, seat, anonymous
+    // You may need to trigger UI updates for seat selection, lab selection, etc.
+    document.getElementById('reservationDate').value = reservationToEdit.date;
+    document.getElementById('reservationTime').value = reservationToEdit.time;
+    document.getElementById('anonymous-checkbox').checked = reservationToEdit.isAnonymous;
+    // TODO: Pre-select lab and seats in the UI if your seat grid supports it
+  }
+
   reserveButton.addEventListener('click', async () => {
     const labKey = labOrder[currentLab];
     const isAnonymous = anonymousCheckbox.checked;
-
     if (selectedSeats.size === 0) {
       alert('Please select at least one seat.');
       return;
     }
-
     const date = dateInput.value;
     const time = timeInput.value;
-
-    console.log(date, time);
-
     if (!date || !time) {
       alert('Please select date and time.');
       return;
     }
-
+    // Check if in edit mode
+    const reservationId = document.getElementById('reservationId') ? document.getElementById('reservationId').value : null;
+    if (reservationId) {
+      // Edit mode: send update to backend
+      const response = await fetch(`/reservations/edit/${reservationId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          labName: labKey,
+          seatIndices: Array.from(selectedSeats),
+          reservationDate: date,
+          reservationTime: time,
+          isAnonymous
+        })
+      });
+      const result = await response.json();
+      if (result.success) {
+        alert('Reservation updated successfully!');
+        window.location.href = '/reservations/my-reservations';
+      } else {
+        alert(`Update failed: ${result.message}`);
+      }
+      return;
+    }
+    // Create mode (existing logic)
     const response = await fetch('/reservations/create-reservation', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -116,7 +151,6 @@ document.addEventListener('DOMContentLoaded', () => {
         isAnonymous
       })
     });
-
     const result = await response.json();
     if (result.success) {
       alert('Reservation successful!');

@@ -57,15 +57,19 @@ router.post('/check-slots',
 //   ResController.viewMyReservations
 // );
 
-// router.get('/edit/:id',
-//   AuthController.requireAuth,
-//   ResController.showEditReservation
-// );
+// Edit reservation by ID (show form)
+router.get('/edit/:id',
+  AuthController.requireAuth,
+  ResController.checkStudentRole,
+  ResController.showEditReservation
+);
 
-// router.post('/edit/:id',
-//   AuthController.requireAuth,
-//   ResController.handleEditReservation
-// );
+// Edit reservation by ID (submit update)
+router.post('/edit/:id',
+  AuthController.requireAuth,
+  ResController.checkStudentRole,
+  ResController.handleEditReservation
+);
 
 // // Admin reservation management
 // router.post('/cancel/:id',
