@@ -20,5 +20,4 @@ router.post('/delete-account', UserController.deleteAccount); // Delete user acc
 // Route to search for users
 router.get('/search-users', UserController.searchUsers);
 
-
 module.exports = router;
