@@ -128,17 +128,15 @@ async function performSearch() {
                 
                 // Reserved by
                 const reservedCell = document.createElement('td');
-                if (timeSlot.reservedBy && timeSlot.status === 'Reserved') {
+                if (timeSlot.status === 'Reserved' && timeSlot.reservedBy) {
                     const userLink = document.createElement('a');
                     userLink.href = `/profile/${timeSlot.reservedBy.email}`;
                     userLink.innerHTML = `
-                        ${timeSlot.reservedBy.email}
+                        ${timeSlot.reservedBy.name}
                         ${timeSlot.reservedBy.profilePicture ? 
                             `<img src="${timeSlot.reservedBy.profilePicture}" class="rounded-circle ms-2" width="24" height="24">` : ''}
                     `;
                     reservedCell.appendChild(userLink);
-                } else if (timeSlot.blockedBy && timeSlot.status === 'Blocked') {
-                    reservedCell.textContent = `Blocked by technician`;
                 } else {
                     reservedCell.textContent = '-';
                 }
@@ -152,7 +150,7 @@ async function performSearch() {
                     reserveBtn.innerHTML = '<i class="bi bi-bookmark-plus"></i> Reserve';
                     reserveBtn.onclick = () => showReservationModal(data.labId, seat.seatNumber, data.date, timeSlot);
                     actionCell.appendChild(reserveBtn);
-                } else if (timeSlot.status === 'Reserved' && timeSlot.reservedBy._id.toString() === '{{currentUser._id}}') {
+                } else if (timeSlot.status === 'Reserved' && timeSlot.reservedBy && timeSlot.reservedBy._id === '{{currentUser._id}}') {
                     const cancelBtn = document.createElement('button');
                     cancelBtn.className = 'btn btn-sm btn-danger';
                     cancelBtn.innerHTML = '<i class="bi bi-x-circle"></i> Cancel';

@@ -274,18 +274,24 @@ exports.handleSearchSlots = async (req, res) => {
         const endDate = new Date(selectedDate);
         endDate.setHours(23, 59, 59, 999);
 
-        const slots = await Slot.find({
+        // Get all reservations for this lab on the selected date
+        const reservations = await Reservation.find({
             laboratory: labId,
-            date: { $gte: selectedDate, $lte: endDate }
-        })
-        .populate({
-            path: 'timeSlots.reservedBy',
-            select: 'name email profilePicture'
-        })
-        .populate({
-            path: 'timeSlots.blockedBy',
-            select: 'name'
-        });
+            startTime: { $gte: selectedDate, $lte: endDate }
+        }).populate('user', 'firstName lastName email profilePicture');
+
+        // Generate time slots from 8:00 to 18:00 in 30-minute intervals
+        const timeSlots = [];
+        for (let hour = 8; hour < 18; hour++) {
+            timeSlots.push({
+                startTime: `${hour.toString().padStart(2, '0')}:00`,
+                endTime: `${hour.toString().padStart(2, '0')}:30`
+            });
+            timeSlots.push({
+                startTime: `${hour.toString().padStart(2, '0')}:30`,
+                endTime: `${(hour + 1).toString().padStart(2, '0')}:00`
+            });
+        }
 
         const results = {
             labName: laboratory.name,
@@ -295,43 +301,47 @@ exports.handleSearchSlots = async (req, res) => {
             seats: []
         };
 
+        // Check availability for each seat and time slot
         for (let seatNum = 1; seatNum <= laboratory.capacity; seatNum++) {
             const seatData = {
                 seatNumber: seatNum,
                 timeSlots: []
             };
 
-            const seatSlots = slots.filter(s => s.seatNumber === seatNum);
-            
-            if (seatSlots.length > 0) {
-                seatSlots.forEach(slot => {
-                    slot.timeSlots.forEach(timeSlot => {
-                        seatData.timeSlots.push({
-                            id: timeSlot._id,
-                            startTime: timeSlot.startTime,
-                            endTime: timeSlot.endTime,
-                            status: timeSlot.status,
-                            reservedBy: timeSlot.reservedBy,
-                            blockedBy: timeSlot.blockedBy,
-                            reservationId: timeSlot.reservation
-                        });
-                    });
+            timeSlots.forEach(timeSlot => {
+                const slotStart = new Date(`${date}T${timeSlot.startTime}`);
+                const slotEnd = new Date(`${date}T${timeSlot.endTime}`);
+
+                // Check if this seat is reserved in any reservation during this time slot
+                const reservation = reservations.find(res => {
+                    return (
+                        res.seats.some(s => s.seatNumber === seatNum) &&
+                        res.startTime < slotEnd &&
+                        res.endTime > slotStart
+                    );
                 });
-            } else {
-                // Generate default slots if none exist
-                for (let hour = 8; hour < 18; hour++) {
+
+                if (reservation) {
                     seatData.timeSlots.push({
-                        startTime: `${hour}:00`,
-                        endTime: `${hour}:30`,
-                        status: 'Available'
+                        startTime: timeSlot.startTime,
+                        endTime: timeSlot.endTime,
+                        status: 'Reserved',
+                        reservedBy: {
+                            _id: reservation.user._id,
+                            name: `${reservation.user.firstName} ${reservation.user.lastName}`,
+                            email: reservation.user.email,
+                            profilePicture: reservation.user.profilePicture
+                        },
+                        reservationId: reservation._id
                     });
+                } else {
                     seatData.timeSlots.push({
-                        startTime: `${hour}:30`,
-                        endTime: `${hour+1}:00`,
+                        startTime: timeSlot.startTime,
+                        endTime: timeSlot.endTime,
                         status: 'Available'
                     });
                 }
-            }
+            });
 
             results.seats.push(seatData);
         }
