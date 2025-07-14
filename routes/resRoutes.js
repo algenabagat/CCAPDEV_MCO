@@ -74,4 +74,11 @@ router.post('/check-slots',
 //   ResController.cancelReservation
 // );
 
+// My Reservations page for logged-in user
+router.get('/my-reservations',
+  AuthController.requireAuth, 
+  ResController.checkStudentRole,
+  ResController.showMyReservations
+);
+
 module.exports = router;

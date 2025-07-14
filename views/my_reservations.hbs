@@ -1,0 +1,50 @@
+{{!-- Main Container --}}
+<div class="main-container">
+  <div class="content-container">
+    <div class="container">
+      <h1>My Reservations</h1>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Lab</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Seat No.</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#if reservations.length}}
+              {{#each reservations}}
+              <tr>
+                <td>{{this.lab}}</td>
+                <td>{{this.date}}</td>
+                <td>{{this.time}}</td>
+                <td>{{this.seat}}</td>
+                <td>
+                  {{#if (eq this.status 'Reserved')}}
+                    <span class="badge bg-success">Reserved</span>
+                  {{else if (eq this.status 'Cancelled')}}
+                    <span class="badge bg-danger">Cancelled</span>
+                  {{/if}}
+                </td>
+                <td>
+                  <a href="/reservations/create-reservation?edit={{this.id}}" class="btn btn-sm btn-primary">Edit</a>
+                </td>
+              </tr>
+              {{/each}}
+            {{else}}
+              <tr>
+                <td colspan="6" class="text-center text-muted">No reservations found.</td>
+              </tr>
+            {{/if}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<link rel="stylesheet" href="/css/my_reservations.css">

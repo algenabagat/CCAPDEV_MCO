@@ -23,13 +23,9 @@
             Reservation
           </a>
           <ul class="dropdown-menu">
-            {{#if (eq currentUser.role 'Student')}}
-              <li><a class="dropdown-item" href="/reservations/create-reservation">Make a Reservation</a></li>
-            {{/if}}
-            {{#if (eq currentUser.role 'Technician')}}
-              <li><a class="dropdown-item" href="/reservations/create-reservation-tech">Create Reservation</a></li>
-            {{/if}}
-            <li><a class="dropdown-item" href="/reservations">My Reservations</a></li>
+            <li><a class="dropdown-item" href="/reservations/create-reservation">Create Reservation</a></li>
+            <li><a class="dropdown-item" href="/reservations/create-reservation-tech">Walk-in Reservation</a></li>
+            <li><a class="dropdown-item" href="/reservations/my-reservations">My Reservations</a></li>
           </ul>
         </li>
         {{else}}

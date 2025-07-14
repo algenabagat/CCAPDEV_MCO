@@ -1,0 +1,204 @@
+body {
+  margin: 0;
+  background-color: #f7f9fc;
+}
+
+.main-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.content-container {
+  flex: 1;
+  padding: 20px;
+}
+
+.container {
+  max-width: 1000px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: white;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  border-radius: 16px;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 24px;
+  color: #222;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.table-responsive {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 0;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+th {
+  background: #111;
+  color: #fff;
+  padding: 16px 14px;
+  text-align: left;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+}
+
+tbody tr {
+  transition: background 0.2s;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #f4f6fa;
+}
+
+tbody tr:hover {
+  background-color: #e9f5ff;
+}
+
+td {
+  border: none;
+  padding: 14px 14px;
+  background-color: transparent;
+  font-size: 1rem;
+  vertical-align: middle;
+}
+
+.status-pill, .badge {
+  padding: 6px 16px;
+  border-radius: 20px;
+  color: #fff;
+  font-weight: 600;
+  display: inline-block;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+.badge.bg-success, .status-confirmed {
+  background: #28a745;
+}
+
+.badge.bg-danger, .status-pending {
+  background: #dc3545;
+}
+
+.action-btn, .btn {
+  padding: 7px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: none;
+  margin-right: 8px;
+  font-size: 0.97rem;
+  font-weight: 500;
+  transition: background 0.15s, color 0.15s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+.btn-primary, .edit-btn {
+  background: #007bff;
+  color: #fff;
+}
+
+.btn-primary:hover, .edit-btn:hover {
+  background: #0056b3;
+  color: #fff;
+}
+
+.btn-danger, .delete-btn {
+  background: #dc3545;
+  color: #fff;
+}
+
+.btn-danger:hover, .delete-btn:hover {
+  background: #b52a37;
+  color: #fff;
+}
+
+.modal-btn {
+  background-color: #004080;
+  color: white;
+}
+
+.modal-btn:hover {
+  background-color: #003060;
+}
+
+#editModal {
+  display: none;
+  position: fixed;
+  top: 15%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 350px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.2);
+  padding: 25px;
+  z-index: 1000;
+}
+
+#editModal h3 {
+  margin-top: 0;
+  color: #333;
+}
+
+#editModal label {
+  display: block;
+  margin-top: 15px;
+  font-weight: 500;
+}
+
+#editModal input,
+#editModal select {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+  gap: 10px;
+}
+
+.no-reservations {
+  text-align: center;
+  padding: 24px;
+  color: #6c757d;
+  font-style: italic;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 10px;
+  }
+  table {
+    font-size: 0.95rem;
+  }
+  th, td {
+    padding: 8px 6px;
+  }
+  .action-btn, .btn {
+    padding: 6px 10px;
+    font-size: 0.93rem;
+  }
+} 

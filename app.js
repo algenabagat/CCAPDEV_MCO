@@ -67,9 +67,7 @@ mongoose.connect('mongodb://localhost:27017/labReservation')
 const indexRoutes = require('./routes/indexRoutes');
 const userRoutes = require('./routes/userRoutes');
 const resRoutes = require('./routes/resRoutes');
-const reservationRoutes = require('./routes/reservations');
 
-app.use('/reservations', reservationRoutes);
 // Route handlers
 app.use('/', indexRoutes);
 app.use('/profile', userRoutes);

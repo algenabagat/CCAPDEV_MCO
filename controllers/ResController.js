@@ -6,10 +6,7 @@ const Reservation = require('../models/Reservations');
 exports.checkStudentRole = async (req, res, next) => {
     try {
         if (req.user.role !== 'Student') {
-            return res.status(403).render('error', {
-                title: 'Access Denied',
-                message: 'Only students can access this feature'
-            });
+            return res.status(200).send(`<script>alert('Only students can access this feature'); window.history.back();</script>`);
         }
         next();
     } catch (err) {
@@ -22,10 +19,7 @@ exports.checkStudentRole = async (req, res, next) => {
 exports.checkTechnicianRole = async (req, res, next) => {
     try {
         if (req.user.role !== 'Technician') {
-            return res.status(403).render('error', {
-                title: 'Access Denied',
-                message: 'Only lab technicians can access this feature'
-            });
+            return res.status(200).send(`<script>alert('Only lab technicians can access this feature'); window.history.back();</script>`);
         }
         next();
     } catch (err) {
@@ -588,5 +582,44 @@ res.json({ success: true, seatData });
   } catch (err) {
     console.error('Slot check error:', err);
     res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+// Show the current user's reservations in the my_reservations.hbs view
+exports.showMyReservations = async (req, res) => {
+  try {
+    const currentUser = await require('./AuthController').getCurrentUser(req);
+    if (!currentUser) {
+      return res.redirect('/login');
+    }
+    if (currentUser.role !== 'Student') {
+      return res.status(200).send(`<script>alert('Only students can access this feature'); window.history.back();</script>`);
+    }
+    // Fetch reservations for the current user
+    const reservations = await require('../models/Reservations').find({
+      user: currentUser._id
+    })
+      .populate('laboratory', 'name')
+      .sort({ startTime: -1 });
+
+    // Format reservations for the template
+    const formattedReservations = reservations.map(res => ({
+      lab: res.laboratory && res.laboratory.name ? res.laboratory.name : '',
+      date: res.startTime ? res.startTime.toISOString().split('T')[0] : '',
+      time: res.startTime && res.endTime ? `${res.startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${res.endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : '',
+      seat: res.seats && res.seats.length ? 'Seat ' + res.seats.map(s => s.seatNumber).join(', ') : '',
+      status: res.status
+    }));
+
+    res.render('my_reservations', {
+      title: 'My Reservations',
+      reservations: formattedReservations,
+      additionalCSS: ['/css/my_reservations.css'],
+      additionalJS: ['/js/my_reservations.js'],
+      currentUser: currentUser.toObject()
+    });
+  } catch (err) {
+    console.error('Error rendering my reservations:', err);
+    res.redirect('/');
   }
 };
