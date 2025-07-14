@@ -180,7 +180,7 @@ exports.handleCreateReservation = async (req, res) => {
       startTime,
       endTime,
       isAnonymous,
-      status: 'Pending'
+      status: 'Reserved'
     });
 
     res.status(201).json({ success: true, reservation });
@@ -313,7 +313,7 @@ exports.handleCreateReservationTech = async (req, res) => {
       startTime,
       endTime,
       isAnonymous,
-      status: 'Pending'
+      status: 'Reserved'
     });
 
     res.status(201).json({ success: true, reservation });

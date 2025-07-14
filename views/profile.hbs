@@ -113,16 +113,10 @@
                       <td>{{this.time}}</td>
                       <td>{{this.seat}}</td>
                       <td>
-                        {{#if (eq this.status 'Active')}}
-                          <span class="badge bg-success">{{this.status}}</span>
-                        {{else if (eq this.status 'Pending')}}
-                          <span class="badge bg-warning text-dark">{{this.status}}</span>
+                        {{#if (eq this.status 'Reserved')}}
+                          <span class="badge bg-success">Reserved</span>
                         {{else if (eq this.status 'Cancelled')}}
-                          <span class="badge bg-danger">{{this.status}}</span>
-                        {{else if (eq this.status 'Completed')}}
-                          <span class="badge bg-secondary">{{this.status}}</span>
-                        {{else}}
-                          <span class="badge bg-primary">{{this.status}}</span>
+                          <span class="badge bg-danger">Cancelled</span>
                         {{/if}}
                       </td>
                     </tr>

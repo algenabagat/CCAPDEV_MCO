@@ -7,7 +7,7 @@ const reservationSchema = new mongoose.Schema({
   startTime: { type: Date, required: true },
   endTime: { type: Date, required: true },
   isAnonymous: { type: Boolean, default: false },
-  status: { type: String, enum: ['Pending', 'Active', 'Completed', 'Cancelled'], default: 'Pending' },
+  status: { type: String, enum: ['Reserved', 'Cancelled'], default: 'Reserved' },
   createdAt: { type: Date, default: Date.now },
   cancelledAt: { type: Date },
   cancelledBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
