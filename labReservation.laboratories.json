@@ -1,22 +1,50 @@
 [{
   "_id": {
-    "$oid": "707f1f77bcf86cd799439011"
+    "$oid": "6871ef91a04b227a0623fb92"
   },
   "name": "GK302A",
-  "description": "Computer Lab 1",
-  "image": "/img/gk3.jpg",
+  "description": "Main Computer Laboratory with 35 workstations",
   "capacity": 35,
-  "location": "Gokongwei Hall 3rd Floor",
+  "location": "Gokongwei Building 3rd Floor",
   "isActive": true
 },
 {
   "_id": {
-    "$oid": "707f1f77bcf86cd799439012"
+    "$oid": "6871ef91a04b227a0623fb93"
   },
-  "name":"GK302B",
-  "description": "Computer Lab 2",
-  "image": "/img/gk3.jpg",
+  "name": "GK302B",
+  "description": "Secondary Computer Laboratory with 35 workstations",
   "capacity": 35,
-  "location": "Gokongwei Hall 3rd Floor",
+  "location": "Gokongwei Building 3rd Floor",
+  "isActive": true
+},
+{
+  "_id": {
+    "$oid": "6871ef91a04b227a0623fb94"
+  },
+  "name": "GK404",
+  "description": "Advanced Computing Lab with specialized equipment",
+  "capacity": 35,
+  "location": "Gokongwei Building 4th Floor",
+  "isActive": true
+},
+{
+  "_id": {
+    "$oid": "6871ef91a04b227a0623fb95"
+  },
+  "name": "GK403",
+  "description": "Advanced Computing Lab with specialized equipment",
+  "capacity": 35,
+  "location": "Gokongwei Building 4th Floor",
+  "isActive": true
+},
+{
+  "_id": {
+    "$oid": "6871ef91a04b227a0623fb96"
+  },
+  "name": "GK405",
+  "description": "Advanced Computing Lab with specialized equipment",
+  "capacity": 35,
+  "location": "Gokongwei Building 4th Floor",
   "isActive": true
 }]
