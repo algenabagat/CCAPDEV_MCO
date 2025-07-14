@@ -592,30 +592,40 @@ exports.showMyReservations = async (req, res) => {
     if (!currentUser) {
       return res.redirect('/login');
     }
-    if (currentUser.role !== 'Student') {
-      return res.status(200).send(`<script>alert('Only students can access this feature'); window.history.back();</script>`);
+    let reservations;
+    let isTechnician = false;
+    if (currentUser.role === 'Technician') {
+      // Technician: show all reservations, include user info
+      reservations = await require('../models/Reservations').find({})
+        .populate('laboratory', 'name')
+        .populate('user', 'firstName lastName email')
+        .sort({ startTime: -1 })
+        .lean();
+      isTechnician = true;
+    } else {
+      // Student: show only their own
+      reservations = await require('../models/Reservations').find({
+        user: currentUser._id
+      })
+        .populate('laboratory', 'name')
+        .sort({ startTime: -1 })
+        .lean();
     }
-    // Fetch reservations for the current user
-    const reservations = await require('../models/Reservations').find({
-      user: currentUser._id
-    })
-      .populate('laboratory', 'name')
-      .sort({ startTime: -1 })
-      .lean();
-
     // Format reservations for the template
     const formattedReservations = reservations.map(res => ({
       _id: res._id,
       lab: res.laboratory && res.laboratory.name ? res.laboratory.name : '',
       date: res.startTime ? res.startTime.toISOString().split('T')[0] : '',
-      time: res.startTime && res.endTime ? `${res.startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${res.endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : '',
+      time: res.startTime && res.endTime ? `${new Date(res.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${new Date(res.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : '',
       seat: res.seats && res.seats.length ? 'Seat ' + res.seats.map(s => s.seatNumber).join(', ') : '',
-      status: res.status
+      status: res.status,
+      user: res.user ? (res.user.firstName ? `${res.user.firstName} ${res.user.lastName}` : res.user.email) : undefined,
+      userEmail: res.user ? res.user.email : undefined
     }));
-
     res.render('my_reservations', {
-      title: 'My Reservations',
+      title: isTechnician ? 'All Reservations' : 'My Reservations',
       reservations: formattedReservations,
+      isTechnician,
       additionalCSS: ['/css/my_reservations.css'],
       additionalJS: ['/js/my_reservations.js'],
       currentUser: currentUser.toObject()
@@ -623,6 +633,25 @@ exports.showMyReservations = async (req, res) => {
   } catch (err) {
     console.error('Error rendering my reservations:', err);
     res.redirect('/');
+  }
+};
+
+// Technician: Delete reservation by ID
+exports.deleteReservation = async (req, res) => {
+  try {
+    const currentUser = await require('./AuthController').getCurrentUser(req);
+    if (!currentUser || currentUser.role !== 'Technician') {
+      return res.status(403).json({ success: false, message: 'Only technicians can delete reservations.' });
+    }
+    const reservationId = req.params.id;
+    const deleted = await require('../models/Reservations').findByIdAndDelete(reservationId);
+    if (!deleted) {
+      return res.status(404).json({ success: false, message: 'Reservation not found.' });
+    }
+    res.status(200).json({ success: true, message: 'Reservation deleted.' });
+  } catch (err) {
+    console.error('Error deleting reservation:', err);
+    res.status(500).json({ success: false, message: 'Server error.' });
   }
 };
 

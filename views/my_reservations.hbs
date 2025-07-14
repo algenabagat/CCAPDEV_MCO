@@ -12,6 +12,9 @@
               <th>Time</th>
               <th>Seat No.</th>
               <th>Status</th>
+              {{#if isTechnician}}
+                <th>User</th>
+              {{/if}}
               <th>Actions</th>
             </tr>
           </thead>
@@ -30,8 +33,12 @@
                     <span class="badge bg-danger">Cancelled</span>
                   {{/if}}
                 </td>
+                {{#if ../isTechnician}}
+                  <td>{{this.user}}</td>
+                {{/if}}
                 <td>
                   <a href="/reservations/edit/{{this._id}}" class="btn btn-sm btn-primary">Edit</a>
+                  <button class="btn btn-sm btn-danger" onclick="deleteReservation('{{this._id}}')">Delete</button>
                 </td>
               </tr>
               {{/each}}

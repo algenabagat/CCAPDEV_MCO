@@ -71,6 +71,13 @@ router.post('/edit/:id',
   ResController.handleEditReservation
 );
 
+// Technician: Delete reservation by ID
+router.delete('/delete/:id',
+  AuthController.requireAuth,
+  ResController.checkTechnicianRole,
+  ResController.deleteReservation
+);
+
 // // Admin reservation management
 // router.post('/cancel/:id',
 //   AuthController.requireAuth,
@@ -81,7 +88,6 @@ router.post('/edit/:id',
 // My Reservations page for logged-in user
 router.get('/my-reservations',
   AuthController.requireAuth, 
-  ResController.checkStudentRole,
   ResController.showMyReservations
 );
 

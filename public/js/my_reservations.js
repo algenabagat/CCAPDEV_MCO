@@ -55,23 +55,29 @@ function saveEdit() {
   renderTable();
 }
 
-// Delete reservation (placeholder, needs backend integration)
-function deleteReservation(index) {
-  // Implement AJAX call to delete reservation in backend
-  renderTable();
+// Technician delete reservation
+function deleteReservation(reservationId) {
+  if (!confirm('Are you sure you want to delete this reservation?')) return;
+  fetch(`/reservations/delete/${reservationId}`, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' }
+  })
+    .then(res => res.json())
+    .then(result => {
+      if (result.success) {
+        alert('Reservation deleted.');
+        window.location.reload();
+      } else {
+        alert('Delete failed: ' + result.message);
+      }
+    })
+    .catch(() => alert('Delete failed: server error'));
 }
 
 function closeModal() {
   document.getElementById("editModal").style.display = "none";
   currentEditIndex = null;
 }
-
-window.deleteReservation = function(index) {
-  if (confirm('Are you sure you want to delete this reservation?')) {
-    // Implement AJAX or redirect to a delete endpoint as needed
-    window.location.href = `/reservations/delete/${index}`;
-  }
-};
 
 document.addEventListener('DOMContentLoaded', function() {
   renderTable();
