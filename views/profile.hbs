@@ -105,7 +105,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  {{#if reservations}}
+                  {{#if reservations.length}}
                     {{#each reservations}}
                     <tr>
                       <td>{{this.lab}}</td>
@@ -113,21 +113,25 @@
                       <td>{{this.time}}</td>
                       <td>{{this.seat}}</td>
                       <td>
-                        {{#if (eq this.status 'Confirmed')}}
+                        {{#if (eq this.status 'Active')}}
                           <span class="badge bg-success">{{this.status}}</span>
                         {{else if (eq this.status 'Pending')}}
                           <span class="badge bg-warning text-dark">{{this.status}}</span>
                         {{else if (eq this.status 'Cancelled')}}
                           <span class="badge bg-danger">{{this.status}}</span>
-                        {{else}}
+                        {{else if (eq this.status 'Completed')}}
                           <span class="badge bg-secondary">{{this.status}}</span>
+                        {{else}}
+                          <span class="badge bg-primary">{{this.status}}</span>
                         {{/if}}
                       </td>
                     </tr>
                     {{/each}}
                   {{else}}
                     <tr>
-                      <td colspan="5" class="text-center text-muted">No reservations yet.</td>
+                      <td colspan="{{#if (eq currentUser.email user.email)}}6{{else}}5{{/if}}" class="text-center text-muted">
+                        No reservations found.
+                      </td>
                     </tr>
                   {{/if}}
                 </tbody>

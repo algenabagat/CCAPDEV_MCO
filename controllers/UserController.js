@@ -1,5 +1,6 @@
 const User = require('../models/Users');
 const AuthController = require('./AuthController');
+const Reservation = require('../models/Reservations');
 
 const multer = require('multer');
 const path = require('path');
@@ -19,7 +20,7 @@ const upload = multer({
 
 exports.displayProfilePage = async (req, res) => {
     try {
-        const { email } = req.params; // Get email from URL parameter
+        const { email } = req.params;
         
         // Find user by email
         const user = await User.findOne({ email: email, isDeleted: false });
@@ -31,32 +32,37 @@ exports.displayProfilePage = async (req, res) => {
             });
         }
 
-        // Mock reservations data for the specific user
-        const mockReservations = [
-            {
-                lab: 'GK404',
-                date: '2023-11-15',
-                time: '10:00 - 12:00',
-                seat: 'Seat 12',
-                status: 'Confirmed'
-            },
-            {
-                lab: 'GK403',
-                date: '2023-11-16',
-                time: '14:00 - 16:00',
-                seat: 'Seat 5',
-                status: 'Pending'
-            }
-        ];
+        // Get real reservations for the user (excluding anonymous ones)
+        const reservations = await Reservation.find({
+            user: user._id,
+            isAnonymous: false
+        })
+        .populate('laboratory', 'name')
+        .sort({ startTime: -1 }); // Sort by most recent first
+
+        // Format reservations for display
+        const formattedReservations = reservations.map(res => ({
+            id: res._id,
+            lab: res.laboratory.name,
+            date: res.startTime.toISOString().split('T')[0],
+            time: `${formatTime(res.startTime)} - ${formatTime(res.endTime)}`,
+            seat: `Seat ${res.seats.map(s => s.seatNumber).join(', ')}`,
+            status: res.status
+        }));
+
+        // Helper function to format time
+        function formatTime(date) {
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
 
         // Get current logged-in user for navbar
         const currentUser = await AuthController.getCurrentUser(req);
 
         res.render('profile', {
             title: `${user.firstName} ${user.lastName} - Profile`,
-            user: user.toObject(),  // The profile being viewed
-            currentUser: currentUser ? currentUser.toObject() : null, // For navbar
-            reservations: mockReservations,
+            user: user.toObject(),
+            currentUser: currentUser ? currentUser.toObject() : null,
+            reservations: formattedReservations,
             additionalCSS: ['/css/profile.css'],
             additionalJS: ['/js/profile.js']
         });
@@ -220,6 +226,7 @@ exports.deleteProfile = async (req, res) => {
     }
 
     currentUser.isDeleted = true;
+    currentUser.reservations = []; // Clear reservations
     await currentUser.save();
     
     res.render('delete-profile', {
@@ -234,20 +241,23 @@ exports.deleteAccount = async (req, res) => {
             return res.redirect('/login');
         }
 
-        // Soft delete - mark user as deleted instead of actually removing from database
+        // Delete all reservations associated with this user
+        await Reservation.deleteMany({ user: currentUser._id });
+
+        // Soft delete the user account
         currentUser.isDeleted = true;
-        currentUser.reservations = []; // Clear reservations
+        currentUser.reservations = []; // Clear reservations array
         await currentUser.save();
 
         // Clear the authentication cookie
         res.clearCookie('userId');
 
-        // Render the delete confirmation page 
+        // Render the delete confirmation page
         res.render('delete-profile', {
             title: 'Account Deleted - Lab Reservation System',
-            message: 'Your account has been successfully deleted.',
-            redirectUrl: '/',    // Where to redirect
-            delay: 2000,        // 2 second delay
+            message: 'Your account and all associated reservations have been successfully deleted.',
+            redirectUrl: '/',
+            delay: 2000,
             additionalCSS: ['/css/logout.css'],
         });
     } catch (error) {
