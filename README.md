@@ -28,11 +28,13 @@ This is a Node.js/Express application for managing laboratory reservations with 
    - Edit `compass-connections.json` or update your connection string in the code as needed.
    - Make sure MongoDB is running locally or update the connection to your cloud instance.
 
-4. **Seed the database (optional):**
-   - To populate the database with sample data, run:
-     ```bash
-     node init.js
-     ```
+4. **Seed the database:**
+   - To populate the database with the sample data provided, import each .JSON file through the
+   MongoDB Compass application:
+   - Step 1: Click on 'ADD DATA' and click 'Import JSON or CSV File'.
+   ![STEP1](/public/img/import-step-1.png)
+   - Step 2:
+   ![STEP2](/public/img/import-step-2.png)
 
 5. **Start the application:**
    ```bash
