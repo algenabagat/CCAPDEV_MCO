@@ -1,34 +1,173 @@
 [{
   "_id": {
-    "$oid": "687305ea95dfb3eac9866024"
+    "$oid": "6875056b90b4d9ad5690bc8f"
   },
   "user": {
-    "$oid": "6868a35f639f6a35f8980f68"
+    "$oid": "687333ce4bdbe6ca9d8a2711"
   },
   "laboratory": {
-    "$oid": "707f1f77bcf86cd799439011"
+    "$oid": "6871ef91a04b227a0623fb92"
   },
   "seats": [
     {
       "seatNumber": 1,
-      "timeSlot": {
-        "$oid": "687305ea95dfb3eac9865d39"
-      },
       "_id": {
-        "$oid": "687305ea95dfb3eac9866025"
+        "$oid": "6875056b90b4d9ad5690bc90"
+      }
+    },
+    {
+      "seatNumber": 2,
+      "_id": {
+        "$oid": "6875056b90b4d9ad5690bc91"
       }
     }
   ],
   "startTime": {
-    "$date": "2025-07-13T00:30:00.000Z"
+    "$date": "2025-07-14T01:00:00.000Z"
   },
   "endTime": {
-    "$date": "2025-07-13T01:00:00.000Z"
+    "$date": "2025-07-14T01:30:00.000Z"
   },
   "isAnonymous": false,
-  "status": "Active",
+  "status": "Reserved",
   "createdAt": {
-    "$date": "2025-07-13T01:03:38.169Z"
+    "$date": "2025-07-14T13:26:03.033Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "687505dd90b4d9ad5690bcd1"
+  },
+  "user": {
+    "$oid": "687335b8c0894c036fbea396"
+  },
+  "laboratory": {
+    "$oid": "6871ef91a04b227a0623fb94"
+  },
+  "seats": [
+    {
+      "seatNumber": 24,
+      "_id": {
+        "$oid": "687505dd90b4d9ad5690bcd2"
+      }
+    }
+  ],
+  "startTime": {
+    "$date": "2025-07-14T02:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-07-14T02:30:00.000Z"
+  },
+  "isAnonymous": false,
+  "status": "Reserved",
+  "createdAt": {
+    "$date": "2025-07-14T13:27:57.054Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "687505f090b4d9ad5690bcde"
+  },
+  "user": {
+    "$oid": "687335b8c0894c036fbea396"
+  },
+  "laboratory": {
+    "$oid": "6871ef91a04b227a0623fb92"
+  },
+  "seats": [
+    {
+      "seatNumber": 17,
+      "_id": {
+        "$oid": "687505f090b4d9ad5690bcdf"
+      }
+    },
+    {
+      "seatNumber": 29,
+      "_id": {
+        "$oid": "687505f090b4d9ad5690bce0"
+      }
+    },
+    {
+      "seatNumber": 35,
+      "_id": {
+        "$oid": "687505f090b4d9ad5690bce1"
+      }
+    }
+  ],
+  "startTime": {
+    "$date": "2025-07-14T00:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-07-14T00:30:00.000Z"
+  },
+  "isAnonymous": true,
+  "status": "Reserved",
+  "createdAt": {
+    "$date": "2025-07-14T13:28:16.455Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6875064390b4d9ad5690bd20"
+  },
+  "user": {
+    "$oid": "6874fad8581f07707b7d7869"
+  },
+  "laboratory": {
+    "$oid": "6871ef91a04b227a0623fb96"
+  },
+  "seats": [
+    {
+      "seatNumber": 19,
+      "_id": {
+        "$oid": "6875064390b4d9ad5690bd21"
+      }
+    }
+  ],
+  "startTime": {
+    "$date": "2025-07-14T04:30:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-07-14T05:00:00.000Z"
+  },
+  "isAnonymous": false,
+  "status": "Reserved",
+  "createdAt": {
+    "$date": "2025-07-14T13:29:39.574Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6875064a90b4d9ad5690bd2e"
+  },
+  "user": {
+    "$oid": "6874fad8581f07707b7d7869"
+  },
+  "laboratory": {
+    "$oid": "6871ef91a04b227a0623fb92"
+  },
+  "seats": [
+    {
+      "seatNumber": 5,
+      "_id": {
+        "$oid": "6875064a90b4d9ad5690bd2f"
+      }
+    }
+  ],
+  "startTime": {
+    "$date": "2025-07-14T00:00:00.000Z"
+  },
+  "endTime": {
+    "$date": "2025-07-14T00:30:00.000Z"
+  },
+  "isAnonymous": false,
+  "status": "Reserved",
+  "createdAt": {
+    "$date": "2025-07-14T13:29:46.894Z"
   },
   "__v": 0
 }]
