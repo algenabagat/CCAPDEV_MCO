@@ -79,7 +79,7 @@ exports.showCreateReservation = async (req, res) => {
         const reserved = reservedSeats.has(i);
         seatData[lab.name].push({
           occupied: reserved,
-          user: reserved ? { name: 'Reserved User', anonymous: true } : null
+          user: reserved ? { name: req.user.firstName + ' ' + req.user.lastName, anonymous: res.isAnonymous } : null
         });
       }
     }
@@ -116,7 +116,7 @@ exports.handleCreateReservation = async (req, res) => {
       reservationTime,
       isAnonymous
     });
-    
+
     // Validate input
     if (
       !labName ||
@@ -390,7 +390,7 @@ exports.showViewSlots = async (req, res) => {
         const isReserved = reservedSeats.has(i);
         seatData[lab.name].push({
           occupied: isReserved,
-          user: isReserved ? { name: 'Reserved User', anonymous: true } : null
+          user: isReserved ? { name: req.user.firstName + ' ' + req.user.lastName, anonymous: res.isAnonymous } : null
         });
       }
     }
