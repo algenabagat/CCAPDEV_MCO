@@ -20,4 +20,10 @@ router.post('/delete-account', UserController.deleteAccount); // Delete user acc
 // Route to search for users
 router.get('/search-users', UserController.searchUsers);
 
+// Route for technicians to delete any user
+router.post('/delete-user/:email', UserController.deleteUserByTechnician);
+
+// Route for technicians to update any user 
+router.post('/update-user/:email', UserController.updateUserByTechnician);
+
 module.exports = router;
