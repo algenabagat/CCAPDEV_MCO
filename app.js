@@ -15,6 +15,9 @@ app.engine('hbs', engine({
         and: function(a, b) {
             return a && b;
         },
+        or: function(a, b) {
+            return a || b;
+        },
         eq: function(a, b) {
             return a === b;
         },

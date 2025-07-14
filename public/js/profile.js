@@ -12,6 +12,18 @@ document.addEventListener('DOMContentLoaded', function() {
   const bioInput = document.getElementById('bio-edit');
   const profileImage = document.getElementById('profile-image');
 
+  // Technician Edit Elements
+  const techEditBtn = document.getElementById('tech-edit-profile-btn');
+  const techSaveBtn = document.getElementById('tech-save-profile-btn');
+  const techProfileForm = document.getElementById('tech-profile-form');
+  const techProfileUpload = document.getElementById('tech-profile-upload');
+  
+  // Technician Form Elements
+  const techNameInput = document.getElementById('tech-name-edit');
+  const techBioInput = document.getElementById('tech-bio-edit');
+  const techRoleSelect = document.getElementById('tech-role-edit');
+  const accountTypeDisplay = document.getElementById('account-type-display');
+
   // Toggle Edit Mode
   if (editBtn) {
     editBtn.addEventListener('click', () => toggleEditMode(true));
@@ -23,6 +35,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
   if (profileUpload) {
     profileUpload.addEventListener('change', handleImagePreview);
+  }
+
+  // Technician Edit Mode Toggle
+  if (techEditBtn) {
+    techEditBtn.addEventListener('click', () => toggleTechEditMode(true));
+  }
+
+  if (techProfileForm) {
+    techProfileForm.addEventListener('submit', handleTechProfileUpdate);
+  }
+
+  if (techProfileUpload) {
+    techProfileUpload.addEventListener('change', handleTechImagePreview);
   }
 
   function toggleEditMode(enable) {
@@ -87,6 +112,97 @@ document.addEventListener('DOMContentLoaded', function() {
       toggleEditMode(false);
     } catch (error) {
       showAlert(error.message || 'Failed to update profile', 'error');
+    }
+  }
+
+  // Technician Edit Mode Toggle
+  function toggleTechEditMode(enable) {
+    // Toggle visibility for technician editing
+    techEditBtn.classList.toggle('d-none', enable);
+    techSaveBtn.classList.toggle('d-none', !enable);
+    
+    // Toggle fields
+    if (techNameInput) techNameInput.classList.toggle('d-none', !enable);
+    bioDisplay.classList.toggle('d-none', enable);
+    if (techBioInput) techBioInput.classList.toggle('d-none', !enable);
+    if (techRoleSelect) {
+      techRoleSelect.classList.toggle('d-none', !enable);
+      accountTypeDisplay.classList.toggle('d-none', enable);
+    }
+    if (document.getElementById('tech-pfp-edit-btn')) {
+      document.getElementById('tech-pfp-edit-btn').classList.toggle('d-none', !enable);
+    }
+    
+    // Set initial values
+    if (enable) {
+      if (techNameInput) techNameInput.value = nameDisplay.textContent.trim();
+      if (techBioInput) techBioInput.value = bioDisplay.textContent.trim();
+    }
+  }
+
+  function handleTechImagePreview(event) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        profileImage.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  async function handleTechProfileUpdate(event) {
+    event.preventDefault();
+    
+    // Parse name input (firstName lastName)
+    const nameValue = techNameInput ? techNameInput.value.trim() : '';
+    const nameParts = nameValue.split(' ');
+    const firstName = nameParts[0] || '';
+    const lastName = nameParts.slice(1).join(' ') || '';
+    
+    // Populate hidden fields
+    document.getElementById('tech-firstName-hidden').value = firstName;
+    document.getElementById('tech-lastName-hidden').value = lastName;
+    document.getElementById('tech-description-hidden').value = techBioInput ? techBioInput.value.trim() : '';
+    if (techRoleSelect) document.getElementById('tech-role-hidden').value = techRoleSelect.value;
+    
+    const formData = new FormData(techProfileForm);
+    
+    // Add profile picture if selected
+    if (techProfileUpload && techProfileUpload.files[0]) {
+      formData.append('profilePicture', techProfileUpload.files[0]);
+    }
+
+    try {
+      const response = await fetch(techProfileForm.action, {
+        method: 'POST',
+        body: formData
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        // Update display with new values
+        nameDisplay.textContent = `${result.user.firstName} ${result.user.lastName}`;
+        bioDisplay.textContent = result.user.description || 'No bio yet.';
+        if (techRoleSelect && accountTypeDisplay) {
+          accountTypeDisplay.textContent = result.user.role;
+        }
+        
+        // Update profile picture if changed
+        if (result.user.profilePicture) {
+          profileImage.src = result.user.profilePicture;
+        }
+        
+        // Exit edit mode
+        toggleTechEditMode(false);
+
+      } else {
+        showAlert(result.error || 'Failed to update profile', 'danger');
+      }
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      showAlert('An error occurred while updating the profile', 'danger');
     }
   }
 

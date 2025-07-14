@@ -37,10 +37,38 @@
           </form>
         </div>
         {{else}}
-        <!-- Add back to search here that will redirect to search-users -->
-        <a href="/search-users" class="btn btn-secondary">
-          <i class="bi bi-arrow-left"></i> Back to Search
-        </a>
+        <div class="d-flex gap-2">
+          <!-- Technician edit/delete user functionality -->
+          {{#if (eq currentUser.role "Technician")}}
+            {{#unless (eq user.role "Technician")}}
+              <button id="tech-edit-profile-btn" class="btn btn-warning">
+                <i class="bi bi-pencil-fill"></i> Edit User
+              </button>
+              
+              <form id="tech-profile-form" method="POST" enctype="multipart/form-data" action="/update-user/{{user.email}}" class="d-inline">
+                <!-- Hidden fields for technician form -->
+                <input type="hidden" name="firstName" id="tech-firstName-hidden">
+                <input type="hidden" name="lastName" id="tech-lastName-hidden">
+                <input type="hidden" name="description" id="tech-description-hidden">
+                <input type="hidden" name="role" id="tech-role-hidden">
+                <button id="tech-save-profile-btn" type="submit" class="btn btn-primary d-none">
+                  <i class="bi bi-check"></i> Save Changes
+                </button>
+              </form>
+              
+              <form action="/delete-user/{{user.email}}" method="POST" onsubmit="return confirm('Are you sure you want to delete {{user.firstName}} {{user.lastName}}\'s account? This action cannot be undone and will delete all their reservations.');" class="d-inline">
+                <button type="submit" class="btn btn-danger">
+                  <i class="bi bi-trash"></i> Delete User
+                </button>
+              </form>
+            {{/unless}}
+          {{/if}}
+          
+          <!-- Back to search button -->
+          <a href="/search-users" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Search
+          </a>
+        </div>
         {{/if}}
       </div>
       <hr>
@@ -63,6 +91,13 @@
                 <i class="bi bi-pencil-fill"></i>
               </label>
               <input type="file" id="profile-upload" accept="image/*" class="d-none">
+              {{else if (eq currentUser.role "Technician")}}
+                {{#unless (eq user.role "Technician")}}
+                  <label for="tech-profile-upload" id="tech-pfp-edit-btn" class="profile-edit-btn d-none">
+                    <i class="bi bi-pencil-fill"></i>
+                  </label>
+                  <input type="file" id="tech-profile-upload" accept="image/*" class="d-none">
+                {{/unless}}
               {{/if}}
             </div>
             <div class="mb-3">
@@ -72,8 +107,21 @@
               {{#if (eq currentUser.email user.email)}}
               <input type="text" id="name-edit" class="form-control d-none" 
                      value="{{#if user.firstName}}{{user.firstName}} {{user.lastName}}{{else}}{{user.email}}{{/if}}">
+              {{else if (eq currentUser.role "Technician")}}
+                {{#unless (eq user.role "Technician")}}
+                  <input type="text" id="tech-name-edit" class="form-control d-none" 
+                         value="{{#if user.firstName}}{{user.firstName}} {{user.lastName}}{{else}}{{user.email}}{{/if}}">
+                {{/unless}}
               {{/if}}
               <p class="text-muted mb-1" id="account-type-display">{{user.role}}</p>
+              {{#if (eq currentUser.role "Technician")}}
+                {{#unless (eq user.role "Technician")}}
+                  <select id="tech-role-edit" class="form-select d-none">
+                    <option value="Student" {{#if (eq user.role "Student")}}selected{{/if}}>Student</option>
+                    <option value="Technician" {{#if (eq user.role "Technician")}}selected{{/if}}>Technician</option>
+                  </select>
+                {{/unless}}
+              {{/if}}
               <p class="text-muted"><i class="bi bi-envelope"></i> <span id="email-display">{{user.email}}</span></p>
             </div>
           </div>
@@ -93,6 +141,10 @@
             </p>
             {{#if (eq currentUser.email user.email)}}
             <textarea class="form-control d-none" id="bio-edit" rows="3">{{user.description}}</textarea>
+            {{else if (eq currentUser.role "Technician")}}
+              {{#unless (eq user.role "Technician")}}
+                <textarea class="form-control d-none" id="tech-bio-edit" rows="3">{{user.description}}</textarea>
+              {{/unless}}
             {{/if}}
           </div>
         </div>
