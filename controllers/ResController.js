@@ -655,7 +655,7 @@ exports.deleteReservation = async (req, res) => {
   }
 };
 
-// Show edit reservation page for students
+// Show edit reservation page for students or technicians
 exports.showEditReservation = async (req, res) => {
   try {
     const reservationId = req.params.id;
@@ -668,8 +668,8 @@ exports.showEditReservation = async (req, res) => {
     // convert reservation to object
     const plainReservation = reservation.toObject();
 
-    // Only allow editing own reservation
-    if (!reservation.user.equals(req.user._id)) {
+    // Allow editing if technician or reservation owner
+    if (!(req.user.role === 'Technician' || reservation.user.equals(req.user._id))) {
       return res.status(403).send(`<script>alert('You can only edit your own reservations'); window.history.back();</script>`);
     }
     // Only allow editing if status is Reserved
@@ -761,7 +761,8 @@ exports.handleEditReservation = async (req, res) => {
     if (!reservation) {
       return res.status(404).json({ success: false, message: 'Reservation not found.' });
     }
-    if (!reservation.user.equals(req.user._id)) {
+    // Allow editing if technician or reservation owner
+    if (!(req.user.role === 'Technician' || reservation.user.equals(req.user._id))) {
       return res.status(403).json({ success: false, message: 'You can only edit your own reservations.' });
     }
     if (reservation.status !== 'Reserved') {

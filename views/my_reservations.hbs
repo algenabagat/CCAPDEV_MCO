@@ -38,7 +38,9 @@
                 {{/if}}
                 <td>
                   <a href="/reservations/edit/{{this._id}}" class="btn btn-sm btn-primary">Edit</a>
-                  <button class="btn btn-sm btn-danger" onclick="deleteReservation('{{this._id}}')">Delete</button>
+                  {{#if ../isTechnician}}
+                  <button type="button" class="btn btn-sm btn-danger" onclick="deleteReservation('{{this._id}}')">Delete</button>
+                  {{/if}}
                 </td>
               </tr>
               {{/each}}

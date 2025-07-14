@@ -19,8 +19,8 @@ router.get('/view-slots', AuthController.requireAuth, ResController.showViewSlot
 router.post('/check-slots', ResController.checkAvailableSlots);
 
 // Edit reservation routes
-router.get('/edit/:id', AuthController.requireAuth, ResController.checkStudentRole, ResController.showEditReservation);
-router.post('/edit/:id', AuthController.requireAuth, ResController.checkStudentRole, ResController.handleEditReservation);
+router.get('/edit/:id', AuthController.requireAuth, ResController.showEditReservation);
+router.post('/edit/:id', AuthController.requireAuth, ResController.handleEditReservation);
 
 // Delete reservation route
 router.delete('/delete/:id', AuthController.requireAuth, ResController.checkTechnicianRole, ResController.deleteReservation);
