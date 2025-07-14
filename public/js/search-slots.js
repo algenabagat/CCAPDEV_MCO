@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const resultsHeader = document.getElementById('results-header');
     const lastUpdatedEl = document.getElementById('last-updated');
     const resultsBody = document.getElementById('results-body');
-    const reservationModal = new bootstrap.Modal(document.getElementById('reservationModal'));
     let autoRefreshInterval;
     let currentLabId = null;
     let currentDate = null;
@@ -119,79 +118,49 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        data.seats.forEach(seat => {
-            seat.timeSlots.forEach(timeSlot => {
-                const row = document.createElement('tr');
-                
-                // Seat number
-                const seatCell = document.createElement('td');
-                seatCell.textContent = seat.seatNumber;
-                row.appendChild(seatCell);
-                
-                // Time slot
-                const timeCell = document.createElement('td');
-                timeCell.textContent = `${timeSlot.startTime} - ${timeSlot.endTime}`;
-                row.appendChild(timeCell);
-                
-                // Status
-                const statusCell = document.createElement('td');
-                const statusBadge = document.createElement('span');
-                statusBadge.className = `badge bg-${getStatusColor(timeSlot.status)}`;
-                statusBadge.textContent = timeSlot.status;
-                statusCell.appendChild(statusBadge);
-                row.appendChild(statusCell);
-                
-                // Reserved by
-                const reservedCell = document.createElement('td');
-                if (timeSlot.status === 'Reserved' && timeSlot.reservedBy) {
-                    const userLink = document.createElement('a');
-                    userLink.href = `/profile/${timeSlot.reservedBy.email}`;
-                    userLink.innerHTML = `
-                        ${timeSlot.reservedBy.name}
-                        ${timeSlot.reservedBy.profilePicture ? 
-                            `<img src="${timeSlot.reservedBy.profilePicture}" class="rounded-circle ms-2" width="24" height="24">` : ''}
-                    `;
-                    reservedCell.appendChild(userLink);
-                } else {
-                    reservedCell.textContent = '-';
-                }
-                row.appendChild(reservedCell);
-                
-                // Action
-                const actionCell = document.createElement('td');
-                if (timeSlot.status === 'Available') {
-                    const reserveBtn = document.createElement('button');
-                    reserveBtn.className = 'btn btn-sm btn-success me-2';
-                    reserveBtn.innerHTML = '<i class="bi bi-bookmark-plus"></i> Reserve';
-                    reserveBtn.onclick = () => showReservationModal(data.labId, seat.seatNumber, data.date, timeSlot);
-                    actionCell.appendChild(reserveBtn);
-                } else if (timeSlot.status === 'Reserved' && timeSlot.reservedBy && timeSlot.reservedBy._id === '{{currentUser._id}}') {
-                    const cancelBtn = document.createElement('button');
-                    cancelBtn.className = 'btn btn-sm btn-danger';
-                    cancelBtn.innerHTML = '<i class="bi bi-x-circle"></i> Cancel';
-                    cancelBtn.onclick = () => cancelReservation(timeSlot.reservationId);
-                    actionCell.appendChild(cancelBtn);
-                } else {
-                    actionCell.textContent = '-';
-                }
-                row.appendChild(actionCell);
-                
-                resultsBody.appendChild(row);
-            });
+    data.seats.forEach(seat => {
+        seat.timeSlots.forEach(timeSlot => {
+            const row = document.createElement('tr');
+            
+            // Seat number
+            const seatCell = document.createElement('td');
+            seatCell.textContent = seat.seatNumber;
+            row.appendChild(seatCell);
+            
+            // Time slot
+            const timeCell = document.createElement('td');
+            timeCell.textContent = `${timeSlot.startTime} - ${timeSlot.endTime}`;
+            row.appendChild(timeCell);
+            
+            // Status
+            const statusCell = document.createElement('td');
+            const statusBadge = document.createElement('span');
+            statusBadge.className = `badge bg-${getStatusColor(timeSlot.status)}`;
+            statusBadge.textContent = timeSlot.status;
+            statusCell.appendChild(statusBadge);
+            row.appendChild(statusCell);
+            
+            // Reserved by
+            const reservedCell = document.createElement('td');
+            if (timeSlot.status === 'Reserved' && timeSlot.reservedBy) {
+                const userLink = document.createElement('a');
+                userLink.href = `/profile/${timeSlot.reservedBy.email}`;
+                userLink.innerHTML = `
+                    ${timeSlot.reservedBy.name}
+                    ${timeSlot.reservedBy.profilePicture ? 
+                        `<img src="${timeSlot.reservedBy.profilePicture}" class="rounded-circle ms-2" width="24" height="24" style="border: 1px solid black;">` : ''}
+                `;
+                reservedCell.appendChild(userLink);
+            } else {
+                reservedCell.textContent = '-';
+            }
+            row.appendChild(reservedCell);
+                        
+            resultsBody.appendChild(row);
         });
-        
-        resultsSection.style.display = 'block';
-    }
-
-    // Show reservation modal
-    function showReservationModal(labId, seatNumber, date, timeSlot) {
-        document.getElementById('reservation-lab-id').value = labId;
-        document.getElementById('reservation-seat-number').value = seatNumber;
-        document.getElementById('reservation-date').value = date;
-        document.getElementById('reservation-start-time').value = timeSlot.startTime;
-        document.getElementById('reservation-end-time').value = timeSlot.endTime;
-        
-        reservationModal.show();
+    });
+    
+    resultsSection.style.display = 'block';
     }
 
     // Setup auto-refresh every 30 seconds

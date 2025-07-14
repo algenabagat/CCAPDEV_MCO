@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema({
   firstName: { type: String },
   lastName: { type: String },
   role: { type: String, enum: ['Student', 'Technician'], required: true },
-  profilePicture: { type: String }, // image URL or file path
+  profilePicture: { type: String, default: "/img/pfp.png" }, // image URL or file path
   description: { type: String },
   rememberUntil: { type: Date },
   isDeleted: { type: Boolean, default: false },

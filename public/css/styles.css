@@ -57,7 +57,7 @@ body {
   background-position: center;
   background-repeat: no-repeat;
   height: 500px;
-  opacity: 0.85; /* Adjust transparency here (0 = fully transparent, 1 = fully opaque) */
+  opacity: 0.85; 
   color: white;
 }
 
