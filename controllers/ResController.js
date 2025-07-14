@@ -659,10 +659,15 @@ exports.deleteReservation = async (req, res) => {
 exports.showEditReservation = async (req, res) => {
   try {
     const reservationId = req.params.id;
-    const reservation = await Reservation.findById(reservationId).populate('laboratory');
+    const reservation = await Reservation.findById(reservationId).populate('laboratory', 'name image').populate('user', '_id');
+
     if (!reservation) {
       return res.status(404).send(`<script>alert('Reservation not found'); window.history.back();</script>`);
     }
+
+    // convert reservation to object
+    const plainReservation = reservation.toObject();
+
     // Only allow editing own reservation
     if (!reservation.user.equals(req.user._id)) {
       return res.status(403).send(`<script>alert('You can only edit your own reservations'); window.history.back();</script>`);
@@ -724,19 +729,19 @@ exports.showEditReservation = async (req, res) => {
       title: 'Edit Reservation',
       currentUser: req.user,
       labs,
-      currentLab: reservation.laboratory,
+      currentLab: plainReservation.laboratory,
       seatData: JSON.stringify(seatData),
       today: todayStr,
       sevenDaysLater: sevenDaysLaterStr,
       timeOptions,
       editMode: true,
       reservationToEdit: {
-        _id: reservation._id,
-        lab: reservation.laboratory.name,
-        seatNumbers: reservation.seats.map(s => s.seatNumber),
-        date: reservation.startTime.toISOString().split('T')[0],
-        time: reservation.startTime.toTimeString().slice(0,5),
-        isAnonymous: reservation.isAnonymous
+        _id: plainReservation._id,
+        lab: plainReservation.laboratory.name,
+        seatNumbers: plainReservation.seats.map(s => s.seatNumber),
+        date: plainReservation.startTime.toISOString().split('T')[0],
+        time: plainReservation.startTime.toTimeString().slice(0,5),
+        isAnonymous: plainReservation.isAnonymous
       },
       additionalCSS: ['/css/seats.css', '/css/slotregis.css'],
       additionalJS: ['/js/createResStud.js']
