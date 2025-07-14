@@ -130,9 +130,9 @@ async function performSearch() {
                 const reservedCell = document.createElement('td');
                 if (timeSlot.reservedBy && timeSlot.status === 'Reserved') {
                     const userLink = document.createElement('a');
-                    userLink.href = `/profile/${timeSlot.reservedBy._id}`;
+                    userLink.href = `/profile/${timeSlot.reservedBy.email}`;
                     userLink.innerHTML = `
-                        ${timeSlot.reservedBy.name}
+                        ${timeSlot.reservedBy.email}
                         ${timeSlot.reservedBy.profilePicture ? 
                             `<img src="${timeSlot.reservedBy.profilePicture}" class="rounded-circle ms-2" width="24" height="24">` : ''}
                     `;

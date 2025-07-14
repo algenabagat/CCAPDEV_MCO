@@ -4,7 +4,7 @@ const router = express.Router();
 // Controller for handling index routes
 const AuthController = require('../controllers/AuthController');
 const UserController = require('../controllers/UserController');
-const ResController = require('../controllers/ResController');
+//const ResController = require('../controllers/ResController');
 
 router.get('/', AuthController.isLoggedIn);
 router.get('/login', AuthController.displayLoginPage);
