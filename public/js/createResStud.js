@@ -14,56 +14,74 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Function to render seats based on the current lab
   function renderSeats(labIndex, overrideSeats = null) {
-    const labKey = labOrder[labIndex];
-    const seats = overrideSeats || seatData[labKey] || [];
+  const labKey = labOrder[labIndex];
+  const seats = overrideSeats || seatData[labKey] || [];
 
-    // Update room name and clear previous seats
-    roomName.textContent = `Room: ${labKey}`;
-    seatLayout.innerHTML = '';
-    selectedSeats.clear();
+  roomName.textContent = `Room: ${labKey}`;
+  seatLayout.innerHTML = '';
+  selectedSeats.clear();
 
-    // Create seat elements
-    seats.forEach((s, i) => {
-      const div = document.createElement('div');
-      div.className = `seat ${s.occupied ? 'occupied' : 'available'}`;
-      div.textContent = `Seat ${i + 1}`;
+  seats.forEach((s, i) => {
+    const div = document.createElement('div');
+    div.className = 'seat';
+    div.textContent = `Seat ${i + 1}`;
 
-      // Update lab image
-      if (window.labs && window.labs.length) {
-        const labObj = window.labs.find(l => l.name === labKey);
-        if (labObj && labObj.image) {
-          labImage.src = labObj.image;
-        }
+    // Update lab image
+    if (window.labs && window.labs.length) {
+      const labObj = window.labs.find(l => l.name === labKey);
+      if (labObj && labObj.image) {
+        labImage.src = labObj.image;
       }
-  
-      // If seat is occupied, show user info
-      if (s.occupied && s.user) {
+    }
+
+    const isUserSeat = typeof editMode !== 'undefined' &&
+      editMode &&
+      reservationToEdit &&
+      reservationToEdit.lab === labKey &&
+      reservationToEdit.seatNumbers.includes(i + 1);
+
+    if (s.occupied) {
+      // Seat is reserved by someone else or the user
+      div.classList.add('occupied');
+      if (s.user) {
         const userDisplay = document.createElement('div');
         userDisplay.style.fontSize = '0.75rem';
-        // Display user info or anonymous
-        userDisplay.innerHTML = s.user.anonymous ? 'Anonymous' : `<a href="/profile/${encodeURIComponent(s.user.email)}">${s.user.name}</a>`;        
+        userDisplay.innerHTML = s.user.anonymous
+          ? 'Anonymous'
+          : `<a href="/profile/${encodeURIComponent(s.user.email)}">${s.user.name}</a>`;
         div.appendChild(userDisplay);
-      } else if (!s.occupied) {
-        // If seat is available, add click event to select/deselect
-        div.addEventListener('click', () => {
-          // Toggle seat selection
-          if (selectedSeats.has(i)) {
-            selectedSeats.delete(i);
-            div.classList.remove('selected');
-            console.log(`Seat ${i + 1} deselected`);
-          } 
-          // If not selected, add to selection
-          else {
-            selectedSeats.add(i);
-            div.classList.add('selected');
-            console.log(`Seat ${i + 1} selected`);
-          }
-        });
       }
 
-      seatLayout.appendChild(div);
-    });
-  }
+      // If this is the user's reserved seat in edit mode, preselect it
+      if (isUserSeat) {
+        div.classList.add('selected');
+        selectedSeats.add(i);
+      }
+    } else {
+      // Seat is available
+      div.classList.add('available');
+
+      // Preselect if it's the user's seat
+      if (isUserSeat) {
+        div.classList.add('selected');
+        selectedSeats.add(i);
+      }
+
+      div.addEventListener('click', () => {
+        if (selectedSeats.has(i)) {
+          selectedSeats.delete(i);
+          div.classList.remove('selected');
+        } else {
+          selectedSeats.add(i);
+          div.classList.add('selected');
+        }
+      });
+    }
+
+    seatLayout.appendChild(div);
+  });
+}
+
 
   // Function to update seat availability based on selected date and time
   async function updateSeatAvailability() {
