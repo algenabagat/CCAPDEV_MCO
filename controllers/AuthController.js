@@ -1,4 +1,5 @@
 const User = require('../models/Users');
+const Laboratory = require('../models/Laboratories');
 
 exports.getCurrentUser = async (req) => {
     try {
@@ -16,7 +17,6 @@ exports.getCurrentUser = async (req) => {
     }
 };
 
-// Then modify your existing routes to use it
 exports.displayLoginPage = (req, res) => {
     res.render('login', {
         title: 'Login - Lab Reservation System',
@@ -154,6 +154,7 @@ exports.isLoggedIn = async (req, res) => {
         const userId = req.cookies.userId;
         let user = null;
         
+        
         if (userId) {
             user = await User.findById(userId);
             if (user && user.isDeleted) {
@@ -161,10 +162,13 @@ exports.isLoggedIn = async (req, res) => {
                 user = null;
             }
         }
-        
+
+        const laboratories = await Laboratory.find({ isActive: true }).lean();
+
         res.render('index', { 
             user: user,
             currentUser: user, // Add currentUser for navbar
+            laboratories: laboratories,
             additionalCSS: ['/css/index.css']
         });
     } catch (err) {

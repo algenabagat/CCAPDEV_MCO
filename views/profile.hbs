@@ -11,8 +11,13 @@
       </div>
     {{else}}
     <div class="profile-header mb-4">
+      {{#if (eq currentUser.email user.email)}}
       <div class="d-flex justify-content-between align-items-center">
         <h1 class="display-5 col-8">Hi {{#if user.firstName}}{{user.firstName}}{{else}}{{user.email}}{{/if}}!</h1>
+        {{else}}
+      <div class="d-flex justify-content-between align-items-center">
+        <h1 class="display-5 col-8">{{#if user.firstName}}{{user.firstName}} {{user.lastName}}{{else}}{{user.email}}{{/if}}</h1>
+        {{/if}}
         {{#if (eq currentUser.email user.email)}}
         <div class="d-flex gap-2">
           <form action="/delete-account" method="POST" onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.');">
@@ -31,6 +36,11 @@
             </button>
           </form>
         </div>
+        {{else}}
+        <!-- Add back to search here that will redirect to search-users -->
+        <a href="/search-users" class="btn btn-secondary">
+          <i class="bi bi-arrow-left"></i> Back to Search
+        </a>
         {{/if}}
       </div>
       <hr>
