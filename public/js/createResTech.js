@@ -23,6 +23,14 @@ document.addEventListener('DOMContentLoaded', () => {
     seatLayout.innerHTML = '';
     selectedSeats.clear();
 
+    // Update lab image
+    if (window.labs && window.labs.length) {
+      const labObj = window.labs.find(l => l.name === labKey);
+      if (labObj && labObj.image) {
+        labImage.src = labObj.image;
+      }
+    }
+
     // Create seat elements
     seats.forEach((s, i) => {
       const div = document.createElement('div');

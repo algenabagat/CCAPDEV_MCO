@@ -28,6 +28,14 @@ document.addEventListener('DOMContentLoaded', () => {
       div.className = `seat ${s.occupied ? 'occupied' : 'available'}`;
       div.textContent = `Seat ${i + 1}`;
 
+      // Update lab image
+      if (window.labs && window.labs.length) {
+        const labObj = window.labs.find(l => l.name === labKey);
+        if (labObj && labObj.image) {
+          labImage.src = labObj.image;
+        }
+      }
+  
       // If seat is occupied, show user info
       if (s.occupied && s.user) {
         const userDisplay = document.createElement('div');
