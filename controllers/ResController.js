@@ -1,7 +1,6 @@
 const User = require('../models/Users');
 const Laboratory = require('../models/Laboratories');
 const Reservation = require('../models/Reservations');
-const Reservations = require('../models/Reservations');
 
 // Middleware to check if user is a student
 exports.checkStudentRole = async (req, res, next) => {
@@ -280,14 +279,14 @@ exports.handleSearchSlots = async (req, res) => {
             startTime: { $gte: selectedDate, $lte: endDate }
         }).populate('user', 'firstName lastName email profilePicture');
 
-        // Generate time slots from 8:00 to 18:00 in 30-minute intervals
-        const timeSlots = [];
+        // Generate all possible time slots
+        const allTimeSlots = [];
         for (let hour = 8; hour < 18; hour++) {
-            timeSlots.push({
+            allTimeSlots.push({
                 startTime: `${hour.toString().padStart(2, '0')}:00`,
                 endTime: `${hour.toString().padStart(2, '0')}:30`
             });
-            timeSlots.push({
+            allTimeSlots.push({
                 startTime: `${hour.toString().padStart(2, '0')}:30`,
                 endTime: `${(hour + 1).toString().padStart(2, '0')}:00`
             });
@@ -301,14 +300,14 @@ exports.handleSearchSlots = async (req, res) => {
             seats: []
         };
 
-        // Check availability for each seat and time slot
+        // Check availability for each seat and all time slots
         for (let seatNum = 1; seatNum <= laboratory.capacity; seatNum++) {
             const seatData = {
                 seatNumber: seatNum,
                 timeSlots: []
             };
 
-            timeSlots.forEach(timeSlot => {
+            allTimeSlots.forEach(timeSlot => {
                 const slotStart = new Date(`${date}T${timeSlot.startTime}`);
                 const slotEnd = new Date(`${date}T${timeSlot.endTime}`);
 

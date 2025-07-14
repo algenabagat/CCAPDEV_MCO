@@ -47,51 +47,66 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Main search function
-async function performSearch() {
-    const submitBtn = searchForm.querySelector('button[type="submit"]');
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Searching...';
-    
-    try {
-        const formData = new FormData(searchForm);
-        currentLabId = formData.get('labId');
-        currentDate = formData.get('date');
+    async function performSearch() {
+        const submitBtn = searchForm.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Searching...';
         
-        const response = await fetch('/reservations/search-slots', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json' // Explicitly request JSON
-            },
-            body: JSON.stringify({
-                labId: currentLabId,
-                date: currentDate
-            })
-        });
+        try {
+            const formData = new FormData(searchForm);
+            currentLabId = formData.get('labId');
+            currentDate = formData.get('date');
+            const selectedTimeSlot = formData.get('timeSlot');
+            
+            const response = await fetch('/reservations/search-slots', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    labId: currentLabId,
+                    date: currentDate
+                })
+            });
 
-        // Check if response is OK before parsing JSON
-        if (!response.ok) {
-            const errorData = await response.text();
-            throw new Error(`Server responded with ${response.status}: ${errorData}`);
+            if (!response.ok) {
+                const errorData = await response.text();
+                throw new Error(`Server responded with ${response.status}: ${errorData}`);
+            }
+            
+            const data = await response.json();
+            
+            if (data.error) {
+                showAlert('danger', data.error);
+                return;
+            }
+            
+            // Filter results if a specific time slot is selected
+            if (selectedTimeSlot) {
+                const [startTime, endTime] = selectedTimeSlot.split('-');
+                data.seats = data.seats.map(seat => {
+                    return {
+                        ...seat,
+                        timeSlots: seat.timeSlots.filter(slot => 
+                            slot.startTime === startTime.trim() && 
+                            slot.endTime === endTime.trim()
+                        )
+                    };
+                }).filter(seat => seat.timeSlots.length > 0);
+            }
+            
+            displayResults(data);
+            setupAutoRefresh();
+        } catch (error) {
+            console.error('Search error:', error);
+            showAlert('danger', error.message || 'Failed to search slots. Please try again.');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="bi bi-search me-2"></i>Search Slots';
         }
-        
-        const data = await response.json();
-        
-        if (data.error) {
-            showAlert('danger', data.error);
-            return;
-        }
-        
-        displayResults(data);
-        setupAutoRefresh();
-    } catch (error) {
-        console.error('Search error:', error);
-        showAlert('danger', error.message || 'Failed to search slots. Please try again.');
-    } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="bi bi-search me-2"></i>Search Slots';
     }
-}
+    
     // Display results in table
     function displayResults(data) {
         resultsHeader.textContent = `${data.labName} - ${formatDisplayDate(data.date)}`;

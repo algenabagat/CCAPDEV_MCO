@@ -70,7 +70,7 @@ exports.displayProfilePage = async (req, res) => {
     }
 };
 
-// Add a new method for current user's own profile
+// For current user's own profile
 exports.displayMyProfile = async (req, res) => {
     try {
         const currentUser = await AuthController.getCurrentUser(req);
@@ -236,6 +236,7 @@ exports.deleteAccount = async (req, res) => {
 
         // Soft delete - mark user as deleted instead of actually removing from database
         currentUser.isDeleted = true;
+        currentUser.reservations = []; // Clear reservations
         await currentUser.save();
 
         // Clear the authentication cookie
