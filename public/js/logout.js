@@ -14,8 +14,7 @@ $(document).ready(function() {
     
     if (seconds <= 0) {
       clearInterval(timer);
-      // The actual redirect will happen via the backend response
-      // This just provides visual feedback
+
       $logoutMessage.text('Redirecting to homepage...');
     }
   }, 1000);

@@ -71,18 +71,8 @@ const resRoutes = require('./routes/resRoutes');
 
 // Route handlers
 app.use('/', indexRoutes);
-
 app.use('/profile', userRoutes);
-//app.use('/users', userRoutes);
 app.use('/reservations', resRoutes);
-
-
-app.get('/register', (req, res) => {
-    res.render('register', {
-        additionalCSS: ['/css/register.css'],
-        additionalJS: ['/js/register.js']
-    });
-});
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
