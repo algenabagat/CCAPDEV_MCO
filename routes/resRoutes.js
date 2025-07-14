@@ -40,6 +40,9 @@ router.get('/view-slots',
   ResController.showViewSlots
 );
 
+router.post('/check-slots', 
+  ResController.checkAvailableSlots
+);
 
 
 // View/edit reservations routes

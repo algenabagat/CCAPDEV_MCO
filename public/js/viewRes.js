@@ -2,12 +2,16 @@ const seatLayout = document.getElementById('seat-layout');
 const roomName = document.getElementById('room-name');
 const carousel = document.getElementById('carouselExampleCaptions');
 
+const dateInput = document.getElementById('reservationDate');
+  const timeInput = document.getElementById('reservationTime');
+
+
 const labOrder = Object.keys(seatData);
 let currentLab = 0;
 
-function renderSeats(labIndex) {
+function renderSeats(labIndex, overrideSeats = null) {
   const labKey = labOrder[labIndex];
-  const seats = seatData[labKey] || [];
+  const seats = overrideSeats || seatData[labKey] || [];
 
   roomName.textContent = `Room: ${labKey}`;
   seatLayout.innerHTML = seats.map((s, i) => {
@@ -25,9 +29,49 @@ function renderSeats(labIndex) {
   }).join('');
 }
 
-carousel.addEventListener('slid.bs.carousel', function (e) {
-  currentLab = e.to;
+document.addEventListener('DOMContentLoaded', () => {
+  const dateInput = document.getElementById('reservationDate');
+  const timeInput = document.getElementById('reservationTime');
+
+  // Move updateSeatAvailability INSIDE this scope if it uses dateInput
+  async function updateSeatAvailability() {
+    const selectedDate = dateInput.value;
+    const selectedTime = timeInput.value;
+    const labKey = labOrder[currentLab];
+
+    if (!selectedDate || !selectedTime) return;
+
+    const response = await fetch('/reservations/check-slots', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        labName: labKey,
+        date: selectedDate,
+        time: selectedTime
+      })
+    });
+
+    const data = await response.json();
+    if (data.success) {
+      seatData[labKey] = data.seatData;
+      renderSeats(currentLab);
+    } else {
+      console.error(data.message);
+    }
+  }
+
+  // Attach listeners after inputs exist
+  if (dateInput && timeInput) {
+    dateInput.addEventListener('change', updateSeatAvailability);
+    timeInput.addEventListener('change', updateSeatAvailability);
+  }
+
+    carousel.addEventListener('slid.bs.carousel', function (e) {
+    currentLab = e.to;
+    updateSeatAvailability();
+  });
+
   renderSeats(currentLab);
 });
 
-renderSeats(currentLab);
+

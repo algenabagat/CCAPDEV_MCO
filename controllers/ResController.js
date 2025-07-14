@@ -2,6 +2,7 @@ const User = require('../models/Users');
 const Laboratory = require('../models/Laboratories');
 const Slot = require('../models/Slots');
 const Reservation = require('../models/Reservations');
+const Reservations = require('../models/Reservations');
 
 // Middleware to check if user is a student
 exports.checkStudentRole = async (req, res, next) => {
@@ -37,38 +38,133 @@ exports.checkTechnicianRole = async (req, res, next) => {
 
 // Show create reservation page for students
 exports.showCreateReservation = async (req, res) => {
-    try {
-        const laboratories = await Laboratory.find({ isActive: true });
-        
-        res.render('create-reservation', {
-            title: 'Create Reservation',
-            currentUser: req.user,
-            laboratories: laboratories,
-            currentLab: laboratories[0], // Default to first lab
-            additionalCSS: ['/css/seats.css', '/css/slotregis.css'],
-            additionalJS: ['/js/createResStud.js']
-        });
-    } catch (err) {
-        console.error('Error showing reservation page:', err);
-        res.redirect('/');
+  try {
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+
+    const sevenDaysLater = new Date();
+    sevenDaysLater.setDate(today.getDate() + 6);
+    const sevenDaysLaterStr = sevenDaysLater.toISOString().split('T')[0];
+
+    // Generate time options from 08:00 to 17:30 in 30-minute intervals
+    const timeOptions = [];
+    for (let h = 8; h <= 17; h++) {
+      for (let m of [0, 30]) {
+        const hour = h.toString().padStart(2, '0');
+        const minute = m.toString().padStart(2, '0');
+        timeOptions.push(`${hour}:${minute}`);
+      }
     }
+
+    const labs = await Laboratory.find({ isActive: true }).lean();
+    const slots = await Slot.find({ date: todayStr });
+
+    const seatData = {};
+
+    for (const lab of labs) {
+      seatData[lab.name] = [];
+
+      const labSlots = slots.filter(slot => String(slot.laboratory) === String(lab._id));
+      const maxSeat = Math.max(...labSlots.map(s => s.seatNumber), lab.capacity || 0);
+      const selectedStartTime = new Date(req.query.startTime || Date.now());
+
+      for (let i = 1; i <= maxSeat; i++) {
+        const slot = labSlots.find(s => s.seatNumber === i);
+        const reserved = slot?.timeSlots?.some(t =>
+          new Date(t.startTime).getTime() === selectedStartTime.getTime() &&
+          t.status === 'Reserved'
+        );
+        
+        seatData[lab.name].push({
+          occupied: reserved,
+          user: reserved ? { name: 'Reserved User', anonymous: true } : null
+        });
+      }
+    }
+
+    res.render('create-reservation', {
+      title: 'Create Reservation',
+      currentUser: req.user,
+      labs,
+      currentLab: labs[0],
+      seatData: JSON.stringify(seatData),
+      today: todayStr,
+      sevenDaysLater: sevenDaysLaterStr,
+      timeOptions,
+      additionalCSS: ['/css/seats.css', '/css/slotregis.css'],
+      additionalJS: ['/js/createResStud.js']
+    });
+
+  } catch (err) {
+    console.error('Error showing reservation page:', err);
+    res.redirect('/');
+  }
 };
+
 
 // Handle student reservation creation
 exports.handleCreateReservation = async (req, res) => {
-    try {
-        const { seatNumbers, labId, timeSlots, isAnonymous } = req.body;
-        const userId = req.user._id;
+  try {
+    const { labName, seatIndices, reservationDate, reservationTime, isAnonymous } = req.body;
 
-        // Create reservation logic here
-        // ...
-
-        res.redirect('/profile?success=Reservation created successfully');
-    } catch (err) {
-        console.error('Reservation error:', err);
-        res.redirect('/create-reservation?error=Failed to create reservation');
+    if (!labName || !Array.isArray(seatIndices) || seatIndices.length === 0 || !startTime || !endTime) {
+      return res.status(400).json({ success: false, message: 'Missing reservation data.' });
     }
+
+    const userId = req.user._id;
+    const lab = await Laboratory.findOne({ name: labName });
+    if (!lab) return res.status(404).json({ success: false, message: 'Lab not found.' });
+
+    const date = new Date(startTime).toISOString().split('T')[0];
+
+    const affectedSlots = await Slot.find({
+      laboratory: lab._id,
+      seatNumber: { $in: seatIndices.map(i => i + 1) }
+    });
+
+    const updatedSlots = [];
+
+    for (const slot of affectedSlots) {
+      const timeSlot = slot.timeSlots.find(t =>
+        new Date(t.startTime).getTime() === new Date(startTime).getTime()
+      );
+
+      if (!timeSlot || timeSlot.status === 'Reserved') {
+        return res.status(409).json({ success: false, message: `Seat ${slot.seatNumber} is already reserved.` });
+      }
+
+      // Update slot
+      timeSlot.status = 'Reserved';
+      timeSlot.reservedBy = userId;
+      timeSlot.anonymous = isAnonymous;
+      await slot.save();
+
+      updatedSlots.push({
+        seatNumber: slot.seatNumber,
+        timeSlot: timeSlot._id
+      });
+    }
+
+    // Create reservation
+    const reservation = await Reservation.create({
+      user: userId,
+      laboratory: lab._id,
+      seats: updatedSlots,
+      startTime,
+      endTime,
+      isAnonymous,
+      status: 'Pending'
+    });
+
+    res.status(201).json({ success: true, reservation });
+
+  } catch (err) {
+    console.error('Reservation error:', err);
+    res.status(500).json({ success: false, message: 'Server error.' });
+  }
 };
+
+
 
 // Show create reservation page for technicians
 exports.showCreateReservationTech = async (req, res) => {
@@ -82,6 +178,7 @@ exports.showCreateReservationTech = async (req, res) => {
             laboratories: laboratories,
             students: students,
             currentLab: laboratories[0], // Default to first lab
+            seatData: JSON.stringify(seatData),
             additionalCSS: ['/css/seats.css', '/css/slotregis.css'],
             additionalJS: ['/js/createResTech.js']
         });
@@ -232,7 +329,21 @@ exports.handleSearchSlots = async (req, res) => {
 
 exports.showViewSlots = async (req, res) => {
   try {
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+
+    const sevenDaysLater = new Date();
+    sevenDaysLater.setDate(today.getDate() + 6);
+    const sevenDaysLaterStr = sevenDaysLater.toISOString().split('T')[0];
+
+    const timeOptions = [];
+    for (let h = 8; h <= 17; h++) {
+      for (let m of [0, 30]) {
+        const hour = h.toString().padStart(2, '0');
+        const minute = m.toString().padStart(2, '0');
+        timeOptions.push(`${hour}:${minute}`);
+      }
+    }
 
     const labs = await Laboratory.find({ isActive: true }).lean();
     const slots = await Slot.find({ date: today }); // Skip populate for now
@@ -263,6 +374,9 @@ exports.showViewSlots = async (req, res) => {
       currentUser: req.user,
       labs,
       seatData: JSON.stringify(seatData),
+      today: todayStr,
+      sevenDaysLater: sevenDaysLaterStr,
+      timeOptions,
       additionalCSS: ['/css/seats.css'],
       additionalJS: ['/js/viewRes.js']
     });
@@ -270,5 +384,50 @@ exports.showViewSlots = async (req, res) => {
   } catch (err) {
     console.error('Error showing reservation page:', err);
     res.redirect('/');
+  }
+};
+
+exports.checkAvailableSlots = async (req, res) => {
+  try {
+    const { labName, date, time } = req.body;
+
+    const lab = await Laboratory.findOne({ name: labName });
+    if (!lab) return res.status(404).json({ success: false, message: 'Lab not found' });
+
+    const startTime = new Date(`${date}T${time}`);
+    const endTime = new Date(startTime.getTime() + 30 * 60 * 1000); // 30 mins slot
+
+    console.log('Checking slots for:', {
+      labName,
+      date,
+      time,
+      startTime,
+      endTime});
+
+    // Find overlapping reservations
+    const reservations = await Reservation.find({
+      laboratory: lab._id,
+      startTime: { $lt: endTime },
+      endTime: { $gt: startTime }
+    }).lean();
+
+    const reservedSeats = new Set();
+    reservations.forEach(res => {
+      res.seats.forEach(seat => reservedSeats.add(seat.seatNumber));
+    });
+
+    const seatData = [];
+    for (let i = 1; i <= lab.capacity; i++) {
+      const isReserved = reservedSeats.has(i);
+      seatData.push({
+        occupied: isReserved,
+        user: isReserved ? { name: 'Reserved User', anonymous: true } : null
+      });
+    }
+
+    res.json({ success: true, seatData });
+  } catch (err) {
+    console.error('Slot check error:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 };
