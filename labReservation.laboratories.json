@@ -8,4 +8,15 @@
   "capacity": 35,
   "location": "Gokongwei Hall 3rd Floor",
   "isActive": true
+},
+{
+  "_id": {
+    "$oid": "707f1f77bcf86cd799439012"
+  },
+  "name":"GK302B",
+  "description": "Computer Lab 2",
+  "image": "/img/gk3.jpg",
+  "capacity": 35,
+  "location": "Gokongwei Hall 3rd Floor",
+  "isActive": true
 }]
