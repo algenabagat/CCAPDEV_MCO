@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (s.occupied && s.user) {
         const userDisplay = document.createElement('div');
         userDisplay.style.fontSize = '0.75rem';
-        userDisplay.innerHTML = s.user.anonymous ? 'Anonymous' : `<a href="#">${s.user.name}</a>`;
+        userDisplay.innerHTML = s.user.anonymous ? 'Anonymous' : `<a href="/profile/${encodeURIComponent(s.user.email)}">${s.user.name}</a>`;        
         div.appendChild(userDisplay);
       } else if (!s.occupied) {
         div.addEventListener('click', () => {

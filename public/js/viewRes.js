@@ -21,8 +21,7 @@ function renderSeats(labIndex, overrideSeats = null) {
       if (s.user.anonymous) {
         html += `<br><span style="font-size: 0.75rem;">Anonymous</span>`;
       } else {
-        html += `<br><a href="profile.html?user=${encodeURIComponent(s.user.name)}">${s.user.name}</a>`;
-      }
+        html += `<br><a href="/profile/${encodeURIComponent(s.user.email)}">${s.user.name}</a>`;      }
     }
     html += `</div>`;
     return html;
