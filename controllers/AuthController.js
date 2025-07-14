@@ -1,6 +1,7 @@
 const User = require('../models/Users');
 const Laboratory = require('../models/Laboratories');
 
+// Get the currently logged-in user
 exports.getCurrentUser = async (req) => {
     try {
         const userId = req.cookies.userId;
@@ -17,6 +18,7 @@ exports.getCurrentUser = async (req) => {
     }
 };
 
+// Display the login page
 exports.displayLoginPage = (req, res) => {
     res.render('login', {
         title: 'Login - Lab Reservation System',
@@ -25,6 +27,7 @@ exports.displayLoginPage = (req, res) => {
     });
 }
 
+// Display the registration page
 exports.displayRegisterPage = (req, res) => {
     res.render('register', {
         title: 'Register - Lab Reservation System',
@@ -33,7 +36,7 @@ exports.displayRegisterPage = (req, res) => {
     });
 }
 
-
+// Handle user login
 exports.handleLogin = async (req, res) => {
     try {
         const { email, password, rememberMe } = req.body;
@@ -74,6 +77,7 @@ exports.handleLogin = async (req, res) => {
     }
 };
 
+// Handle user logout
 exports.handleLogout = (req, res) => {
     // Clear the userId cookie
     res.clearCookie('userId');
@@ -87,6 +91,7 @@ exports.handleLogout = (req, res) => {
     });
 };
 
+// Handle user registration
 exports.handleRegister = async (req, res) => {
     try {
         const {
@@ -125,6 +130,7 @@ exports.handleRegister = async (req, res) => {
     }
 };
 
+// Middleware to check if user is authenticated
 exports.requireAuth = async (req, res, next) => {
     const userId = req.cookies.userId;
     
