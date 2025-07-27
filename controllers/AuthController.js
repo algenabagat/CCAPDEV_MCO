@@ -1,5 +1,7 @@
 const User = require('../models/Users');
 const Laboratory = require('../models/Laboratories');
+const bcrypt = require('bcrypt');
+
 
 // Get the currently logged-in user
 exports.getCurrentUser = async (req) => {
@@ -36,7 +38,7 @@ exports.displayRegisterPage = (req, res) => {
     });
 }
 
-// Handle user login
+// Update the handleLogin function
 exports.handleLogin = async (req, res) => {
     try {
         const { email, password, rememberMe } = req.body;
@@ -47,8 +49,9 @@ exports.handleLogin = async (req, res) => {
             return res.redirect('/login?error=Invalid email or password');
         }
         
-        // 2. Compare passwords
-        if (user.password !== password) {
+        // 2. Compare passwords using bcrypt
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
             return res.redirect('/login?error=Invalid email or password');
         }
         
@@ -91,9 +94,11 @@ exports.handleLogout = (req, res) => {
     });
 };
 
-// Handle user registration
+
+// Update the handleRegister function
 exports.handleRegister = async (req, res) => {
     try {
+
         const {
             'first-name': firstName,
             'last-name': lastName,
@@ -108,12 +113,16 @@ exports.handleRegister = async (req, res) => {
             return res.redirect('/register?error=Email already registered');
         }
 
+        // Hash the password
+        const saltRounds = 10; // Number of salt rounds for hashing
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+
         // Creates new user
         const newUser = new User({
             firstName,
             lastName,
             email,
-            password,
+            password: hashedPassword, // Store the hashed password
             role: accountType === 'technician' ? 'Technician' : 'Student',
             isDeleted: false,
             createdAt: new Date()
