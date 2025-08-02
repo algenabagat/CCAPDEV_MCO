@@ -1,6 +1,5 @@
 const User = require('../models/Users');
 const Laboratory = require('../models/Laboratories');
-const bcrypt = require('bcrypt');
 
 const logError = require('../utils/logError');
 
@@ -52,8 +51,8 @@ exports.handleLogin = async (req, res) => {
             return res.redirect('/login?error=Invalid email or password');
         }
         
-        // 2. Compare passwords using bcrypt
-        const isMatch = await bcrypt.compare(password, user.password);
+        // 2. Compare password
+        const isMatch = await user.comparePassword(password);
         if (!isMatch) {
             return res.redirect('/login?error=Invalid email or password');
         }
@@ -116,16 +115,12 @@ exports.handleRegister = async (req, res) => {
             return res.redirect('/register?error=Email already registered');
         }
 
-        // Hash the password
-        const saltRounds = 10; // Number of salt rounds for hashing
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
-
         // Creates new user
         const newUser = new User({
             firstName,
             lastName,
             email,
-            password: hashedPassword, // Store the hashed password
+            password,
             role: 'Student',
             isDeleted: false,
             createdAt: new Date()

@@ -4,7 +4,6 @@ const errorLogSchema = new mongoose.Schema({
   message: String,
   stack: String,
   name: String,
-  code: String,
   timestamp: { type: Date, default: Date.now },
   location: String,
   route: String,
