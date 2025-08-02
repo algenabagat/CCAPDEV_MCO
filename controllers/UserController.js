@@ -2,6 +2,8 @@ const User = require('../models/Users');
 const AuthController = require('./AuthController');
 const Reservation = require('../models/Reservations');
 
+const logError = require('../utils/logError');
+
 const multer = require('multer');
 const path = require('path');
 
@@ -69,6 +71,7 @@ exports.displayProfilePage = async (req, res) => {
             additionalJS: ['/js/profile.js']
         });
     } catch (error) {
+        await logError({ err: error, req, location: 'UserController.displayProfilePage' });
         console.error('Profile error:', error);
         res.render('profile', {
             title: 'Profile Error - Lab Reservation System',
@@ -89,6 +92,7 @@ exports.displayMyProfile = async (req, res) => {
         // Redirect to their profile page using email
         res.redirect(`/profile/${currentUser.email}`);
     } catch (error) {
+        await logError({ err: error, req, location: 'UserController.displayMyProfile' });
         console.error('My profile error:', error);
         res.redirect('/login');
     }
@@ -143,6 +147,7 @@ exports.updateProfile = async (req, res) => {
       });
     });
   } catch (error) {
+    await logError({ err: error, req, location: 'UserController.updateProfile' });
     console.error('Update profile error:', error);
     res.status(500).json({ error: 'An error occurred while updating the profile' });
   }
@@ -158,7 +163,7 @@ exports.searchUsers = async (req, res) => {
         // Get current logged-in user for navbar
         const currentUser = await AuthController.getCurrentUser(req);
 
-        // Only search if there are query parameters (excluding error/success messages)
+        // Only search if there are query parameters 
         if (name || email || role) {
             showResults = true;
             
@@ -184,12 +189,6 @@ exports.searchUsers = async (req, res) => {
             users = await User.find(query)
                 .select('firstName lastName email role')
                 .lean();
-                
-            // Log the users found for debugging
-            console.log('Search query:', query);
-            console.log('Number of users found:', users.length);
-            console.log('Users data:', users);
-            console.log('Show results:', showResults);
         }
     
 
@@ -204,18 +203,9 @@ exports.searchUsers = async (req, res) => {
             currentUser: currentUser ? currentUser.toObject() : null
         };
 
-        // Log what we're sending to template
-        console.log('Template data being sent:', {
-            usersCount: templateData.users.length,
-            users: templateData.users,
-            showResults: templateData.showResults,
-            searchQuery: templateData.searchQuery,
-            error: templateData.error,
-            success: templateData.success
-        });
-
         res.render('search-users', templateData);
     } catch (error) {
+        await logError({ err: error, req, location: 'UserController.searchUsers' });
         console.error('Search users error:', error);
         res.render('search-users', {
             title: 'Search Users - Lab Reservation System',
@@ -242,9 +232,9 @@ exports.deleteAccount = async (req, res) => {
         currentUser.reservations = []; // Clear reservations array
         await currentUser.save();
 
-        // Clear the authentication cookie
-        res.clearCookie('userId');
-
+        // Clear the authentication session
+        req.session.destroy();
+        
         // Render the delete confirmation page
         res.render('delete-profile', {
             title: 'Account Deleted - Lab Reservation System',
@@ -255,6 +245,7 @@ exports.deleteAccount = async (req, res) => {
         });
 
     } catch (error) {
+        await logError({ err: error, req, location: 'UserController.deleteAccount' });
         console.error('Delete account error:', error);
         res.redirect('/profile?error=Failed to delete account');
     }
@@ -298,6 +289,7 @@ exports.deleteUserByTechnician = async (req, res) => {
         res.redirect('/search-users?success=User account successfully deleted');
 
     } catch (error) {
+        await logError({ err: error, req, location: 'UserController.deleteUserByTechnician' });
         console.error('Delete user by technician error:', error);
         res.redirect('/search-users?error=Failed to delete user account');
     }
@@ -348,7 +340,7 @@ exports.updateUserByTechnician = async (req, res) => {
             userToUpdate.lastName = lastName;
             userToUpdate.description = description || '';
             
-            // Allow technicians to update user roles (but not to technician unless they're updating a technician)
+            // Allow technicians to update user roles 
             if (role) {
                 // Prevent creating new technicians unless updating an existing technician
                 if (role === 'Technician' && userToUpdate.role !== 'Technician') {
@@ -367,7 +359,7 @@ exports.updateUserByTechnician = async (req, res) => {
             res.status(200).json({ 
                 user: {
                     firstName: userToUpdate.firstName,
-                    lastName: userToUpdate.lastName,
+                    lastName: userToUpdate.lastName,    
                     description: userToUpdate.description,
                     email: userToUpdate.email,
                     role: userToUpdate.role,
@@ -377,6 +369,7 @@ exports.updateUserByTechnician = async (req, res) => {
         });
 
     } catch (error) {
+        await logError({ err: error, req, location: 'UserController.updateUserByTechnician' });
         console.error('Update user by technician error:', error);
         res.status(500).json({ error: 'An error occurred while updating the user profile' });
     }

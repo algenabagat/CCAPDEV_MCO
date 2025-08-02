@@ -4,6 +4,7 @@ const app = express();
 const mongoose = require('mongoose');
 const PORT = 3000;  // Define the port number
 const cookieParser = require('cookie-parser');
+const session = require('express-session');
 
 // Set up Handlebars as the template engine
 app.engine('hbs', engine({
@@ -52,6 +53,18 @@ app.set('views', __dirname + '/views');
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
+
+// Session middleware
+app.use(session({
+    secret: 'lab-reservation-secret-key',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { 
+        secure: process.env.NODE_ENV === 'production',
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    }
+}));
 
 // Serve static files from public directory
 app.use(express.static('public'));

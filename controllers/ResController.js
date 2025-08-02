@@ -2,6 +2,8 @@ const User = require('../models/Users');
 const Laboratory = require('../models/Laboratories');
 const Reservation = require('../models/Reservations');
 
+const logError = require('../utils/logError');
+
 // Middleware to check if user is a student
 exports.checkStudentRole = async (req, res, next) => {
     try {
@@ -10,6 +12,7 @@ exports.checkStudentRole = async (req, res, next) => {
         }
         next();
     } catch (err) {
+        await logError({ err: err, req, location: 'ResController.checkStudentRole' });
         console.error('Role check error:', err);
         res.redirect('/');
     }
@@ -23,6 +26,7 @@ exports.checkTechnicianRole = async (req, res, next) => {
         }
         next();
     } catch (err) {
+        await logError({ err: err, req, location: 'ResController.checkTechnicianRole' });
         console.error('Role check error:', err);
         res.redirect('/');
     }
@@ -107,6 +111,7 @@ exports.showCreateReservation = async (req, res) => {
     });
 
   } catch (err) {
+    await logError({ err: err, req, location: 'ResController.showCreateReservation' });
     console.error('Error showing reservation page:', err);
     res.redirect('/');
   }
@@ -183,6 +188,7 @@ exports.handleCreateReservation = async (req, res) => {
     res.status(201).json({ success: true, reservation });
 
   } catch (err) {
+    await logError({ err: err, req, location: 'ResController.handleCreateReservation' });
     console.error('Reservation error:', err);
     res.status(500).json({ success: false, message: 'Server error.' });
   }
@@ -266,6 +272,7 @@ exports.showCreateReservationTech = async (req, res) => {
       additionalJS: ['/js/createResTech.js']
     });
   } catch (err) {
+    await logError({ err: err, req, location: 'ResController.showCreateReservationTech' });
     console.error('Error showing tech reservation page:', err);
     res.redirect('/');
   }
@@ -330,6 +337,7 @@ exports.handleCreateReservationTech = async (req, res) => {
 
     res.status(201).json({ success: true, reservation });
   } catch (err) {
+    await logError({ err: err, req, location: 'ResController.handleCreateReservationTech' });
     console.error('Tech reservation error:', err);
     res.status(500).json({ success: false, message: 'Server error.' });
   }
@@ -362,6 +370,7 @@ exports.showSearchSlots = async (req, res) => {
             additionalJS: ['/js/search-slots.js']
         });
     } catch (err) {
+      await logError({ err: err, req, location: 'ResController.showSearchSlots' });
         console.error('Error showing search slots page:', err);
         res.redirect('/');
     }
@@ -461,6 +470,7 @@ exports.handleSearchSlots = async (req, res) => {
 
         res.json(results);
     } catch (err) {
+      await logError({ err: err, req, location: 'ResController.handleSearchSlots' });
         console.error('Slot search error:', err.message, err.stack);
         res.status(500).json({ 
             error: 'Failed to search slots',
@@ -549,6 +559,7 @@ exports.showViewSlots = async (req, res) => {
     });
 
   } catch (err) {
+    await logError({ err: err, req, location: 'ResController.showViewSlots' });
     console.error('Error showing reservation page:', err);
     res.redirect('/');
   }
@@ -601,6 +612,7 @@ exports.checkAvailableSlots = async (req, res) => {
 
     res.json({ success: true, seatData });
       } catch (err) {
+        await logError({ err: err, req, location: 'ResController.checkAvailableSlots' });
         console.error('Slot check error:', err);
         res.status(500).json({ success: false, message: 'Server error' });
       }
@@ -655,6 +667,7 @@ exports.showMyReservations = async (req, res) => {
       currentUser: currentUser.toObject()
     });
   } catch (err) {
+    await logError({ err: err, req, location: 'ResController.showMyReservations' });
     console.error('Error rendering my reservations:', err);
     res.redirect('/');
   }
@@ -674,6 +687,7 @@ exports.deleteReservation = async (req, res) => {
     }
     res.status(200).json({ success: true, message: 'Reservation deleted.' });
   } catch (err) {
+    await logError({ err: err, req, location: 'ResController.deleteReservation' });
     console.error('Error deleting reservation:', err);
     res.status(500).json({ success: false, message: 'Server error.' });
   }
@@ -771,6 +785,7 @@ exports.showEditReservation = async (req, res) => {
       additionalJS: ['/js/createResStud.js']
     });
   } catch (err) {
+    await logError({ err: err, req, location: 'ResController.showEditReservation' });
     console.error('Error showing edit reservation page:', err);
     res.redirect('/reservations/my-reservations');
   }
@@ -825,6 +840,7 @@ exports.handleEditReservation = async (req, res) => {
     await reservation.save();
     res.status(200).json({ success: true, message: 'Reservation updated successfully.' });
   } catch (err) {
+    await logError({ err: err, req, location: 'ResController.handleEditReservation' });
     console.error('Error updating reservation:', err);
     res.status(500).json({ success: false, message: 'Server error.' });
   }

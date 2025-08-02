@@ -7,7 +7,9 @@
             <p>Reserve labs with ease. Explore, book, and manage your academic needs.</p>
             {{#if user}}
                 <a href="/profile" class="btn btn-light">Go to Profile</a>
-                <a href="/logout" class="btn btn-outline-light"><i class="bi bi-box-arrow-right"></i> Logout</a>
+                <form action="/logout" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-outline-light"><i class="bi bi-box-arrow-right"></i> Logout</button>
+                </form>
             {{else}}
                 <a href="/login" class="btn btn-light">Get Started!</a>
             {{/if}}

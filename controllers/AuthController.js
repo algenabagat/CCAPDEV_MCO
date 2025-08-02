@@ -2,11 +2,12 @@ const User = require('../models/Users');
 const Laboratory = require('../models/Laboratories');
 const bcrypt = require('bcrypt');
 
+const logError = require('../utils/logError');
 
 // Get the currently logged-in user
 exports.getCurrentUser = async (req) => {
     try {
-        const userId = req.cookies.userId;
+        const userId = req.session.userId;
         if (!userId) return null;
         
         const user = await User.findById(userId);
@@ -15,8 +16,10 @@ exports.getCurrentUser = async (req) => {
         }
         return user;
     } catch (err) {
+        await logError({ err: err, req, location: 'AuthController.getCurrentUser' });
         console.error('Error getting current user:', err);
         return null;
+        
     }
 };
 
@@ -55,26 +58,24 @@ exports.handleLogin = async (req, res) => {
             return res.redirect('/login?error=Invalid email or password');
         }
         
-        // 3. Set cookie with user ID
-        const cookieOptions = {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production'
-        };
+        // 3. Store user in session
+        req.session.userId = user._id.toString();
+        req.session.user = user; // Store full user object for convenience
 
         if (rememberMe) {
-            cookieOptions.maxAge = 21 * 24 * 60 * 60 * 1000; // 3 weeks
+            req.session.cookie.maxAge = 21 * 24 * 60 * 60 * 1000; // 3 weeks
             // Update rememberUntil in database
-            user.rememberUntil = new Date(Date.now() + cookieOptions.maxAge);
+            user.rememberUntil = new Date(Date.now() + req.session.cookie.maxAge);
             await user.save();
         }
-
-        res.cookie('userId', user._id.toString(), cookieOptions);
         
+        //throw new Error('Simulated error for testing catch block');
+
         // Redirect to the main page 
-        console.log('User logged in:', user.email);
         return res.redirect('/');
 
     } catch (err) {
+        await logError({ err: err, req, location: 'AuthController.handleLogin' });
         console.error('Login error:', err);
         return res.redirect('/login?error=An error occurred during login');
     }
@@ -84,7 +85,10 @@ exports.handleLogin = async (req, res) => {
 exports.handleLogout = (req, res) => {
     // Clear the userId cookie
     res.clearCookie('userId');
-    
+
+    // Destroy the session
+    req.session.destroy();
+
     // Render a minimal logout page that will handle the redirect
     res.render('logout', {
         title: 'Logging out...',
@@ -133,6 +137,7 @@ exports.handleRegister = async (req, res) => {
         return res.redirect('/login?success=Registration successful. Please log in.');
         
     } catch (err) {
+        await logError({ err: err, req, location: 'AuthController.handleRegister' });
         console.error('Registration error:', err);
         return res.redirect('/register?error=Registration failed');
     }
@@ -140,7 +145,7 @@ exports.handleRegister = async (req, res) => {
 
 // Middleware to check if user is authenticated
 exports.requireAuth = async (req, res, next) => {
-    const userId = req.cookies.userId;
+    const userId = req.session.userId;
     
     if (!userId) {
         return res.redirect('/login');
@@ -149,15 +154,16 @@ exports.requireAuth = async (req, res, next) => {
     try {
         const user = await User.findById(userId);
         if (!user || user.isDeleted) {
-            res.clearCookie('userId');
+            req.session.destroy();
             return res.redirect('/login');
         }
 
         req.user = user; // Attach user to request
         next();
     } catch (err) {
+        await logError({ err: err, req, location: 'AuthController.requireAuth' });
         console.error('Auth middleware error:', err);
-        res.clearCookie('userId');
+        req.session.destroy();
         return res.redirect('/login');
     }
 };
@@ -165,14 +171,14 @@ exports.requireAuth = async (req, res, next) => {
 // This function checks if the user is logged in and renders the index page accordingly
 exports.isLoggedIn = async (req, res) => {
     try {
-        const userId = req.cookies.userId;
+        const userId = req.session.userId;
         let user = null;
         
         
         if (userId) {
             user = await User.findById(userId);
             if (user && user.isDeleted) {
-                res.clearCookie('userId');
+                req.session.destroy();
                 user = null;
             }
         }
@@ -186,6 +192,7 @@ exports.isLoggedIn = async (req, res) => {
             additionalCSS: ['/css/index.css']
         });
     } catch (err) {
+        await logError({ err: err, req, location: 'AuthController.isLoggedIn' });
         console.error('Error rendering index:', err);
         res.render('index', { user: null, currentUser: null });
     }
