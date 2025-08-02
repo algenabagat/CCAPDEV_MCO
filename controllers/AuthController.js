@@ -103,8 +103,7 @@ exports.handleRegister = async (req, res) => {
             'first-name': firstName,
             'last-name': lastName,
             email,
-            password,
-            'account-type': accountType
+            password
         } = req.body;
 
         // Checks if a user is already registered
@@ -123,7 +122,7 @@ exports.handleRegister = async (req, res) => {
             lastName,
             email,
             password: hashedPassword, // Store the hashed password
-            role: accountType === 'technician' ? 'Technician' : 'Student',
+            role: 'Student',
             isDeleted: false,
             createdAt: new Date()
         });
