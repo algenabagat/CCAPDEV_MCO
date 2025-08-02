@@ -1,19 +1,4 @@
 $(document).ready(function() {
-  // Account type selection UI
-  $('#student-btn').on('click', function(e) {
-    e.preventDefault();
-    $(this).addClass('active').addClass('btn-primary');
-    $('#tech-btn').removeClass('active').removeClass('btn-primary');
-    $('#account-type').val('student');
-  });
-
-  $('#tech-btn').on('click', function(e) {
-    e.preventDefault();
-    $(this).addClass('active').addClass('btn-primary');
-    $('#student-btn').removeClass('active').removeClass('btn-primary');
-    $('#account-type').val('technician');
-  });
-
   // Form elements
   const form = $('#registration-form');
   const password = $('#password');
