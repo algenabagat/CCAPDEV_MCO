@@ -59,7 +59,7 @@ exports.handleLogin = async (req, res) => {
         
         // 3. Store user in session
         req.session.userId = user._id.toString();
-        req.session.user = user; // Store full user object for convenience
+        req.session.user = user;
 
         if (rememberMe) {
             req.session.cookie.maxAge = 21 * 24 * 60 * 60 * 1000; // 3 weeks
@@ -85,7 +85,7 @@ exports.handleLogout = (req, res) => {
     // Clear the userId cookie
     res.clearCookie('userId');
 
-    // Destroy the session
+    // Destroy session
     req.session.destroy();
 
     // Render a minimal logout page that will handle the redirect

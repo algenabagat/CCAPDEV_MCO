@@ -21,7 +21,7 @@ exports.checkStudentRole = async (req, res, next) => {
 // Middleware to check if user is a technician
 exports.checkTechnicianRole = async (req, res, next) => {
     try {
-        if (req.user.role !== 'Technician') {
+        if (req.user.role !== 'Technician' && req.user.role !== 'Admin') {
             return res.status(200).send(`<script>alert('Only lab technicians can access this feature'); window.history.back();</script>`);
         }
         next();
