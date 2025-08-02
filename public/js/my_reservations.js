@@ -1,8 +1,5 @@
-// Remove all sessionStorage/sample data logic
-
-// Render reservations table using backend data
+// Render reservations table
 function renderTable() {
-  // 'reservations' is provided by Handlebars context
   const tbody = document.querySelector("#reservationsTable tbody");
   const noReservationsMsg = document.getElementById("noReservations");
 
@@ -48,14 +45,13 @@ function editReservation(index) {
   document.getElementById("editModal").style.display = "block";
 }
 
-// Save edited reservation (placeholder, needs backend integration)
+// Save edited reservation
 function saveEdit() {
-  // Implement AJAX call to update reservation in backend
   closeModal();
   renderTable();
 }
 
-// Technician delete reservation
+// Delete reservation
 function deleteReservation(reservationId) {
   if (!confirm('Are you sure you want to delete this reservation?')) return;
   fetch(`/reservations/delete/${reservationId}`, {

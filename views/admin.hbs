@@ -1,0 +1,71 @@
+{{!-- Main Container --}}
+<div class="main-container">
+  <div class="content-container">
+    <div class="container">
+      <h1>Admin Panel</h1>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Joined</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#if users}}
+              {{#each users}}
+                <tr data-user-id="{{this._id}}">
+                  <td>{{this.firstName}} {{this.lastName}}</td>
+                  <td>{{this.email}}</td>
+                  <td>
+                    <span class="badge role-{{this.role}}">{{this.role}}</span>
+                  </td>
+                  <td>{{formatDate this.createdAt 'YYYY-MM-DD'}}</td>
+                  <td>
+                    <div class="action-buttons">
+                      <select class="role-select" data-user-id="{{this._id}}" data-current-role="{{this.role}}">
+                        <option value="Student" {{#if (eq this.role "Student")}}selected{{/if}}>Student</option>
+                        <option value="Technician" {{#if (eq this.role "Technician")}}selected{{/if}}>Technician</option>
+                      </select>
+                      <button class="btn btn-sm btn-primary btn-update-role" data-user-id="{{this._id}}">Update</button>
+                      <button class="btn btn-sm btn-danger btn-delete-user" data-user-id="{{this._id}}" data-user-name="{{this.firstName}} {{this.lastName}}">Delete</button>
+                    </div>
+                  </td>
+                </tr>
+              {{else}}
+                <tr>
+                  <td colspan="5" class="text-center text-muted">No users found in database.</td>
+                </tr>
+              {{/each}}
+            {{else}}
+              <tr>
+                <td colspan="5" class="text-center text-muted">Users data not available.</td>
+              </tr>
+            {{/if}}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Confirmation Modal for Delete -->
+<div id="deleteModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Confirm Delete</h3>
+      <span class="close">&times;</span>
+    </div>
+    <div class="modal-body">
+      <p>Are you sure you want to delete <strong id="deleteUserName"></strong>?</p>
+      <p class="warning">This action cannot be undone.</p>
+    </div>
+    <div class="modal-footer">
+      <button id="confirmDelete" class="btn btn-danger">Delete User</button>
+      <button id="cancelDelete" class="btn btn-secondary">Cancel</button>
+    </div>
+  </div>
+</div> 

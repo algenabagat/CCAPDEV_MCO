@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   firstName: { type: String },
   lastName: { type: String },
-  role: { type: String, enum: ['Student', 'Technician'], required: true },
+  role: { type: String, enum: ['Student', 'Technician', 'Admin'], required: true },
   profilePicture: { type: String, default: "/img/pfp.png" }, // image URL or file path
   description: { type: String },
   rememberUntil: { type: Date },
@@ -17,13 +17,12 @@ const userSchema = new mongoose.Schema({
   }]
 }, { timestamps: true });
 
-// Pre-save middleware to hash password before saving
+// Hash password
 userSchema.pre('save', async function(next) {
-  // Only hash the password if it has been modified (or is new)
   if (!this.isModified('password')) return next();
   
   try {
-    // Hash password with salt rounds
+    // Hash password
     const saltRounds = 10;
     this.password = await bcrypt.hash(this.password, saltRounds);
     next();
@@ -32,7 +31,7 @@ userSchema.pre('save', async function(next) {
   }
 });
 
-// Instance method to compare password
+// Compare password
 userSchema.methods.comparePassword = async function(candidatePassword) {
   try {
     return await bcrypt.compare(candidatePassword, this.password);

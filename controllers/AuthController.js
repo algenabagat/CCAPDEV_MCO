@@ -68,7 +68,7 @@ exports.handleLogin = async (req, res) => {
             await user.save();
         }
         
-        //throw new Error('Simulated error for testing catch block');
+        // throw new Error('Simulated error for testing catch block');
 
         // Redirect to the main page 
         return res.redirect('/');

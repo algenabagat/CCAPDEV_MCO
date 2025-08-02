@@ -150,7 +150,7 @@
         </div>
 
         <!-- Reservations Section -->
-        {{#unless (eq user.role 'Technician')}}
+        {{#unless (or (eq user.role 'Technician') (eq user.role 'Admin'))}}
         <div class="card">
           <div class="card-header">
             <h5 class="mb-0">{{#if (eq currentUser.email user.email)}}My Reservations{{else}}Reservations{{/if}}</h5>
