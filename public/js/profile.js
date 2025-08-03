@@ -13,15 +13,15 @@ document.addEventListener('DOMContentLoaded', function() {
   const profileImage = document.getElementById('profile-image');
 
   // Technician Edit Elements
-  const techEditBtn = document.getElementById('tech-edit-profile-btn');
-  const techSaveBtn = document.getElementById('tech-save-profile-btn');
-  const techProfileForm = document.getElementById('tech-profile-form');
-  const techProfileUpload = document.getElementById('tech-profile-upload');
-  
-  // Technician Form Elements
-  const techNameInput = document.getElementById('tech-name-edit');
-  const techBioInput = document.getElementById('tech-bio-edit');
-  const techRoleSelect = document.getElementById('tech-role-edit');
+  const techEditBtn = document.getElementById('edit-user-btn');
+  const techSaveBtn = document.getElementById('save-user-btn');
+  const techProfileForm = document.getElementById('user-profile-form');
+  const techProfileUpload = document.getElementById('user-profile-upload');
+
+  // Technician Edit Forms
+  const techNameInput = document.getElementById('user-name-edit');
+  const techBioInput = document.getElementById('user-bio-edit');
+  const techRoleSelect = document.getElementById('user-role-edit');
   const accountTypeDisplay = document.getElementById('account-type-display');
 
   // Toggle Edit Mode
@@ -161,10 +161,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const lastName = nameParts.slice(1).join(' ') || '';
     
     // Populate hidden fields
-    document.getElementById('tech-firstName-hidden').value = firstName;
-    document.getElementById('tech-lastName-hidden').value = lastName;
-    document.getElementById('tech-description-hidden').value = techBioInput ? techBioInput.value.trim() : '';
-    if (techRoleSelect) document.getElementById('tech-role-hidden').value = techRoleSelect.value;
+    document.getElementById('firstName-hidden').value = firstName;
+    document.getElementById('lastName-hidden').value = lastName;
+    document.getElementById('description-hidden').value = techBioInput ? techBioInput.value.trim() : '';
+    if (techRoleSelect) document.getElementById('role-hidden').value = techRoleSelect.value;
+
     
     const formData = new FormData(techProfileForm);
     

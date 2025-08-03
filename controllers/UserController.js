@@ -251,72 +251,74 @@ exports.deleteAccount = async (req, res) => {
     }
 };
 
-// Allow technicians to delete any user's profile
-exports.deleteUserByTechnician = async (req, res) => {
+// combined admin and tech delete function
+exports.deleteUser = async (req, res) => {
     try {
-        const currentUser = await AuthController.getCurrentUser(req);
+        const { email } = req.params;
+        const currentUser = req.user || await AuthController.getCurrentUser(req);
+
         if (!currentUser) {
             return res.redirect('/login');
         }
 
-        // Check if current user is a technician
-        if (currentUser.role !== 'Technician') {
-            return res.status(403).json({ error: 'Only technicians can delete user accounts' });
-        }
-
-        const { email } = req.params; // Get email from URL parameter
-        
-        // Find the user to delete
-        const userToDelete = await User.findOne({ email: email, isDeleted: false });
+        const userToDelete = await User.findOne({ email, isDeleted: false });
         if (!userToDelete) {
             return res.redirect('/search-users?error=User not found');
         }
 
-        // Prevent technicians from deleting other technicians
-        if (userToDelete.role === 'Technician') {
-            return res.redirect('/search-users?error=Cannot delete other technician accounts');
+        if (currentUser.role === 'Technician') {
+            // only delete students
+            if (userToDelete.role !== 'Student') {
+                return res.redirect('/search-users?error=Cannot delete non-student accounts');
+            }
+        } else if (currentUser.role === 'Admin') {
+            // admins can delete anyone except themselves and other admins
+            if (userToDelete._id.toString() === currentUser._id.toString()) {
+                return res.redirect('/search-users?error=Cannot delete your own account');
+            }
+            if (userToDelete.role === 'Admin') {
+                return res.redirect('/search-users?error=Cannot delete admin accounts');
+            }
+        } else {
+            return res.redirect('/search-users?error=Unauthorized');
         }
 
-        // Delete all reservations associated with this user
+        // delete reservations
         await Reservation.deleteMany({ user: userToDelete._id });
 
-        // Soft delete the user account
-        userToDelete.isDeleted = true;
-        userToDelete.reservations = []; // Clear reservations array
-        await userToDelete.save();
+        // delete user
+        if (currentUser.role === 'Technician') {
+            userToDelete.isDeleted = true;
+            await userToDelete.save();
+        } else {
+            await User.findByIdAndDelete(userToDelete._id);
+        }
 
-        // Redirect back to search users page with success message
         res.redirect('/search-users?success=User account successfully deleted');
 
     } catch (error) {
-        await logError({ err: error, req, location: 'UserController.deleteUserByTechnician' });
-        console.error('Delete user by technician error:', error);
+        await logError({ err: error, req, location: 'UserController.deleteUser' });
+        console.error('Delete user error:', error);
         res.redirect('/search-users?error=Failed to delete user account');
     }
 };
 
-// Allow technicians to update any user's profile
-exports.updateUserByTechnician = async (req, res) => {
+// combined admin and tech update function
+exports.updateUser = async (req, res) => {
     try {
-        const currentUser = await AuthController.getCurrentUser(req);
+        const { email } = req.params;
+        const currentUser = req.user || await AuthController.getCurrentUser(req);
+
         if (!currentUser) {
             return res.status(401).json({ error: 'Unauthorized' });
         }
 
-        // Check if current user is a technician
-        if (currentUser.role !== 'Technician') {
-            return res.status(403).json({ error: 'Only technicians can update user accounts' });
-        }
-
-        const { email } = req.params; // Get email from URL parameter
-        
-        // Find the user to update
-        const userToUpdate = await User.findOne({ email: email, isDeleted: false });
+        const userToUpdate = await User.findOne({ email, isDeleted: false });
         if (!userToUpdate) {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        // Handle the upload for profile picture
+        // Handle file upload
         upload(req, res, async (err) => {
             if (err) {
                 return res.status(400).json({ error: err.message });
@@ -324,28 +326,34 @@ exports.updateUserByTechnician = async (req, res) => {
 
             const { firstName, lastName, description, role } = req.body;
             
-            // Validate required fields
             if (!firstName || !lastName) {
                 return res.status(400).json({ error: 'First name and last name are required' });
             }
 
-            // Validate role if provided
-            const validRoles = ['Student', 'Technician'];
-            if (role && !validRoles.includes(role)) {
+            let allowedRoles = ['Student'];
+            if (currentUser.role === 'Admin') {
+                allowedRoles = ['Student', 'Technician', 'Admin'];
+                
+                if (userToUpdate._id.toString() === currentUser._id.toString() && role && role !== currentUser.role) {
+                    return res.status(403).json({ error: 'Cannot change your own role' });
+                }
+            }
+
+            if (role && !allowedRoles.includes(role)) {
                 return res.status(400).json({ error: 'Invalid role specified' });
+            }
+
+            if (currentUser.role === 'Technician' && userToUpdate.role !== 'Student') {
+                return res.status(403).json({ error: 'Can only update student accounts' });
             }
 
             // Update user data
             userToUpdate.firstName = firstName;
             userToUpdate.lastName = lastName;
             userToUpdate.description = description || '';
-            
-            // Allow technicians to update user roles 
-            if (role) {
-                // Prevent creating new technicians unless updating an existing technician
-                if (role === 'Technician' && userToUpdate.role !== 'Technician') {
-                    return res.status(403).json({ error: 'Cannot promote users to technician role' });
-                }
+
+            // update role if allowed
+            if (role && allowedRoles.includes(role)) {
                 userToUpdate.role = role;
             }
 
@@ -369,8 +377,8 @@ exports.updateUserByTechnician = async (req, res) => {
         });
 
     } catch (error) {
-        await logError({ err: error, req, location: 'UserController.updateUserByTechnician' });
-        console.error('Update user by technician error:', error);
+        await logError({ err: error, req, location: 'UserController.updateUser' });
+        console.error('Update user error:', error);
         res.status(500).json({ error: 'An error occurred while updating the user profile' });
     }
 };
