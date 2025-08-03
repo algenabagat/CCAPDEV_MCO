@@ -136,12 +136,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Pre-fill form if in edit mode
   if (typeof editMode !== 'undefined' && editMode && typeof reservationToEdit !== 'undefined') {
-    // Set lab, date, time, seat, anonymous
-    // You may need to trigger UI updates for seat selection, lab selection, etc.
+    // Set current lab based on reservation
     document.getElementById('reservationDate').value = reservationToEdit.date;
     document.getElementById('reservationTime').value = reservationToEdit.time;
     document.getElementById('anonymous-checkbox').checked = reservationToEdit.isAnonymous;
-    // TODO: Pre-select lab and seats in the UI if your seat grid supports it
   }
 
   // Handle reservation creation or update
@@ -187,7 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       return;
     }
-    // Create mode (existing logic)
+    
     const response = await fetch('/reservations/create-reservation', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
