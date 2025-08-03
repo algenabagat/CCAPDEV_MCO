@@ -117,9 +117,10 @@ exports.showCreateReservation = async (req, res) => {
   }
 };
 
-
 // Handle student reservation creation
 exports.handleCreateReservation = async (req, res) => {
+  const session = await Reservation.startSession();
+  session.startTransaction();
   try {
     // Extract reservation data from request body
     const { labName, seatIndices, reservationDate, reservationTime, isAnonymous } = req.body;
@@ -145,28 +146,18 @@ exports.handleCreateReservation = async (req, res) => {
     const startTime = new Date(`${reservationDate}T${reservationTime}`);
     const endTime = new Date(startTime.getTime() + 30 * 60 * 1000);
 
-    // Check for overlapping reservations for selected seats
+    // Check for overlapping reservations inside the transaction
     const overlappingReservations = await Reservation.find({
       laboratory: lab._id,
       startTime: { $lt: endTime },
       endTime: { $gt: startTime },
       'seats.seatNumber': { $in: seatIndices.map(i => i + 1) }
-    });
+    }).session(session);
 
     if (overlappingReservations.length > 0) {
-      // Find which seats are already reserved
-      const reservedSeats = new Set();
-      overlappingReservations.forEach(res => {
-        res.seats.forEach(seat => reservedSeats.add(seat.seatNumber));
-      });
-      // Check if any of the selected seats are reserved
-      const conflictSeats = seatIndices
-        .map(i => i + 1)
-        .filter(seatNum => reservedSeats.has(seatNum));
-      return res.status(409).json({
-        success: false,
-        message: `Seat(s) ${conflictSeats.join(', ')} already reserved for this time slot.`
-      });
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(409).json({ success: false, message: 'Seat(s) already reserved.' });
     }
 
     // Prepare seat objects for reservation
@@ -175,7 +166,7 @@ exports.handleCreateReservation = async (req, res) => {
     }));
 
     // Create reservation
-    const reservation = await Reservation.create({
+    await Reservation.create([{
       user: userId,
       laboratory: lab._id,
       seats: reservedSeats,
@@ -183,18 +174,20 @@ exports.handleCreateReservation = async (req, res) => {
       endTime,
       isAnonymous,
       status: 'Reserved'
-    });
+    }], { session });
 
-    res.status(201).json({ success: true, reservation });
+    await session.commitTransaction();
+    session.endSession();
+    res.status(201).json({ success: true });
 
   } catch (err) {
     await logError({ err: err, req, location: 'ResController.handleCreateReservation' });
     console.error('Reservation error:', err);
+    await session.abortTransaction();
+    session.endSession();
     res.status(500).json({ success: false, message: 'Server error.' });
   }
 };
-
-
 
 // Show create reservation page for technicians
 exports.showCreateReservationTech = async (req, res) => {
@@ -280,41 +273,58 @@ exports.showCreateReservationTech = async (req, res) => {
 
 // Handle technician reservation creation
 exports.handleCreateReservationTech = async (req, res) => {
+  const session = await Reservation.startSession();
+  session.startTransaction();
   try {
     const { labName, seatIndices, reservationDate, reservationTime, studentEmail, isAnonymous } = req.body;
 
     // Validate input
     if (!labName || !studentEmail || !reservationDate || !reservationTime || !Array.isArray(seatIndices) || seatIndices.length === 0) {
+      await logError({ err: 'Missing reservation data.', req, location: 'ResController.handleCreateReservationTech' });
+      await session.abortTransaction();
+      session.endSession();
       return res.status(400).json({ success: false, message: 'Missing reservation data.' });
     }
 
     // Find the student by email
     const student = await User.findOne({ email: studentEmail, role: 'Student' });
-    if (!student) return res.status(404).json({ success: false, message: 'Student not found.' });
+    if (!student) {
+      await logError({ err: 'Student not found.', req, location: 'ResController.handleCreateReservationTech' });
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(404).json({ success: false, message: 'Student not found.' });
+    }
 
     // Find the laboratory by name
     const lab = await Laboratory.findOne({ name: labName });
-    if (!lab) return res.status(404).json({ success: false, message: 'Lab not found.' });
+    if (!lab) {
+      await logError({ err: 'Lab not found.', req, location: 'ResController.handleCreateReservationTech' });
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(404).json({ success: false, message: 'Lab not found.' });
+    }
 
     // Calculate start and end time for the reservation
     const startTime = new Date(`${reservationDate}T${reservationTime}`);
     const endTime = new Date(startTime.getTime() + 30 * 60 * 1000);
 
-    // Check for overlapping reservations for selected seats
+    // Check for overlapping reservations for selected seats inside the transaction
     const overlappingReservations = await Reservation.find({
       laboratory: lab._id,
       startTime: { $lt: endTime },
       endTime: { $gt: startTime },
       'seats.seatNumber': { $in: seatIndices.map(i => i + 1) }
-    });
+    }).session(session);
 
-    // If there are overlapping reservations, return conflict
     if (overlappingReservations.length > 0) {
       const reservedSeats = new Set();
       overlappingReservations.forEach(res => {
         res.seats.forEach(seat => reservedSeats.add(seat.seatNumber));
       });
       const conflictSeats = seatIndices.map(i => i + 1).filter(seatNum => reservedSeats.has(seatNum));
+      await logError({ err: `Seat(s) ${conflictSeats.join(', ')} already reserved for this time slot.`, req, location: 'ResController.handleCreateReservationTech' });
+      await session.abortTransaction();
+      session.endSession();
       return res.status(409).json({
         success: false,
         message: `Seat(s) ${conflictSeats.join(', ')} already reserved for this time slot.`
@@ -324,8 +334,8 @@ exports.handleCreateReservationTech = async (req, res) => {
     // Prepare seat objects for reservation
     const reservedSeats = seatIndices.map(i => ({ seatNumber: i + 1 }));
 
-    // Create the reservation
-    const reservation = await Reservation.create({
+    // Create the reservation inside the transaction
+    await Reservation.create([{
       user: student._id,
       laboratory: lab._id,
       seats: reservedSeats,
@@ -333,12 +343,17 @@ exports.handleCreateReservationTech = async (req, res) => {
       endTime,
       isAnonymous,
       status: 'Reserved'
-    });
+    }], { session });
 
-    res.status(201).json({ success: true, reservation });
+    await session.commitTransaction();
+    session.endSession();
+    res.status(201).json({ success: true });
+
   } catch (err) {
     await logError({ err: err, req, location: 'ResController.handleCreateReservationTech' });
     console.error('Tech reservation error:', err);
+    await session.abortTransaction();
+    session.endSession();
     res.status(500).json({ success: false, message: 'Server error.' });
   }
 };
