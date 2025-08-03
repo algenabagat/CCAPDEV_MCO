@@ -57,7 +57,7 @@ exports.handleLogin = async (req, res) => {
             return res.redirect('/login?error=Invalid email or password');
         }
         
-        // 3. Store user in session
+        // 3. Set session variables
         req.session.userId = user._id.toString();
         req.session.user = user;
 

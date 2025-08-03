@@ -54,7 +54,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
-// Session middleware
+// Middleware for session management
 app.use(session({
     secret: 'lab-reservation-secret-key',
     resave: false,
