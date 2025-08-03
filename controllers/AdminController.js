@@ -1,7 +1,6 @@
 const User = require('../models/Users');
 const logError = require('../utils/logError');
 
-// Check if user is Admin
 exports.checkAdminRole = async (req, res, next) => {
     try {
         const userId = req.session.userId;
@@ -22,7 +21,6 @@ exports.checkAdminRole = async (req, res, next) => {
     }
 };
 
-// Display admin page
 exports.displayAdminPage = async (req, res) => {
     try {
         const users = await User.find({ isDeleted: false })
@@ -44,25 +42,15 @@ exports.displayAdminPage = async (req, res) => {
     }
 };
 
-// Update role
 exports.updateUserRole = async (req, res) => {
     try {
         const { userId, newRole } = req.body;
 
-        // Validate role
         const validRoles = ['Student', 'Technician', 'Admin'];
         if (!validRoles.includes(newRole)) {
             return res.status(400).json({ 
                 success: false, 
-                message: 'Invalid role specified' 
-            });
-        }
-
-        // Prevent admin from changing their own role
-        if (userId === req.session.userId) {
-            return res.status(400).json({ 
-                success: false, 
-                message: 'Cannot change your own role' 
+                error: 'Invalid role specified' 
             });
         }
 
@@ -75,13 +63,12 @@ exports.updateUserRole = async (req, res) => {
         if (!user) {
             return res.status(404).json({ 
                 success: false, 
-                message: 'User not found' 
+                error: 'User not found' 
             });
         }
 
         res.json({ 
-            success: true, 
-            message: `Role updated to ${newRole}`,
+            success: true,
             user: {
                 id: user._id,
                 firstName: user.firstName,
@@ -96,36 +83,26 @@ exports.updateUserRole = async (req, res) => {
         console.error('Error updating user role:', err);
         res.status(500).json({ 
             success: false, 
-            message: 'Failed to update user role' 
+            error: 'Failed to update user role' 
         });
     }
 };
 
-// Delete user
 exports.deleteUser = async (req, res) => {
     try {
         const userId = req.params.userId;
-
-        // Prevent admin from deleting themselves
-        if (userId === req.session.userId) {
-            return res.status(400).json({ 
-                success: false, 
-                message: 'Cannot delete your own account' 
-            });
-        }
 
         const user = await User.findByIdAndDelete(userId);
 
         if (!user) {
             return res.status(404).json({ 
                 success: false, 
-                message: 'User not found' 
+                error: 'User not found' 
             });
         }
 
         res.json({ 
-            success: true, 
-            message: 'User deleted successfully' 
+            success: true
         });
 
     } catch (err) {
@@ -133,7 +110,7 @@ exports.deleteUser = async (req, res) => {
         console.error('Error deleting user:', err);
         res.status(500).json({ 
             success: false, 
-            message: 'Failed to delete user' 
+            error: 'Failed to delete user' 
         });
     }
 }; 

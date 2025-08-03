@@ -630,14 +630,16 @@ exports.showMyReservations = async (req, res) => {
     // Check if the user is a technician or student
     let reservations;
     let isTechnician = false;
-    if (currentUser.role === 'Technician') {
-      // Technician: show all reservations, include user info
+    let isAdmin = false;
+    if (currentUser.role === 'Technician' || currentUser.role === 'Admin') {
+      // Technician & Admin: show all reservations, include user info
       reservations = await require('../models/Reservations').find({})
         .populate('laboratory', 'name')
         .populate('user', 'firstName lastName email')
         .sort({ startTime: -1 })
         .lean();
       isTechnician = true;
+      isAdmin = true;
     } else {
       // Student: show only their own
       reservations = await require('../models/Reservations').find({
@@ -659,9 +661,10 @@ exports.showMyReservations = async (req, res) => {
       userEmail: res.user ? res.user.email : undefined
     }));
     res.render('my_reservations', {
-      title: isTechnician ? 'All Reservations' : 'My Reservations',
+      title: (isTechnician || isAdmin) ? 'All Reservations' : 'My Reservations',
       reservations: formattedReservations,
       isTechnician,
+      isAdmin,
       additionalCSS: ['/css/my_reservations.css'],
       additionalJS: ['/js/my_reservations.js'],
       currentUser: currentUser.toObject()
@@ -677,7 +680,7 @@ exports.showMyReservations = async (req, res) => {
 exports.deleteReservation = async (req, res) => {
   try {
     const currentUser = await require('./AuthController').getCurrentUser(req);
-    if (!currentUser || currentUser.role !== 'Technician') {
+    if (!currentUser || currentUser.role !== 'Technician' && currentUser.role !== 'Admin') {
       return res.status(403).json({ success: false, message: 'Only technicians can delete reservations.' });
     }
     const reservationId = req.params.id;
@@ -707,7 +710,7 @@ exports.showEditReservation = async (req, res) => {
     const plainReservation = reservation.toObject();
 
     // Allow editing if technician or reservation owner
-    if (!(req.user.role === 'Technician' || reservation.user.equals(req.user._id))) {
+    if (!(req.user.role === 'Technician' || req.user.role === 'Admin' || reservation.user.equals(req.user._id))) {
       return res.status(403).send(`<script>alert('You can only edit your own reservations'); window.history.back();</script>`);
     }
     // Only allow editing if status is Reserved
@@ -801,7 +804,7 @@ exports.handleEditReservation = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Reservation not found.' });
     }
     // Allow editing if technician or reservation owner
-    if (!(req.user.role === 'Technician' || reservation.user.equals(req.user._id))) {
+    if (!(req.user.role === 'Technician' || req.user.role === 'Admin' || reservation.user.equals(req.user._id))) {
       return res.status(403).json({ success: false, message: 'You can only edit your own reservations.' });
     }
     if (reservation.status !== 'Reserved') {

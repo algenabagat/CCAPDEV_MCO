@@ -25,6 +25,7 @@
                   </td>
                   <td>{{formatDate this.createdAt 'YYYY-MM-DD'}}</td>
                   <td>
+                    {{#unless (eq this.role "Admin")}}
                     <div class="action-buttons">
                       <select class="role-select" data-user-id="{{this._id}}" data-current-role="{{this.role}}">
                         <option value="Student" {{#if (eq this.role "Student")}}selected{{/if}}>Student</option>
@@ -33,6 +34,9 @@
                       <button class="btn btn-sm btn-primary btn-update-role" data-user-id="{{this._id}}">Update</button>
                       <button class="btn btn-sm btn-danger btn-delete-user" data-user-id="{{this._id}}" data-user-name="{{this.firstName}} {{this.lastName}}">Delete</button>
                     </div>
+                    {{else}}
+                    <span class="text-muted">No actions available</span>
+                    {{/unless}}
                   </td>
                 </tr>
               {{else}}
@@ -68,4 +72,4 @@
       <button id="cancelDelete" class="btn btn-secondary">Cancel</button>
     </div>
   </div>
-</div> 
+</div>

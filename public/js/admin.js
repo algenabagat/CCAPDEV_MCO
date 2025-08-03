@@ -10,7 +10,6 @@ function initializeAdminPage() {
 }
 
 function setupRoleUpdateListeners() {
-    // Update role
     document.querySelectorAll('.btn-update-role').forEach(button => {
         button.addEventListener('click', function() {
             const userId = this.getAttribute('data-user-id');
@@ -29,7 +28,6 @@ function setupRoleUpdateListeners() {
 }
 
 function setupDeleteUserListeners() {
-    // Delete user
     document.querySelectorAll('.btn-delete-user').forEach(button => {
         button.addEventListener('click', function() {
             const userId = this.getAttribute('data-user-id');
@@ -45,11 +43,9 @@ function setupModal() {
     const closeBtn = modal.querySelector('.close');
     const cancelBtn = document.getElementById('cancelDelete');
     
-    // Close modal
     closeBtn.addEventListener('click', closeDeleteModal);
     cancelBtn.addEventListener('click', closeDeleteModal);
     
-    // Confirm delete
     document.getElementById('confirmDelete').addEventListener('click', function() {
         const userId = this.getAttribute('data-user-id');
         deleteUser(userId);
@@ -73,18 +69,17 @@ async function updateUserRole(userId, newRole, row) {
         const data = await response.json();
         
         if (data.success) {
-            // Update UI
             const roleBadge = row.querySelector('.badge');
             if (roleBadge) {
                 roleBadge.textContent = newRole;
                 roleBadge.className = `badge role-${newRole}`;
             }
             
-            // Update current role
             const roleSelect = row.querySelector('.role-select');
             if (roleSelect) {
                 roleSelect.setAttribute('data-current-role', newRole);
             }
+            alert('Role updated successfully!');
         }
     } catch (error) {
         console.error('Error updating user role:', error);
@@ -119,11 +114,11 @@ async function deleteUser(userId) {
         const data = await response.json();
         
         if (data.success) {
-            // Remove row
             const row = document.querySelector(`tr[data-user-id="${userId}"]`);
             if (row) {
                 row.remove();
             }
+            alert('User deleted successfully!');
         }
     } catch (error) {
         console.error('Error deleting user:', error);
