@@ -3,7 +3,7 @@
     "$oid": "687333ce4bdbe6ca9d8a2711"
   },
   "email": "earl.ferguson@dlsu.edu.ph",
-  "password": "Earlferg123!",
+  "password": "$2b$10$fFymyX3PgFK7mNrY5SJOSebVe4Gzyn8U9AD39f9NgGm5tfqCh9DBa",
   "firstName": "Earl",
   "lastName": "Ferguson",
   "role": "Student",
@@ -24,7 +24,7 @@
     "$oid": "687335b8c0894c036fbea396"
   },
   "email": "stacie.mack@dlsu.edu.ph",
-  "password": "MackStaC1e?",
+  "password": "$2b$10$b64i9Se5GnJUq8bLljKfpO3xmF9UNjmDEvm.bwA4yj4UIeOrIdafm",
   "firstName": "Stacie",
   "lastName": "Mack",
   "role": "Student",
@@ -45,7 +45,7 @@
     "$oid": "68733697e864a533e8d6b97c"
   },
   "email": "nelson.pittman@dlsu.edu.ph",
-  "password": "nEls0n!123",
+  "password": "$2b$10$a65usar/Qa/gc.4ZH5ceKOBI8Mvsbl4W2/v.HcwtuLsZ3U0K0eECG",
   "firstName": "Nelson",
   "lastName": "Pittman",
   "role": "Technician",
@@ -66,7 +66,7 @@
     "$oid": "6874fad8581f07707b7d7869"
   },
   "email": "billie.gregg@dlsu.edu.ph",
-  "password": "b1lli3!2005",
+  "password": "$2b$10$hT0CD5ir0U6UCb3NR59ZNOWdpj0JwLwZ2uZiCIvCa4RsQOGvlWYOS",
   "firstName": "Billie",
   "lastName": "Gregg",
   "role": "Student",
@@ -87,10 +87,10 @@
     "$oid": "6874fca2581f07707b7d7894"
   },
   "email": "julio.newell@dlsu.edu.ph",
-  "password": "Jul10!123",
+  "password": "$2b$10$VNrpivVGB3h1yjhQHCbx7eMuKGBuNnpj1wbwrwa37mDl9dF0VIDye",
   "firstName": "Julio",
   "lastName": "Newell",
-  "role": "Technician",
+  "role": "Admin",
   "profilePicture": "/uploads/profile-pictures/f63bd2ba8a77a3e43293378532c83a4c",
   "isDeleted": false,
   "reservations": [],
