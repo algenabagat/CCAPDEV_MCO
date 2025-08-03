@@ -1,4 +1,5 @@
 const User = require('../models/Users');
+const Reservation = require('../models/Reservations');
 const logError = require('../utils/logError');
 
 exports.checkAdminRole = async (req, res, next) => {
@@ -91,6 +92,8 @@ exports.updateUserRole = async (req, res) => {
 exports.deleteUser = async (req, res) => {
     try {
         const userId = req.params.userId;
+
+        await Reservation.deleteMany({ user: userId });
 
         const user = await User.findByIdAndDelete(userId);
 
