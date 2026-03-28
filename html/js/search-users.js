@@ -1,3 +1,7 @@
+import { getAppData } from './initData.js';
+console.log('Search Users script loaded');
+console.log('App data:', getAppData()); 
+
 $(document).ready(function() {
     $('#search-users-form').submit(function(e) {
         e.preventDefault();
@@ -8,10 +12,10 @@ $(document).ready(function() {
         const accountType = $('#search-account-type').val();
         
         // Get all users from localStorage
-        const allUsers = JSON.parse(localStorage.getItem('users') || '[]');
+        const allUsers = getAppData();
         
         // Filter users based on search criteria
-        const results = allUsers.filter(user => {
+        const results = allUsers.users.filter(user => {
             const matchesName = !name || 
                 user.firstName.toLowerCase().includes(name) || 
                 user.lastName.toLowerCase().includes(name);
